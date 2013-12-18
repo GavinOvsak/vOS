@@ -20,16 +20,20 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
+  /*socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
     console.log('from: my other event');
     console.log(data);
-  });
+  });*/
   socket.on('start', function (data) {
-    console.log('from: start');
-    console.log(data);
+    console.log(JSON.parse(data));
   });
-  console.log('test');
+  socket.on('move', function (data) {
+    console.log(JSON.parse(data));
+  });
+  socket.on('end', function (data) {
+    console.log(JSON.parse(data));
+  });
 });
 
 /*
