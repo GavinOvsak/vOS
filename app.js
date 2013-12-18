@@ -21,9 +21,15 @@ function handler (req, res) {
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
-  socket.on('start', function (data) {
+  socket.on('my other event', function (data) {
+    console.log('from: my other event');
     console.log(data);
   });
+  socket.on('start', function (data) {
+    console.log('from: start');
+    console.log(data);
+  });
+  console.log('test');
 });
 
 /*
