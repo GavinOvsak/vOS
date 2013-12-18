@@ -1,3 +1,32 @@
+var app = require('http').createServer(handler)
+  , io = require('socket.io').listen(app)
+  , fs = require('fs')
+
+app.listen(80);
+
+function handler (req, res) {
+  res.writeHead(200, {"Content-Type": "text/plain"});
+  res.end("Hello World\n");
+/*  fs.readFile(__dirname + '/index.html',
+  function (err, data) {
+    if (err) {
+      res.writeHead(500);
+      return res.end('Error loading index.html');
+    }
+
+    res.writeHead(200);
+    res.end(data);
+  });*/
+}
+
+io.sockets.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('start', function (data) {
+    console.log(data);
+  });
+});
+
+/*
 // Load the http module to create an http server.
 var http = require('http');
 
@@ -12,3 +41,4 @@ server.listen(80);
 
 // Put a friendly message on the terminal
 console.log("Server running at http://127.0.0.1:80/");
+*/
