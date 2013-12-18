@@ -5,9 +5,9 @@ var app = require('http').createServer(handler)
 app.listen(80);
 
 function handler (req, res) {
-  res.writeHead(200, {"Content-Type": "text/plain"});
-  res.end("Hello World\n");
-/*  fs.readFile(__dirname + '/index.html',
+//  res.writeHead(200, {"Content-Type": "text/plain"});
+//  res.end("Hello World\n");
+  fs.readFile(__dirname + '/index.html',
   function (err, data) {
     if (err) {
       res.writeHead(500);
@@ -16,7 +16,7 @@ function handler (req, res) {
 
     res.writeHead(200);
     res.end(data);
-  });*/
+  });
 }
 
 io.sockets.on('connection', function (socket) {
