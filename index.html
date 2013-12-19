@@ -37,7 +37,7 @@ var repaint = function() {
 		if (!!points[i] && !!points[i].x && !!points[i].y) {
 			c.fillStyle = "#555555";
 			c.beginPath();
-			c.arc(points[i].x/device_width, points[i].y/device_height, 20, 0, 2*Math.PI);
+			c.arc(points[i].x*width/device_width, points[i].y*height/device_height, 20, 0, 2*Math.PI);
 			c.closePath();
 			c.fill();		
 		}
