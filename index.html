@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-//Make into VR Keybaord
 <html>
 <head>
 	<meta charset="utf-8"> 
@@ -50,6 +49,8 @@ var repaint = function() {
 
 socket.on('start', function (data) {
 	parsed = JSON.parse(data);
+	console.log('start');
+	console.log(parsed);
 	points[parsed.i] = {
 		x: parsed.x,
 		y: parsed.y
@@ -59,6 +60,8 @@ socket.on('start', function (data) {
 
 socket.on('move', function (data) {
 	parsed = JSON.parse(data);
+	console.log('start');
+	console.log(parsed);
 	points[parsed.i] = {
 		x: parsed.x,
 		y: parsed.y
@@ -68,6 +71,8 @@ socket.on('move', function (data) {
 
 socket.on('end', function (data) {
 	parsed = JSON.parse(data);
+	console.log('start');
+	console.log(parsed);
 	points[parsed.i] = {};
 	repaint();
 });
