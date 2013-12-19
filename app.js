@@ -27,21 +27,21 @@ var newInputSocket = function(socket) {
   socket.on('start', function (data) {
     parsed = JSON.parse(data);
     for (var i = 0; i < outputSockets.length; i++) {
-      outputSockets[i].emit(data);      
+      outputSockets[i].emit('start', data);      
     }
     console.log(parsed);
   });
   socket.on('move', function (data) {
     parsed = JSON.parse(data);
     for (var i = 0; i < outputSockets.length; i++) {
-      outputSockets[i].emit(data);      
+      outputSockets[i].emit('move', data);      
     }
     console.log(parsed);
   });
   socket.on('end', function (data) {
     parsed = JSON.parse(data);
     for (var i = 0; i < outputSockets.length; i++) {
-      outputSockets[i].emit(data);      
+      outputSockets[i].emit('end', data);      
     }
     console.log(parsed);
   });
