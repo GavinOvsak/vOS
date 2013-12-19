@@ -38,7 +38,7 @@ var repaint = function() {
 			c.fillStyle = "#555555";
 			c.beginPath();
 			c.arc(points[i].x, points[i].y, 20, 0, 2*Math.PI);
-			c.endPath();
+			c.closePath();
 			c.fill();		
 		}
 	}
