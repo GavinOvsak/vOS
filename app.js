@@ -27,6 +27,7 @@ var newInputSocket = function(socket) {
   socket.on('start', function (data) {
     parsed = JSON.parse(data);
     for (var i = 0; i < outputSockets.length; i++) {
+      console.log('emit: start, ' + data);
       outputSockets[i].emit('start', data);      
     }
     console.log(parsed);
@@ -34,6 +35,7 @@ var newInputSocket = function(socket) {
   socket.on('move', function (data) {
     parsed = JSON.parse(data);
     for (var i = 0; i < outputSockets.length; i++) {
+      console.log('emit: move, ' + data);
       outputSockets[i].emit('move', data);      
     }
     console.log(parsed);
@@ -41,7 +43,16 @@ var newInputSocket = function(socket) {
   socket.on('end', function (data) {
     parsed = JSON.parse(data);
     for (var i = 0; i < outputSockets.length; i++) {
+      console.log('emit: end, ' + data);
       outputSockets[i].emit('end', data);      
+    }
+    console.log(parsed);
+  });
+  socket.on('size', function (data) {
+    parsed = JSON.parse(data);
+    for (var i = 0; i < outputSockets.length; i++) {
+      console.log('emit: size, ' + data);
+      outputSockets[i].emit('size', data);      
     }
     console.log(parsed);
   });
