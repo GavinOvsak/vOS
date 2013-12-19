@@ -11,7 +11,7 @@
   var socket = io.connect('http://199.223.235.124');
   socket.on('news', function (data) {
     console.log(data);
-    socket.emit('my other event', { my: 'data' });
+    socket.emit('declare-type', 'output');
   });
 </script>
 <canvas width="400" height="300" id="board"></canvas>

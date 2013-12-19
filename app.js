@@ -19,22 +19,53 @@ function handler (req, res) {
   });
 }
 
+//Will design codified way to map
+var inputSockets = [];
+var outputSockets = [];
+
+var newInputSocket = function(socket) {
+  socket.on('start', function (data) {
+    parsed = JSON.parse(data);
+    for (var i = 0; i < outputSockets.length; i++) {
+      outputSockets[i].emit(data);      
+    }
+    console.log(parsed);
+  });
+  socket.on('move', function (data) {
+    parsed = JSON.parse(data);
+    for (var i = 0; i < outputSockets.length; i++) {
+      outputSockets[i].emit(data);      
+    }
+    console.log(parsed);
+  });
+  socket.on('end', function (data) {
+    parsed = JSON.parse(data);
+    for (var i = 0; i < outputSockets.length; i++) {
+      outputSockets[i].emit(data);      
+    }
+    console.log(parsed);
+  });
+}
+
 io.sockets.on('connection', function (socket) {
   /*socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
     console.log('from: my other event');
     console.log(data);
   });*/
-  socket.on('start', function (data) {
-    console.log(JSON.parse(data));
-  });
-  socket.on('move', function (data) {
-    console.log(JSON.parse(data));
-  });
-  socket.on('end', function (data) {
-    console.log(JSON.parse(data));
+  socket.on('declare-type', function (data) {
+    if (data == 'input') {
+      inputSockets.append(socket);
+      newInputSocket(socket);
+    } else if (data == 'output') {
+      outputSockets.append(socket);
+    }
+    console.log(data);
+    console.log(inputSockets);
+    console.log(outputSockets);
   });
 });
+
 
 /*
 // Load the http module to create an http server.
