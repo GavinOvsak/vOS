@@ -11,7 +11,7 @@
   var socket = io.connect('http://199.223.235.124');
   socket.emit('declare-type', 'output');
 </script>
-<canvas width="400" height="300" id="board"></canvas>
+<canvas width="600" height="600" id="board"></canvas>
 <script>
 
 var canvas = document.getElementById( 'board' );
@@ -37,7 +37,7 @@ var repaint = function() {
 		if (!!points[i] && !!points[i].x && !!points[i].y) {
 			c.fillStyle = "#555555";
 			c.beginPath();
-			c.arc(points[i].x, points[i].y, 20, 0, 2*Math.PI);
+			c.arc(points[i].x/device_width, points[i].y/device_height, 20, 0, 2*Math.PI);
 			c.closePath();
 			c.fill();		
 		}
@@ -57,7 +57,7 @@ socket.on('start', function (data) {
 
 socket.on('move', function (data) {
 	parsed = JSON.parse(data);
-	console.log('start');
+	console.log('move');
 	console.log(parsed);
 	points[parsed.i] = {
 		x: parsed.x,
@@ -68,7 +68,7 @@ socket.on('move', function (data) {
 
 socket.on('end', function (data) {
 	parsed = JSON.parse(data);
-	console.log('start');
+	console.log('end');
 	console.log(parsed);
 	points[parsed.i] = {};
 	repaint();
