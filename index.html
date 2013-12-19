@@ -1,4 +1,13 @@
-<script src="http://199.223.235.124/socket.io/socket.io.js"></script>
+//Make into VR Keybaord
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<title>LEAPnav Example</title>
+</head>
+<body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://www.workbygavin.com/js/lodash.min.js"></script>
 <script>
   var socket = io.connect('http://199.223.235.124');
   socket.on('news', function (data) {
@@ -6,3 +15,63 @@
     socket.emit('my other event', { my: 'data' });
   });
 </script>
+<canvas width="400" height="300" id="board"></canvas>
+<script>
+
+var canvas = document.getElementById( 'board' );
+var c =  canvas.getContext( '2d' );
+
+var width = canvas.width;
+var height = canvas.height;
+
+var device_width = width;
+var device_height = height;
+
+socket.on('size', function (data) {
+	device_width = JSON.stringify(data).width;
+	device_height = JSON.stringify(data).height;
+	console.log(data);
+});
+
+var points = [];
+
+var repaint = function() {
+	c.clearRect(width, height);
+	for (var i = 0; i < points.length; i++) {
+		if (!!points[i] && !!points[i].x && !!points[i].y) {
+			c.fillStyle = "#555555";
+			c.beginPath();
+			c.arc(points[i].x, points[i].y, 20, 0, 2*Math.PI);
+			c.endPath();
+			c.fill();		
+		}
+	}
+};
+
+socket.on('start', function (data) {
+	parsed = JSON.parse(data);
+	points[parsed.i] = {
+		x: parsed.x,
+		y: parsed.y
+	};
+	repaint();
+});
+
+socket.on('move', function (data) {
+	parsed = JSON.parse(data);
+	points[parsed.i] = {
+		x: parsed.x,
+		y: parsed.y
+	};
+	repaint();
+});
+
+socket.on('end', function (data) {
+	parsed = JSON.parse(data);
+	points[parsed.i] = {};
+	repaint();
+});
+
+</script>
+</body>
+</html>
