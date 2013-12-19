@@ -24,8 +24,8 @@ var device_width = width;
 var device_height = height;
 
 socket.on('size', function (data) {
-	device_width = JSON.stringify(data).width;
-	device_height = JSON.stringify(data).height;
+	device_width = JSON.parse(data).width;
+	device_height = JSON.parse(data).height;
 	console.log(data);
 });
 
