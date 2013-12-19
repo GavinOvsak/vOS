@@ -55,10 +55,10 @@ io.sockets.on('connection', function (socket) {
   });*/
   socket.on('declare-type', function (data) {
     if (data == 'input') {
-      inputSockets.append(socket);
+      inputSockets.push(socket);
       newInputSocket(socket);
     } else if (data == 'output') {
-      outputSockets.append(socket);
+      outputSockets.push(socket);
     }
     console.log(data);
     console.log(inputSockets);
