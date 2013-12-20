@@ -23,10 +23,14 @@ var height = canvas.height;
 
 var device_width = width;
 var device_height = height;
+var x_scale = width/device_width;
+var y_scale = height/device_height;
 
 socket.on('size', function (data) {
 	device_width = JSON.parse(data).width;
 	device_height = JSON.parse(data).height;
+	x_scale = width/device_width;
+	y_scale = height/device_height;
 	console.log(data);
 });
 
@@ -36,7 +40,7 @@ var slider_pointers = [];
 var slider_positions = [50, 50];
 
 var rectContains = function(point, x, y, width, height) {
-	return point.x*width/device_width > x && point.x*width/device_width < x + width && point.y*height/device_height > y && point.y*height/device_height < y + height;
+	return point.x*x_scale > x && point.x*x_scale < x + width && point.y*y_scale > y && point.y*y_scale < y + height;
 };
 
 var repaint = function() {
