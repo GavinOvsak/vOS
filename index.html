@@ -12,7 +12,7 @@
   socket.emit('declare-type', 'output');
 </script>
 <div id="code"></div>
-<canvas width="600" height="600" id="board"></canvas>
+<canvas width="800" height="600" id="board"></canvas>
 <script>
 
 var canvas = document.getElementById( 'board' );
@@ -57,15 +57,22 @@ var drawBackground = function(){
 
 	c.fillStyle = "#999999";
 	c.beginPath();
-	c.rect(75, 75, 100, 100);
-	c.rect(200, 75, 100, 100);
-	c.rect(325, 75, 100, 100);
-	c.rect(75, 200, 100, 100);
-	c.rect(200, 200, 100, 100);
-	c.rect(325, 200, 100, 100);
-	c.rect(75, 325, 100, 100);
-	c.rect(200, 325, 100, 100);
-	c.rect(325, 325, 100, 100);
+	c.rect(225, 125, 100, 100);
+	c.rect(350, 125, 100, 100);
+	c.rect(475, 125, 100, 100);
+	c.rect(225, 250, 100, 100);
+	c.rect(350, 250, 100, 100);
+	c.rect(475, 250, 100, 100);
+	c.rect(225, 375, 100, 100);
+	c.rect(350, 375, 100, 100);
+	c.rect(475, 375, 100, 100);
+
+	c.rect(50, 50, 5, 500);
+	c.rect(25, 50, 50, 20);
+
+	c.rect(600, 200, 175, 200);
+
+
 /*	c.rect(175, 175, 50, 50);
 	c.rect(275, 175, 50, 50);
 	c.rect(375, 175, 50, 50);
