@@ -81,10 +81,10 @@ var drawBackground = function(){
 	//color buttons based on where their pointers are if they have them.
 
 	if(slider_pointers[0] != undefined) {
-		slider_positions[0] = Math.max(550, Math.min(50, points[slider_pointers[0]].y*y_scale));
+		slider_positions[0] = Math.min(550, Math.max(50, points[slider_pointers[0]].y*y_scale));
 	}
 	if(slider_pointers[1] != undefined) {
-		slider_positions[1] = Math.max(550, Math.min(50, points[slider_pointers[1]].y*y_scale));
+		slider_positions[1] = Math.min(550, Math.max(50, points[slider_pointers[1]].y*y_scale));
 	}
 
 	c.rect(50, 50, 5, 500);
