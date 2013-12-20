@@ -4,14 +4,15 @@ var socket = require('socket.io')
   , express = require('express');
 
 var app = express();
-app.get("/", handler);
+//app.get("/", handler);
 
 app.configure(function(){
-  app.use('/tests', express.static(__dirname + '/public'));
+  app.use('/', express.static(__dirname + '/public'));
 });
 
 var io = socket.listen(app.listen(80));
 
+/*
 function handler (req, res) {
 //  res.writeHead(200, {"Content-Type": "text/plain"});
 //  res.end("Hello World\n");
@@ -24,7 +25,7 @@ function handler (req, res) {
     res.writeHead(200);
     res.end(data);
   });
-}
+}*/
 
 var outputs = {};
 

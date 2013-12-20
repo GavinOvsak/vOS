@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<title>Keyboard Demo</title>
+</head>
+<body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://www.workbygavin.com/js/lodash.min.js"></script>
+<script>
+  var socket = io.connect('http://199.223.235.124');
+  socket.emit('declare-type', 'output');
+</script>
+<div id="code"></div>
+<canvas width="800" height="600" id="board"></canvas>
+<script>
+
+var canvas = document.getElementById( 'board' );
+var c =  canvas.getContext( '2d' );
+
+var width = canvas.width;
+var height = canvas.height;
+
+var device_width = width;
+var device_height = height;
+var x_scale = width/device_width;
+var y_scale = height/device_height;
+
+socket.on('size', function (data) {
+	device_width = JSON.parse(data).width;
+	device_height = JSON.parse(data).height;
+	x_scale = width/device_width;
+	y_scale = height/device_height;
+	console.log(data);
+});
+
+var points = [];
+var button_pointers = [];
+var slider_pointers = [];
+var slider_positions = [50, 50];
+var buttonPositions = [
+{x: 205, y: 125},
+{x: 330, y: 125},
+{x: 455, y: 125},
+{x: 205, y: 250},
+{x: 330, y: 250},
+{x: 455, y: 250},
+{x: 205, y: 375},
+{x: 330, y: 375},
+{x: 455, y: 375}
+];
+
+var rectContains = function(point, x, y, width, height) {
+	return point.x*x_scale > x && point.x*x_scale < x + width && point.y*y_scale > y && point.y*y_scale < y + height;
+};
+
+var repaint = function() {
+	c.clearRect(0, 0, width, height);
+
+	drawBackground();
+
+	for (var i = 0; i < points.length; i++) {
+		if (!!points[i] && !!points[i].x && !!points[i].y) {
+			c.fillStyle = "#555555";
+			c.beginPath();
+			c.arc(points[i].x*x_scale, points[i].y*y_scale, 5, 0, 2*Math.PI);
+			c.closePath();
+			c.fill();
+		}
+	}
+};
+
+var vector = function(a, b) {
+return [b[0]-a[0], b[1]-a[1]];
+}
+
+var dot = function(a, b) {
+return a[0]*b[0]+a[1]*b[1];
+}
+
+var length = function(a) {
+return Math.sqrt(a[0]*a[0]+a[1]*a[1]);
+}
+
+var distance = function(a, b) {
+return length(vector(a,b));
+}
+
+var angle = function(a, b) {
+return Math.acos(dot(a,b)/(length(a)*length(b)));
+}
+
+var threshold_distance = 100;
+
+var drawBackground = function(){
+	c.fillStyle = "#EEEEEE";
+	c.beginPath();
+	c.rect(0, 0, 800, 600);
+	c.closePath();
+	c.fill();
+
+	if(slider_pointers[0] != undefined && slider_pointers[0].pointer != undefined) {
+		var pointer = points[slider_pointers[0].pointer];
+		slider_positions[0] = Math.min(550, Math.max(50, (pointer.y - pointer.start_y)*y_scale + slider_pointers[0].initial_position));
+	}
+	if(slider_pointers[1] != undefined && slider_pointers[1].pointer != undefined) {
+		var pointer = points[slider_pointers[1].pointer];
+		slider_positions[1] = Math.min(550, Math.max(50, (pointer.y - pointer.start_y)*y_scale + slider_pointers[1].initial_position));
+	}
+
+	for (var i = 0; i < buttonPositions.length; i++) {
+		var other = 99;
+		if (button_pointers[i] != undefined) {
+			var pointer = points[button_pointers[i]];
+			other = Math.floor(99 - 89*Math.min(threshold_distance, distance([pointer.x*x_scale, pointer.y*y_scale], [pointer.start_x*x_scale, pointer.start_y*y_scale]))/threshold_distance);
+		}
+		c.fillStyle = "#99" + other + "" + other;
+		c.beginPath();
+		c.rect(buttonPositions[i].x, buttonPositions[i].y, 100, 100);
+		c.closePath();
+		c.fill();
+	}
+
+
+
+	c.fillStyle = "#999999";
+	c.beginPath();
+	c.rect(50, 50, 5, 500);
+	c.rect(25, slider_positions[0], 55, 50);
+
+	c.rect(130, 50, 5, 500);
+	c.rect(105, slider_positions[1], 55, 50);
+
+	c.rect(600, 200, 175, 200);
+	c.closePath();
+	c.fill();
+
+
+	//color buttons based on where their pointers are if they have them.
+	
+	
+	
+
+
+}
+
+socket.on('code', function (code) {
+	console.log(code);
+	screen_code = document.getElementById( 'code' );
+	screen_code.innerText = 'Use this code to connect: ' + code;
+});
+
+socket.on('start', function (data) {
+	parsed = JSON.parse(data);
+	console.log('start');
+	console.log(parsed);
+	points[parsed.i] = {
+		start_x: parsed.x,
+		start_y: parsed.y,
+		x: parsed.x,
+		y: parsed.y
+	};
+
+	//If inside a button, and the button isn't already claimed, claim button.
+	//two slider grips are also buttons.
+	for (var i = 0; i < buttonPositions.length; i++) {
+		if (!button_pointers[i] && rectContains(parsed, buttonPositions[i].x, buttonPositions[i].y, 100, 100)) {
+			button_pointers[i] = parsed.i;
+		}
+	}
+
+	if (!slider_pointers[0] && rectContains(parsed, 25, slider_positions[0], 55, 50)) {
+		slider_pointers[0] = {
+			pointer: parsed.i,
+			initial_position: slider_positions[0]
+		};
+	}
+	if (!slider_pointers[1] && rectContains(parsed, 105, slider_positions[1], 55, 50)) {
+		slider_pointers[1] = {
+			pointer: parsed.i,
+			initial_position: slider_positions[1]
+		};
+	}
+
+	repaint();
+});
+
+socket.on('move', function (data) {
+	parsed = JSON.parse(data);
+	console.log('move');
+	console.log(parsed);
+	points[parsed.i].x = parsed.x;
+	points[parsed.i].y = parsed.y;
+
+	repaint();
+});
+
+socket.on('end', function (data) {
+	parsed = JSON.parse(data);
+	console.log('end');
+	console.log(parsed);
+	points[parsed.i] = {};
+
+	//if was in button, and is outside threshold, trigger button.
+	for(var i = 0; i < button_pointers.length; i++) {
+		if (button_pointers[i] != undefined && button_pointers[i] == parsed.i) {
+			button_pointers[i] = undefined;
+		}
+	}
+
+	for(var i = 0; i < slider_pointers.length; i++) {
+		if (slider_pointers[i] != undefined && slider_pointers[i].pointer == parsed.i) {
+			slider_pointers[i] = undefined;
+		}
+	}
+
+	repaint();
+});
+
+</script>
+</body>
+</html>
