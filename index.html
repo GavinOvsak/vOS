@@ -50,9 +50,24 @@ var repaint = function() {
 };
 
 var drawBackground = function(){
+	c.fillStyle = "#111111";
+	c.beginPath();
+	c.rect(0, 0, 600, 600);
+	c.closePath();
+	c.fill();
+
 	c.fillStyle = "#999999";
 	c.beginPath();
-	c.rect(175, 175, 50, 50);
+	c.rect(75, 75, 100, 100);
+	c.rect(200, 75, 100, 100);
+	c.rect(325, 75, 100, 100);
+	c.rect(75, 200, 100, 100);
+	c.rect(200, 200, 100, 100);
+	c.rect(325, 200, 100, 100);
+	c.rect(75, 325, 100, 100);
+	c.rect(200, 325, 100, 100);
+	c.rect(325, 325, 100, 100);
+/*	c.rect(175, 175, 50, 50);
 	c.rect(275, 175, 50, 50);
 	c.rect(375, 175, 50, 50);
 	c.rect(175, 275, 50, 50);
@@ -60,7 +75,7 @@ var drawBackground = function(){
 	c.rect(375, 275, 50, 50);
 	c.rect(175, 375, 50, 50);
 	c.rect(275, 375, 50, 50);
-	c.rect(375, 375, 50, 50);
+	c.rect(375, 375, 50, 50);*/
 	c.closePath();
 	c.fill();
 }
