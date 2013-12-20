@@ -162,32 +162,10 @@ socket.on('start', function (data) {
 
 	//If inside a button, and the button isn't already claimed, claim button.
 	//two slider grips are also buttons.
-	if (!button_pointers[0] && rectContains(parsed, 205, 125, 100, 100)) {
-		button_pointers[0] = parsed.i;
-	}
-	if (!button_pointers[1] && rectContains(parsed, 330, 125, 100, 100)) {
-		button_pointers[1] = parsed.i;
-	}
-	if (!button_pointers[2] && rectContains(parsed, 455, 125, 100, 100)) {
-		button_pointers[2] = parsed.i;
-	}
-	if (!button_pointers[3] && rectContains(parsed, 205, 250, 100, 100)) {
-		button_pointers[3] = parsed.i;
-	}
-	if (!button_pointers[4] && rectContains(parsed, 330, 250, 100, 100)) {
-		button_pointers[4] = parsed.i;
-	}
-	if (!button_pointers[5] && rectContains(parsed, 455, 250, 100, 100)) {
-		button_pointers[5] = parsed.i;
-	}
-	if (!button_pointers[6] && rectContains(parsed, 205, 375, 100, 100)) {
-		button_pointers[6] = parsed.i;
-	}
-	if (!button_pointers[7] && rectContains(parsed, 330, 375, 100, 100)) {
-		button_pointers[7] = parsed.i;
-	}
-	if (!button_pointers[8] && rectContains(parsed, 455, 375, 100, 100)) {
-		button_pointers[8] = parsed.i;
+	for (var i = 0; i < buttonPositions.length; i++) {
+		if (!button_pointers[i] && rectContains(parsed, buttonPositions[i].x, buttonPositions[i].y, 100, 100)) {
+			button_pointers[i] = parsed.i;
+		}
 	}
 
 	if (!slider_pointers[0] && rectContains(parsed, 25, slider_positions[0], 55, 50)) {
