@@ -178,10 +178,8 @@ socket.on('move', function (data) {
 	parsed = JSON.parse(data);
 	console.log('move');
 	console.log(parsed);
-	points[parsed.i] = {
-		x: parsed.x,
-		y: parsed.y
-	};
+	points[parsed.i].x = parsed.x;
+	points[parsed.i].y = parsed.y;
 
 	repaint();
 });
