@@ -36,7 +36,7 @@ var slider_pointers = [];
 var slider_positions = [50, 50];
 
 var rectContains = function(point, x, y, width, height) {
-	return point.x*width/device_width > x && point.x*width/device_width < x + width && point.y*width/device_width > y && point.y*width/device_width < y + height;
+	return point.x*width/device_width > x && point.x*width/device_width < x + width && point.y*height/device_height > y && point.y*height/device_height < y + height;
 };
 
 var repaint = function() {
