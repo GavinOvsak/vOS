@@ -123,7 +123,6 @@ var repaint = function() {
 		}
 	}
 };
-repaint();
 
 var vector = function(a, b) {
 	return b.x-a.x, b.y-a.y;
@@ -170,6 +169,8 @@ var drawBackground = function(){
 		c.fill();
 	}
 }
+
+repaint();
 
 socket.on('code', function (code) {
 	console.log(code);
