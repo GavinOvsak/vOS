@@ -20,10 +20,25 @@ function handler (req, res) {
 }
 
 //Will design codified way to map
-var inputSockets = [];
-var outputSockets = [];
+//var inputSockets = [];
+//var outputSockets = [];
 
-var newInputSocket = function(socket) {
+var outputs = {};
+
+var keyOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+var makeKey = function() {
+  var key = '';
+  while(key == '' || outputs[key]) {
+    key = '';
+    key += keyOptions[Math.floor(Math.random()*keyOptions.length)];
+    key += keyOptions[Math.floor(Math.random()*keyOptions.length)];
+    key += keyOptions[Math.floor(Math.random()*keyOptions.length)];
+  }
+  return key;
+}
+
+/*var newInputSocket = function(socket) {
   socket.on('start', function (data) {
     parsed = JSON.parse(data);
     for (var i = 0; i < outputSockets.length; i++) {
@@ -56,6 +71,29 @@ var newInputSocket = function(socket) {
     }
     console.log(parsed);
   });
+}*/
+
+var bind = function(input, output) {
+  input.on('start', function (data) {
+    parsed = JSON.parse(data);
+    output.emit('start', data);
+    console.log('emit: start, ' + data);
+  });
+  input.on('move', function (data) {
+    parsed = JSON.parse(data);
+    output.emit('move', data);      
+    console.log('emit: move, ' + data);
+  });
+  input.on('end', function (data) {
+    parsed = JSON.parse(data);
+    output.emit('end', data);      
+    console.log('emit: end, ' + data);
+  });
+  input.on('size', function (data) {
+    parsed = JSON.parse(data);
+    output.emit('size', data);      
+    console.log('emit: size, ' + data);
+  });
 }
 
 io.sockets.on('connection', function (socket) {
@@ -66,10 +104,20 @@ io.sockets.on('connection', function (socket) {
   });*/
   socket.on('declare-type', function (data) {
     if (data == 'input') {
-      inputSockets.push(socket);
-      newInputSocket(socket);
+        socket.on('code', function (data) {
+          if(!!outputs[data]) {
+            //Consider if output is already used.
+            bind(socket, outputs[data]);
+            //On input action, send to output
+          }
+        }
+      //inputSockets.push(socket);
+      //newInputSocket(socket);
     } else if (data == 'output') {
-      outputSockets.push(socket);
+      var key = makeKey();
+      socket.emit('code', key);
+      outputs[key] = socket;
+      //outputSockets.push(socket);
     }
     console.log(data);
     console.log(inputSockets);
