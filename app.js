@@ -115,13 +115,14 @@ io.sockets.on('connection', function (socket) {
       //newInputSocket(socket);
     } else if (data == 'output') {
       var key = makeKey();
+      console.log(key);
       socket.emit('code', key);
       outputs[key] = socket;
       //outputSockets.push(socket);
     }
     console.log(data);
-    console.log(inputSockets);
-    console.log(outputSockets);
+//    console.log(inputSockets);
+//    console.log(outputSockets);
   });
 });
 
