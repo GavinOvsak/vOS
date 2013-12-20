@@ -110,7 +110,7 @@ io.sockets.on('connection', function (socket) {
             bind(socket, outputs[data]);
             //On input action, send to output
           }
-        }
+        });
       //inputSockets.push(socket);
       //newInputSocket(socket);
     } else if (data == 'output') {
