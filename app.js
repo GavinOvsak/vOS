@@ -10,8 +10,7 @@ app.configure(function(){
   app.use('/tests', express.static(__dirname + '/public'));
 });
 
-app.listen(80);
-var io = socket.listen(app);
+var io = socket.listen(app.listen(80));
 
 function handler (req, res) {
 //  res.writeHead(200, {"Content-Type": "text/plain"});
