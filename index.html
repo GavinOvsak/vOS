@@ -199,7 +199,7 @@ socket.on('end', function (data) {
 
 	for(var i = 0; i < slider_pointers.length; i++) {
 		if (slider_pointers[i] != undefined && slider_pointers[i].pointer == parsed.i) {
-			slider_pointers[i].pointer = undefined;
+			slider_pointers[i] = {};
 		}
 	}
 
