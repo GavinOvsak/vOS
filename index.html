@@ -83,7 +83,7 @@ var drawBackground = function(){
 socket.on('code', function (code) {
 	console.log(code);
 	screen_code = document.getElementById( 'code' );
-	screen_code.text = 'Use this code to connect: ' + code;
+	screen_code.innerText = 'Use this code to connect: ' + code;
 });
 
 socket.on('start', function (data) {
