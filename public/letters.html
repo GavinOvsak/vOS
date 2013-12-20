@@ -176,8 +176,8 @@ var drawBackground = function(){
 		c.fill();
 
 		c.fillStyle = "#000000";
-		c.font = "bold 12px sans-serif";
-		c.fillText(keys[i].lower, keys[i].x + 10, keys[i].y + 10);
+		c.font = "bold 30px sans-serif";
+		c.fillText(keys[i].lower, keys[i].x*keyboard_scale_x + 10, keys[i].y*keyboard_scale_y + 10);
 	}
 }
 
