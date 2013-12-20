@@ -192,13 +192,13 @@ socket.on('end', function (data) {
 
 	//if was in button, and is outside threshold, trigger button.
 	for(var i = 0; i < button_pointers.length; i++) {
-		if (button_pointers[i] == parsed.i) {
+		if (button_pointers[i] != undefined && button_pointers[i] == parsed.i) {
 			button_pointers[i] = undefined;
 		}
 	}
 
 	for(var i = 0; i < slider_pointers.length; i++) {
-		if (slider_pointers[i].pointer == parsed.i) {
+		if (slider_pointers[i] != undefined && slider_pointers[i].pointer == parsed.i) {
 			slider_pointers[i].pointer = undefined;
 		}
 	}
