@@ -1,27 +1,32 @@
-var app = require('http').createServer(handler)
-  , io = require('socket.io').listen(app)
+//var app = require('http').createServer(handler)
+var io = require('socket.io')
   , fs = require('fs')
+  , express = require('express');
+
+var app = express();
+app.get("/", handler);
+
+app.configure(function(){
+  app.use(express.static(__dirname + '/public'));
+});
+
+io.listen(app);
 
 app.listen(80);
 
 function handler (req, res) {
 //  res.writeHead(200, {"Content-Type": "text/plain"});
 //  res.end("Hello World\n");
-  fs.readFile(__dirname + '/index.html',
+  fs.readFile(__dirname + '/public/index.html',
   function (err, data) {
     if (err) {
       res.writeHead(500);
       return res.end('Error loading index.html');
     }
-
     res.writeHead(200);
     res.end(data);
   });
 }
-
-//Will design codified way to map
-//var inputSockets = [];
-//var outputSockets = [];
 
 var outputs = {};
 
