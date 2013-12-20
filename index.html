@@ -36,7 +36,7 @@ var slider_pointers = [];
 var slider_positions = [50, 50];
 
 var rectContains = function(point, x, y, width, height) {
-	return point.x > x && point.x < x + width && point.y > y && point.y < y + height;
+	return point.x*width/device_width > x && point.x*width/device_width < x + width && point.y*width/device_width > y && point.y*width/device_width < y + height;
 };
 
 var repaint = function() {
@@ -153,7 +153,7 @@ socket.on('start', function (data) {
 	if (!slider_pointers[0] && rectContains(parsed, 25, slider_positions[0], 55, 50)) {
 		slider_pointers[0] = parsed.i;
 	}
-	if (!slider_pointers[1] && rectContains(parsed, 105, slider_positions[0], 55, 50)) {
+	if (!slider_pointers[1] && rectContains(parsed, 105, slider_positions[1], 55, 50)) {
 		slider_pointers[1] = parsed.i;
 	}
 
