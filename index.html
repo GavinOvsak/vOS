@@ -11,9 +11,8 @@
   var socket = io.connect('http://199.223.235.124');
   socket.emit('declare-type', 'output');
 </script>
+<div id="code"></div>
 <canvas width="600" height="600" id="board"></canvas>
-<div id="code">
-</div>
 <script>
 
 var canvas = document.getElementById( 'board' );
@@ -50,7 +49,7 @@ var repaint = function() {
 };
 
 var drawBackground = function(){
-	c.fillStyle = "#111111";
+	c.fillStyle = "#EEEEEE";
 	c.beginPath();
 	c.rect(0, 0, 600, 600);
 	c.closePath();
