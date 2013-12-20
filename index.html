@@ -111,7 +111,7 @@ var drawBackground = function(){
 	for (var i = 0; i < buttonPositions.length; i++) {
 		var other = 99;
 		if (button_pointers[i] != undefined) {
-			other = Math.floor(99 - distance([buttonPositions.x*x_scale, buttonPositions.y*y_scale], [buttonPositions.start_x*x_scale, buttonPositions.start_y*y_scale])/threshold_distance);
+			other = Math.floor(99 - Math.min(threshold_distance, distance([buttonPositions.x*x_scale, buttonPositions.y*y_scale], [buttonPositions.start_x*x_scale, buttonPositions.start_y*y_scale]))/threshold_distance);
 		}
 		c.fillStyle = "#99" + other + "" + other;
 		c.beginPath();
