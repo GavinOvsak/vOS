@@ -123,6 +123,7 @@ var repaint = function() {
 		}
 	}
 };
+repaint();
 
 var vector = function(a, b) {
 	return b.x-a.x, b.y-a.y;
@@ -216,15 +217,9 @@ socket.on('end', function (data) {
 
 	//Todo: if was in button, and is outside threshold, trigger button.
 
-	for(var i = 0; i < button_pointers.length; i++) {
-		if (button_pointers[i] != undefined && button_pointers[i] == parsed.i) {
-			button_pointers[i] = undefined;
-		}
-	}
-
-	for(var i = 0; i < slider_pointers.length; i++) {
-		if (slider_pointers[i] != undefined && slider_pointers[i].pointer == parsed.i) {
-			slider_pointers[i] = undefined;
+	for(var i = 0; i < key_pointers.length; i++) {
+		if (key_pointers[i] != undefined && key_pointers[i] == parsed.i) {
+			key_pointers[i] = undefined;
 		}
 	}
 
