@@ -1,5 +1,5 @@
 //var app = require('http').createServer(handler)
-var io = require('socket.io')
+var socket = require('socket.io')
   , fs = require('fs')
   , express = require('express');
 
@@ -10,7 +10,7 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
-io.listen(app);
+var io = socket.listen(app);
 
 app.listen(80);
 
