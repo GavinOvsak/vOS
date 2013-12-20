@@ -52,7 +52,7 @@ var repaint = function() {
 		if (!!points[i] && !!points[i].x && !!points[i].y) {
 			c.fillStyle = "#555555";
 			c.beginPath();
-			c.arc(points[i].x*width/device_width, points[i].y*height/device_height, 5, 0, 2*Math.PI);
+			c.arc(points[i].x*x_scale, points[i].y*y_scale, 5, 0, 2*Math.PI);
 			c.closePath();
 			c.fill();
 		}
@@ -80,10 +80,10 @@ var drawBackground = function(){
 
 	//color buttons based on where their pointers are if they have them.
 
-	if(slider_pointers[0]) {
+	if(!!slider_pointers[0] != undefined) {
 		slider_positions[0] = Math.max(550, Math.min(50, points[slider_pointers[0]].y));
 	}
-	if(slider_pointers[1]) {
+	if(!!slider_pointers[1] != undefined) {
 		slider_positions[1] = Math.max(550, Math.min(50, points[slider_pointers[1]].y));
 	}
 
