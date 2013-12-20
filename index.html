@@ -38,6 +38,17 @@ var points = [];
 var button_pointers = [];
 var slider_pointers = [];
 var slider_positions = [50, 50];
+var buttonPositions = [
+{x: 205, y: 125},
+{x: 330, y: 125},
+{x: 455, y: 125},
+{x: 205, y: 250},
+{x: 330, y: 250},
+{x: 455, y: 250},
+{x: 205, y: 375},
+{x: 330, y: 375},
+{x: 455, y: 375}
+];
 
 var rectContains = function(point, x, y, width, height) {
 	return point.x*x_scale > x && point.x*x_scale < x + width && point.y*y_scale > y && point.y*y_scale < y + height;
@@ -59,26 +70,34 @@ var repaint = function() {
 	}
 };
 
+var vector = function(a, b) {
+return [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+}
+
+var dot = function(a, b) {
+return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+}
+
+var length = function(a) {
+return Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
+}
+
+var distance = function(a, b) {
+return length(vector(a,b));
+}
+
+var angle = function(a, b) {
+return Math.acos(dot(a,b)/(length(a)*length(b)));
+}
+
+var threshold_distance = 100;
+
 var drawBackground = function(){
 	c.fillStyle = "#EEEEEE";
 	c.beginPath();
 	c.rect(0, 0, 800, 600);
 	c.closePath();
 	c.fill();
-
-	c.fillStyle = "#999999";
-	c.beginPath();
-	c.rect(205, 125, 100, 100);
-	c.rect(330, 125, 100, 100);
-	c.rect(455, 125, 100, 100);
-	c.rect(205, 250, 100, 100);
-	c.rect(330, 250, 100, 100);
-	c.rect(455, 250, 100, 100);
-	c.rect(205, 375, 100, 100);
-	c.rect(330, 375, 100, 100);
-	c.rect(455, 375, 100, 100);
-
-	//color buttons based on where their pointers are if they have them.
 
 	if(slider_pointers[0] != undefined && slider_pointers[0].pointer != undefined) {
 		var pointer = points[slider_pointers[0].pointer];
@@ -89,6 +108,21 @@ var drawBackground = function(){
 		slider_positions[1] = Math.min(550, Math.max(50, (pointer.y - pointer.start_y)*y_scale + slider_pointers[1].initial_position));
 	}
 
+	for (var i = 0; i < buttonPositions.length; i++) {
+		var other = 99;
+		if (button_pointers[i] != undefined) {
+			other = Math.floor(99 - distance([buttonPositions.x*x_scale, buttonPositions.y*y_scale], [buttonPositions.start_x*x_scale, buttonPositions.start_y*y_scale])/threshold_distance);
+		}
+		c.fillStyle = "#99" + other + "" + other;
+		c.beginPath();
+		c.rect(buttonPositions[i].x, buttonPositions[i].y, 100, 100);
+		c.closePath();
+		c.fill();
+	}
+
+
+
+	c.fillStyle = "#999999";
 	c.rect(50, 50, 5, 500);
 	c.rect(25, slider_positions[0], 55, 50);
 
@@ -96,19 +130,16 @@ var drawBackground = function(){
 	c.rect(105, slider_positions[1], 55, 50);
 
 	c.rect(600, 200, 175, 200);
-
-
-/*	c.rect(175, 175, 50, 50);
-	c.rect(275, 175, 50, 50);
-	c.rect(375, 175, 50, 50);
-	c.rect(175, 275, 50, 50);
-	c.rect(275, 275, 50, 50);
-	c.rect(375, 275, 50, 50);
-	c.rect(175, 375, 50, 50);
-	c.rect(275, 375, 50, 50);
-	c.rect(375, 375, 50, 50);*/
 	c.closePath();
 	c.fill();
+
+
+	//color buttons based on where their pointers are if they have them.
+	
+	
+	
+
+
 }
 
 socket.on('code', function (code) {
