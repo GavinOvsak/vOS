@@ -31,6 +31,13 @@ socket.on('size', function (data) {
 });
 
 var points = [];
+var button_pointers = [];
+var slider_pointers = [];
+var slider_positions = [50, 50];
+
+var rectContains = function(point, x, y, width, height) {
+	return point.x > x && point.x < x + width && point.y > y && point.y < y + height;
+};
 
 var repaint = function() {
 	c.clearRect(0, 0, width, height);
@@ -67,10 +74,20 @@ var drawBackground = function(){
 	c.rect(330, 375, 100, 100);
 	c.rect(455, 375, 100, 100);
 
+	//color buttons based on where their pointers are if they have them.
+
+	if(slider_pointers[0]) {
+		slider_positions[0] = Math.max(550, Math.min(50, points[slider_pointers[0]].y);
+	}
+	if(slider_pointers[1]) {
+		slider_positions[1] = Math.max(550, Math.min(50, points[slider_pointers[1]].y);
+	}
+
 	c.rect(50, 50, 5, 500);
-	c.rect(25, 50, 55, 50);
+	c.rect(25, slider_positions[0], 55, 50);
+
 	c.rect(130, 50, 5, 500);
-	c.rect(105, 50, 55, 50);
+	c.rect(105, slider_positions[1], 55, 50);
 
 	c.rect(600, 200, 175, 200);
 
@@ -102,6 +119,44 @@ socket.on('start', function (data) {
 		x: parsed.x,
 		y: parsed.y
 	};
+
+	//If inside a button, and the button isn't already claimed, claim button.
+	//two slider grips are also buttons.
+	if (!button_pointers[0] && rectContains(parsed, 205, 125, 100, 100)) {
+		button_pointers[0] = parsed.i;
+	}
+	if (!button_pointers[1] && rectContains(parsed, 330, 125, 100, 100)) {
+		button_pointers[1] = parsed.i;
+	}
+	if (!button_pointers[2] && rectContains(parsed, 455, 125, 100, 100)) {
+		button_pointers[2] = parsed.i;
+	}
+	if (!button_pointers[3] && rectContains(parsed, 205, 250, 100, 100)) {
+		button_pointers[3] = parsed.i;
+	}
+	if (!button_pointers[4] && rectContains(parsed, 330, 250, 100, 100)) {
+		button_pointers[4] = parsed.i;
+	}
+	if (!button_pointers[5] && rectContains(parsed, 455, 250, 100, 100)) {
+		button_pointers[5] = parsed.i;
+	}
+	if (!button_pointers[6] && rectContains(parsed, 205, 375, 100, 100)) {
+		button_pointers[6] = parsed.i;
+	}
+	if (!button_pointers[7] && rectContains(parsed, 330, 375, 100, 100)) {
+		button_pointers[7] = parsed.i;
+	}
+	if (!button_pointers[8] && rectContains(parsed, 455, 375, 100, 100)) {
+		button_pointers[8] = parsed.i;
+	}
+
+	if (!slider_pointers[0] && rectContains(parsed, 25, slider_positions[0], 55, 50)) {
+		slider_pointers[0] = parsed.i;
+	}
+	if (!slider_pointers[1] && rectContains(parsed, 105, slider_positions[0], 55, 50)) {
+		slider_pointers[1] = parsed.i;
+	}
+
 	repaint();
 });
 
@@ -113,6 +168,7 @@ socket.on('move', function (data) {
 		x: parsed.x,
 		y: parsed.y
 	};
+
 	repaint();
 });
 
@@ -121,6 +177,20 @@ socket.on('end', function (data) {
 	console.log('end');
 	console.log(parsed);
 	points[parsed.i] = {};
+
+	//if was in button, and is outside threshold, trigger button.
+	for(var i = 0; i < button_pointers.length; i++) {
+		if (button_pointers[i] == parsed.i) {
+			button_pointers[i] = undefined;
+		}
+	}
+
+	for(var i = 0; i < slider_pointers.length; i++) {
+		if (slider_pointers[i] == parsed.i) {
+			slider_pointers[i] = undefined;
+		}
+	}
+
 	repaint();
 });
 
