@@ -50,7 +50,19 @@ var repaint = function() {
 };
 
 var drawBackground = function(){
-
+	c.fillStyle = "#999999";
+	c.beginPath();
+	c.rect(175, 175, 50, 50);
+	c.rect(275, 175, 50, 50);
+	c.rect(375, 175, 50, 50);
+	c.rect(175, 275, 50, 50);
+	c.rect(275, 275, 50, 50);
+	c.rect(375, 275, 50, 50);
+	c.rect(175, 375, 50, 50);
+	c.rect(275, 375, 50, 50);
+	c.rect(375, 375, 50, 50);
+	c.closePath();
+	c.fill();
 }
 
 socket.on('code', function (code) {
