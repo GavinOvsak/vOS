@@ -111,7 +111,7 @@ var drawBackground = function(){
 	for (var i = 0; i < buttonPositions.length; i++) {
 		var other = 99;
 		if (button_pointers[i] != undefined) {
-			var pointer = points[button_pointers[0]];
+			var pointer = points[button_pointers[i]];
 			other = Math.floor(99 - Math.min(threshold_distance, distance([pointer.x*x_scale, pointer.y*y_scale], [pointer.start_x*x_scale, pointer.start_y*y_scale]))/threshold_distance);
 		}
 		c.fillStyle = "#99" + other + "" + other;
