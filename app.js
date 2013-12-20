@@ -7,12 +7,11 @@ var app = express();
 app.get("/", handler);
 
 app.configure(function(){
-  app.use(express.static(__dirname + '/public'));
+  app.use('/tests', express.static(__dirname + '/public'));
 });
 
-var io = socket.listen(app);
-
 app.listen(80);
+var io = socket.listen(app);
 
 function handler (req, res) {
 //  res.writeHead(200, {"Content-Type": "text/plain"});
