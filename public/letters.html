@@ -125,23 +125,23 @@ var repaint = function() {
 };
 
 var vector = function(a, b) {
-	return b.x-a.x, b.y-a.y;
+	return {x: b.x-a.x, y: b.y-a.y};
 }
 
 var dot = function(a, b) {
-return a.x*b.x+a.y*b.y;
+	return a.x*b.x+a.y*b.y;
 }
 
 var length = function(a) {
-return Math.sqrt(a.x*a.x+a.y*a.y);
+	return Math.sqrt(a.x*a.x+a.y*a.y);
 }
 
 var distance = function(a, b) {
-return length(vector(a,b));
+	return length(vector(a,b));
 }
 
 var angle = function(a, b) {
-return Math.acos(dot(a,b)/(length(a)*length(b)));
+	return Math.acos(dot(a,b)/(length(a)*length(b)));
 }
 
 var scale = function(a, x_Scale, y_scale) {
