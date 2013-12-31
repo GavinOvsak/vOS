@@ -180,10 +180,10 @@ var kM = {
 var socket = io.connect('http://199.223.235.124');
 socket.emit('declare-type', 'output');
 
-var device_width = width;
-var device_height = height;
-var x_scale = width/device_width;
-var y_scale = height/device_height;
+var device_width = WIDTH;
+var device_height = HEIGHT;
+var x_scale = WIDTH/device_width;
+var y_scale = HEIGHT/device_height;
 
 socket.on('size', function (data) {
 	device_width = JSON.parse(data).width;
