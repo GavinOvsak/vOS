@@ -183,7 +183,7 @@ var drawBackground = function(){
 
 		c.fillStyle = "#000000";
 		c.font = "bold 40px sans-serif";
-		c.fillText(keys[i].lower, keys[i].x*keyboard_scale_x + 15, keys[i].y*keyboard_scale_y + 100);
+		c.fillText(keys[i].lower, keys[i].x*keyboard_scale_x + 15, keys[i].y*keyboard_scale_y + 80);
 	}
 
 	c.fillStyle = "#000000";
@@ -206,8 +206,10 @@ var checkGrab = function(parsed) {
 		if (!key_pointers[i] && rectContains(parsed, keys[i].x*keyboard_scale_x, keys[i].y*keyboard_scale_y, keys[i].width*keyboard_scale_x, keys[i].height*keyboard_scale_y)) {
 			key_pointers[i] = parsed.i;
 			points[parsed.i].taken = true;
-			points[parsed.i].grab.x = parsed.x;
-			points[parsed.i].grab.y = parsed.y;
+			points[parsed.i].grab = {
+				x: parsed.x,
+				y: parsed.y
+			};
 		}
 	}
 }
