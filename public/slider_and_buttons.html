@@ -152,8 +152,8 @@ var checkGrab = function(parsed) {
 	for (var i = 0; i < buttonPositions.length; i++) {
 		if (!button_pointers[i] && rectContains(parsed, buttonPositions[i].x, buttonPositions[i].y, 100, 100)) {
 			button_pointers[i] = parsed.i;
+			points[parsed.i].taken = true;
 		}
-		points[parsed.i].taken = true;
 	}
 
 	if (!slider_pointers[0] && rectContains(parsed, 25, slider_positions[0], 55, 50)) {
