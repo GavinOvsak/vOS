@@ -5,8 +5,10 @@
 	<title>Three JS Demo</title>
 </head>
 <body>
+<script src="/socket.io/socket.io.js"></script>
 <script src="/three.min.js"></script>
 <script src="/jquery-1.10.1.min.js"></script>
+<div id="code"></div>
 <div id="container"></div>
 <script>
 //Required for apps
@@ -120,6 +122,9 @@ export2 = galaxy;
 </script>
 
 <script>
+
+
+
 var WIDTH = 600,
   HEIGHT = 400;
 
@@ -168,8 +173,119 @@ var kM = {
 	apps: [],
 	front: null,
 	back: null,
-	front_and_back: null
+	front_and_back: null,
+	kM.points: []
 };
+
+var socket = io.connect('http://199.223.235.124');
+socket.emit('declare-type', 'output');
+
+var device_width = width;
+var device_height = height;
+var x_scale = width/device_width;
+var y_scale = height/device_height;
+
+socket.on('size', function (data) {
+	device_width = JSON.parse(data).width;
+	device_height = JSON.parse(data).height;
+	x_scale = width/device_width;
+	y_scale = height/device_height;
+	console.log(data);
+});
+
+var key_pointers = [];
+
+var rectContains = function(point, x, y, width, height) {
+	return point.x*x_scale > x && point.x*x_scale < x + width && point.y*y_scale > y && point.y*y_scale < y + height;
+};
+
+var vector = function(a, b) {
+	return {x: b.x-a.x, y: b.y-a.y};
+}
+
+var dot = function(a, b) {
+	return a.x*b.x+a.y*b.y;
+}
+
+var length = function(a) {
+	return Math.sqrt(a.x*a.x+a.y*a.y);
+}
+
+var distance = function(a, b) {
+	return length(vector(a,b));
+}
+
+var angle = function(a, b) {
+	return Math.acos(dot(a,b)/(length(a)*length(b)));
+}
+
+var scale = function(a, x_Scale, y_scale) {
+	return {
+		x: a.x*x_scale,
+		y: a.y*y_scale
+	}
+}
+
+var dragDist = function(pointer) {
+	return distance(scale(pointer, x_scale, y_scale), scale(pointer.start, x_scale, y_scale));
+}
+
+socket.on('code', function (code) {
+	console.log(code);
+	screen_code = document.getElementById( 'code' );
+	screen_code.innerText = 'Use this code to connect: ' + code;
+});
+
+socket.on('start', function (data) {
+	parsed = JSON.parse(data);
+	console.log('start');
+	console.log(parsed);
+	kM.points[parsed.i] = {
+		start: {
+			x: parsed.x,
+			y: parsed.y},
+		x: parsed.x,
+		y: parsed.y
+	};
+
+	//If inside a button, and the button isn't already claimed, claim button.
+	//two slider grips are also buttons.
+/*	for (var i = 0; i < keys.length; i++) {
+		if (!key_pointers[i] && rectContains(parsed, keys[i].x*keyboard_scale_x, keys[i].y*keyboard_scale_y, keys[i].width*keyboard_scale_x, keys[i].height*keyboard_scale_y)) {
+			key_pointers[i] = parsed.i;
+		}
+	}*/
+
+//	repaint();
+});
+
+socket.on('move', function (data) {
+	parsed = JSON.parse(data);
+	console.log('move');
+	console.log(parsed);
+	kM.points[parsed.i].x = parsed.x;
+	kM.points[parsed.i].y = parsed.y;
+
+//	repaint();
+});
+
+socket.on('end', function (data) {
+	parsed = JSON.parse(data);
+	console.log('end');
+	console.log(parsed);
+	kM.points[parsed.i] = {};
+
+	//Todo: if was in button, and is outside threshold, trigger button.
+
+/*	for(var i = 0; i < key_pointers.length; i++) {
+		if (key_pointers[i] != undefined && key_pointers[i] == parsed.i) {
+			key_pointers[i] = undefined;
+		}
+	}*/
+
+//	repaint();
+});
+
 
 kM.add = function(extern) {
 	var app = {
@@ -229,8 +345,6 @@ kM.close = function() {
 		kM.back = null;
 	}
 }
-
-kM.points = [];
 
 kM.start = function(update) {
 	kM.points[update.i] = {
