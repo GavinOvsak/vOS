@@ -28,6 +28,7 @@ function handler (req, res) {
 }*/
 
 var outputs = {};
+var inputs = {};
 
 var keyOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
@@ -109,15 +110,30 @@ io.sockets.on('connection', function (socket) {
   socket.on('declare-type', function (data) {
     if (data == 'input') {
         socket.on('code', function (data) {
-          if(!!outputs[data]) {
-            //Consider if output is already used.
-            bind(socket, outputs[data]);
+          if(!!outputs[data] && !!inputs[data]) {
+            //Todo: Consider if output is already used.
+
+            inputs[data] = socket;
+
             //On input action, send to output
-            socket.emit('code', 'success');
+            bind(inputs[data], outputs[data]);
+
+            //Notify on disconnect, should work if only one input per output.
+            outputs[data].on('disconnect', function() {
+              inputs[data].emit('connection', 'disconnected output');
+              delete outputs[data]; //should set to undefined?
+            });
+            inputs[data].on('disconnect', function() {
+              outputs[data].emit('connection', 'disconnected input');
+              delete inputs[data]; //should set to undefined?
+            });
+
+            inputs[data].emit('code', 'success');
           } else {
             socket.emit('code', 'failure');
           }
         });
+
       //inputSockets.push(socket);
       //newInputSocket(socket);
     } else if (data == 'output') {
@@ -133,9 +149,11 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
-io.sockets.on('disconnection', function(socket) {
+/*io.sockets.on('disconnection', function(socket) {
+  console.log("Disconnected");
+  console.log(socket);
   //check if socket is an output. If it is, send a message to the input type: 'connection', message: 'disconnected output'
-});
+});*/
 
 //To do:
 //on disconnected output, send disconnected message to its input if there is one.
