@@ -159,7 +159,7 @@ var keyboard_scale_x = 0.7;
 var keyboard_scale_y = 1.0;
 
 var dragDist = function(pointer) {
-	return distance(scale(pointer, x_scale, y_scale), scale(pointer.start, x_scale, y_scale));
+	return distance(scale(pointer, x_scale, y_scale), scale(pointer.grab, x_scale, y_scale));
 }
 
 var drawBackground = function(){
@@ -171,7 +171,7 @@ var drawBackground = function(){
 
 	for (var i = 0; i < keys.length; i++) {
 		var other = 99;
-		if (key_pointers[i] != undefined) {
+		if (key_pointers[i] != undefined && pointer.grab != undefined) {
 			var pointer = points[key_pointers[i]];
 			other = Math.floor(99 - 89*Math.min(threshold_distance, dragDist(pointer))/threshold_distance);
 		}
@@ -199,6 +199,20 @@ socket.on('code', function (code) {
 	screen_code.innerText = 'Use this code to connect: ' + code;
 });
 
+var checkGrab = function(parsed) {
+	//If inside a button, and the button isn't already claimed, claim button.
+	//two slider grips are also buttons.
+	for (var i = 0; i < keys.length; i++) {
+		if (!key_pointers[i] && rectContains(parsed, keys[i].x*keyboard_scale_x, keys[i].y*keyboard_scale_y, keys[i].width*keyboard_scale_x, keys[i].height*keyboard_scale_y)) {
+			key_pointers[i] = parsed.i;
+			points[parsed.i].taken = true;
+			points[parsed.i].grab.x = parsed.x;
+			points[parsed.i].grab.y = parsed.y;
+		}
+	}
+}
+
+
 socket.on('start', function (data) {
 	parsed = JSON.parse(data);
 	console.log('start');
@@ -208,16 +222,11 @@ socket.on('start', function (data) {
 			x: parsed.x,
 			y: parsed.y},
 		x: parsed.x,
-		y: parsed.y
+		y: parsed.y,
+		taken: false
 	};
 
-	//If inside a button, and the button isn't already claimed, claim button.
-	//two slider grips are also buttons.
-	for (var i = 0; i < keys.length; i++) {
-		if (!key_pointers[i] && rectContains(parsed, keys[i].x*keyboard_scale_x, keys[i].y*keyboard_scale_y, keys[i].width*keyboard_scale_x, keys[i].height*keyboard_scale_y)) {
-			key_pointers[i] = parsed.i;
-		}
-	}
+	checkGrab(parsed);
 
 	repaint();
 });
@@ -228,6 +237,11 @@ socket.on('move', function (data) {
 	console.log(parsed);
 	points[parsed.i].x = parsed.x;
 	points[parsed.i].y = parsed.y;
+
+	//if pointer isn't already taken.
+	if (!points[parsed.i].taken) {
+		checkGrab(parsed);
+	}
 
 	repaint();
 });
