@@ -339,10 +339,10 @@ kM.close = function() {
 kM.start = function(update) {
 	kM.points[update.i] = {
 		start: {
-			x: parsed.x/device_width,
-			y: parsed.y/device_height},
-		x: parsed.x/device_width,
-		y: parsed.y/device_height
+			x: update.x/device_width,
+			y: update.y/device_height},
+		x: update.x/device_width,
+		y: update.y/device_height
 	};
 };
 
