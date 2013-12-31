@@ -110,7 +110,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('declare-type', function (data) {
     if (data == 'input') {
         socket.on('code', function (data) {
-          if(!!outputs[data] && !!inputs[data]) {
+          if(!!outputs[data] && !inputs[data]) {
             //Todo: Consider if output is already used.
 
             inputs[data] = socket;
