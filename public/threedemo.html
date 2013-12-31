@@ -182,21 +182,17 @@ socket.emit('declare-type', 'output');
 
 var device_width = WIDTH;
 var device_height = HEIGHT;
-var x_scale = WIDTH/device_width;
-var y_scale = HEIGHT/device_height;
 
 socket.on('size', function (data) {
 	device_width = JSON.parse(data).width;
 	device_height = JSON.parse(data).height;
-	x_scale = width/device_width;
-	y_scale = height/device_height;
 	console.log(data);
 });
 
 var key_pointers = [];
 
 var rectContains = function(point, x, y, width, height) {
-	return point.x*x_scale > x && point.x*x_scale < x + width && point.y*y_scale > y && point.y*y_scale < y + height;
+	return point.x > x && point.x < x + width && point.y > y && point.y < y + height;
 };
 
 var vector = function(a, b) {
@@ -219,16 +215,16 @@ var angle = function(a, b) {
 	return Math.acos(dot(a,b)/(length(a)*length(b)));
 }
 
-var scale = function(a, x_Scale, y_scale) {
+var scale = function(a, x_scale, y_scale) {
 	return {
 		x: a.x*x_scale,
 		y: a.y*y_scale
 	}
 }
 
-var dragDist = function(pointer) {
+/*var dragDist = function(pointer) {
 	return distance(scale(pointer, x_scale, y_scale), scale(pointer.start, x_scale, y_scale));
-}
+}*/
 
 socket.on('code', function (code) {
 	console.log(code);
@@ -238,15 +234,9 @@ socket.on('code', function (code) {
 
 socket.on('start', function (data) {
 	parsed = JSON.parse(data);
-	console.log('start');
-	console.log(parsed);
-	kM.points[parsed.i] = {
-		start: {
-			x: parsed.x,
-			y: parsed.y},
-		x: parsed.x,
-		y: parsed.y
-	};
+	kM.start(parsed);
+//	console.log('start');
+//	console.log(parsed);
 
 	//If inside a button, and the button isn't already claimed, claim button.
 	//two slider grips are also buttons.
@@ -261,19 +251,19 @@ socket.on('start', function (data) {
 
 socket.on('move', function (data) {
 	parsed = JSON.parse(data);
-	console.log('move');
-	console.log(parsed);
-	kM.points[parsed.i].x = parsed.x;
-	kM.points[parsed.i].y = parsed.y;
+	kM.move(parsed);
+//	console.log('move');
+//	console.log(parsed);
 
 //	repaint();
 });
 
 socket.on('end', function (data) {
 	parsed = JSON.parse(data);
-	console.log('end');
-	console.log(parsed);
-	kM.points[parsed.i] = {};
+	kM.end(parsed);
+//	console.log('end');
+//	console.log(parsed);
+//	kM.points[parsed.i] = {};
 
 	//Todo: if was in button, and is outside threshold, trigger button.
 
@@ -349,16 +339,16 @@ kM.close = function() {
 kM.start = function(update) {
 	kM.points[update.i] = {
 		start: {
-			x: update.x,
-			y: update.y},
-		x: update.x,
-		y: update.y
+			x: parsed.x/device_width,
+			y: parsed.y/device_height},
+		x: parsed.x/device_width,
+		y: parsed.y/device_height
 	};
 };
 
 kM.move = function(update) {
-	kM.points[update.i].x = update.x;
-	kM.points[update.i].y = update.y;
+	kM.points[update.i].x = update.x/device_width;
+	kM.points[update.i].y = update.y/device_height;
 
 	//check kM.screenApp.buttons
 };
