@@ -171,7 +171,7 @@ var drawBackground = function(){
 
 	for (var i = 0; i < keys.length; i++) {
 		var other = 99;
-		if (key_pointers[i] != undefined && pointer.grab != undefined) {
+		if (key_pointers[i] != undefined && points[key_pointers[i]].grab != undefined) {
 			var pointer = points[key_pointers[i]];
 			other = Math.floor(99 - 89*Math.min(threshold_distance, dragDist(pointer))/threshold_distance);
 		}
@@ -183,7 +183,7 @@ var drawBackground = function(){
 
 		c.fillStyle = "#000000";
 		c.font = "bold 40px sans-serif";
-		c.fillText(keys[i].lower, keys[i].x*keyboard_scale_x + 15, keys[i].y*keyboard_scale_y + 150);
+		c.fillText(keys[i].lower, keys[i].x*keyboard_scale_x + 15, keys[i].y*keyboard_scale_y + 100);
 	}
 
 	c.fillStyle = "#000000";
