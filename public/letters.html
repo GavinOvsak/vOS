@@ -144,7 +144,7 @@ var angle = function(a, b) {
 	return Math.acos(dot(a,b)/(length(a)*length(b)));
 }
 
-var scale = function(a, x_Scale, y_scale) {
+var scale = function(a, x_scale, y_scale) {
 	return {
 		x: a.x*x_scale,
 		y: a.y*y_scale
@@ -258,7 +258,7 @@ socket.on('end', function (data) {
 
 	for(var i = 0; i < key_pointers.length; i++) {
 		if (key_pointers[i] != undefined && key_pointers[i] == parsed.i) {
-			if (dragDist(points[key_pointers[i]]) >= threshold_distance) {
+			if (points[key_pointers[i]].grab != undefined && dragDist(points[key_pointers[i]]) >= threshold_distance) {
 				typed_text += keys[i].lower;
 			};
 			key_pointers[i] = undefined;
