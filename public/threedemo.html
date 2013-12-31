@@ -340,15 +340,15 @@ kM.start = function(update) {
 	kM.points[update.i] = {
 		start: {
 			x: update.x/device_width,
-			y: update.y/device_height},
+			y: 1 - update.y/device_height},
 		x: update.x/device_width,
-		y: update.y/device_height
+		y: 1 - update.y/device_height
 	};
 };
 
 kM.move = function(update) {
 	kM.points[update.i].x = update.x/device_width;
-	kM.points[update.i].y = update.y/device_height;
+	kM.points[update.i].y = 1 - update.y/device_height;
 
 	//check kM.screenApp.buttons
 };
