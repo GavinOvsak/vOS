@@ -252,7 +252,6 @@ socket.on('end', function (data) {
 	parsed = JSON.parse(data);
 	console.log('end');
 	console.log(parsed);
-	points[parsed.i] = {};
 
 	//Todo: if was in button, and is outside threshold, trigger button.
 
@@ -264,6 +263,8 @@ socket.on('end', function (data) {
 			key_pointers[i] = undefined;
 		}
 	}
+
+	points[parsed.i] = {};
 
 	repaint();
 });
