@@ -120,11 +120,15 @@ io.sockets.on('connection', function (socket) {
 
             //Notify on disconnect, should work if only one input per output.
             outputs[data].on('disconnect', function() {
-              inputs[data].emit('connection', 'disconnected output');
+              if (!!inputs[data]) {
+                inputs[data].emit('connection', 'disconnected output');
+              }
               delete outputs[data]; //should set to undefined?
             });
             inputs[data].on('disconnect', function() {
-              outputs[data].emit('connection', 'disconnected input');
+              if (!!outputs[data]) {
+                outputs[data].emit('connection', 'disconnected input');
+              }
               delete inputs[data]; //should set to undefined?
             });
 
