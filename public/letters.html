@@ -151,10 +151,16 @@ var scale = function(a, x_Scale, y_scale) {
 	}
 }
 
+var typed_text = "Ouput: ";
+
 var threshold_distance = 100;
 
 var keyboard_scale_x = 0.7;
 var keyboard_scale_y = 1.0;
+
+var dragDist = function(pointer) {
+	return distance(scale(pointer, x_scale, y_scale), scale(pointer.start, x_scale, y_scale));
+}
 
 var drawBackground = function(){
 	c.fillStyle = "#EEEEEE";
@@ -167,7 +173,7 @@ var drawBackground = function(){
 		var other = 99;
 		if (key_pointers[i] != undefined) {
 			var pointer = points[key_pointers[i]];
-			other = Math.floor(99 - 89*Math.min(threshold_distance, distance(scale(pointer, x_scale, y_scale), scale(pointer.start, x_scale, y_scale)))/threshold_distance);
+			other = Math.floor(99 - 89*Math.min(threshold_distance, dragDist(pointer))/threshold_distance);
 		}
 		c.fillStyle = "#99" + other + "" + other;
 		c.beginPath();
@@ -177,8 +183,12 @@ var drawBackground = function(){
 
 		c.fillStyle = "#000000";
 		c.font = "bold 40px sans-serif";
-		c.fillText(keys[i].lower, keys[i].x*keyboard_scale_x + 15, keys[i].y*keyboard_scale_y + 80);
+		c.fillText(keys[i].lower, keys[i].x*keyboard_scale_x + 15, keys[i].y*keyboard_scale_y + 150);
 	}
+
+	c.fillStyle = "#000000";
+	c.font = "bold 40px sans-serif";
+	c.fillText(typed_text, 200, 550);
 }
 
 repaint();

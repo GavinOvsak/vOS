@@ -113,6 +113,9 @@ io.sockets.on('connection', function (socket) {
             //Consider if output is already used.
             bind(socket, outputs[data]);
             //On input action, send to output
+            socket.emit('code', 'success');
+          } else {
+            socket.emit('code', 'failure');
           }
         });
       //inputSockets.push(socket);
@@ -130,6 +133,13 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
+io.sockets.on('disconnection', function(socket) {
+  //check if socket is an output. If it is, send a message to the input type: 'connection', message: 'disconnected output'
+});
+
+//To do:
+//on disconnected output, send disconnected message to its input if there is one.
+//on code received from input, either send correct-code or bad-code or collision-code
 
 /*
 // Load the http module to create an http server.
