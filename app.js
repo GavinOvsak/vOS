@@ -107,6 +107,7 @@ io.sockets.on('connection', function (socket) {
     console.log('from: my other event');
     console.log(data);
   });*/
+  console.log('connected');
   socket.on('declare-type', function (data) {
     if (data == 'input') {
         socket.on('code', function (data) {

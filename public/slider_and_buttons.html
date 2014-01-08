@@ -146,9 +146,6 @@ socket.on('code', function (code) {
 
 
 var checkGrab = function(parsed) {
-	//If inside a button, and the button isn't already claimed, claim button.
-	//two slider grips are also buttons.
-
 	for (var i = 0; i < buttonPositions.length; i++) {
 		if (!button_pointers[i] && rectContains(parsed, buttonPositions[i].x, buttonPositions[i].y, 100, 100)) {
 			button_pointers[i] = parsed.i;
