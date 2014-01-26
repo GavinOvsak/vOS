@@ -45,4 +45,4 @@ chess.setUpKeyboard = function(keyboard) {
 	});
 }
 
-var exports = galaxy;
+var exports = chess;
