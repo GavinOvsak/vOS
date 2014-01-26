@@ -150,8 +150,8 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 		var shifted_x = this.x;
 		var shifted_y = this.y;
 		if(this.point != undefined) {
-			shifted_x = point.x - this.initGrab.x + this.x;
-			shifted_y = point.y - this.initGrab.y + this.y;
+			shifted_x = this.point.x - this.initGrab.x + this.x;
+			shifted_y = this.point.y - this.initGrab.y + this.y;
 		}
 		setKeyboardPosition(board, grab, unitWidth * shifted_x, unitHeight * shifted_y, 0.1);
 
