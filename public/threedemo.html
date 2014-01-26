@@ -144,7 +144,7 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 
 	this.draw = function(scene, board) {
 		//need to fill in circle.
-		var grab = makeCircle(this.radius);
+		var grab = makeFullCircle(this.radius);
 		
 		var shifted_x = this.x;
 		var shifted_y = this.y;
@@ -419,7 +419,7 @@ kM.drawKeyboard = function(scene) {
 			}
 
 			//Draw fingers
-			var circle_amplitude = 0.02;
+			var circle_amplitude = 0.01;
 			for (var i = 0; i < kM.points.length; i++) {
 				if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
 					var circle = makeCircle(circle_amplitude);
