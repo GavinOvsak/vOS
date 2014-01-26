@@ -37,7 +37,7 @@ chess.setUpKeyboard = function(keyboard) {
 
 	var joystick = new VRK.Joystick(4, 4, true);
 	joystick.onMove(function(x, y){
-
+		
 	});
 	keyboard.add(joystick);
 }
