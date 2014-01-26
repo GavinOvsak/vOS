@@ -5,9 +5,9 @@
 	<title>Three JS Demo</title>
 </head>
 <body>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/three.min.js"></script>
-<script src="/jquery-1.10.1.min.js"></script>
+<script src="http://162.222.183.103/socket.io/socket.io.js"></script>
+<script src="http://162.222.183.103/three.min.js"></script>
+<script src="http://162.222.183.103/jquery-1.10.1.min.js"></script>
 <div id="code"></div>
 <div id="container"></div>
 <script>
@@ -29,104 +29,24 @@ VRK.Button = Button;
 </script>
 
 <script>
-var chess = {};
-chess.drawFront = function(scene) {
-	var redLambert = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
-	
-	var cube = new THREE.Mesh(
-		new THREE.CubeGeometry(10, 20, 30),
-		redLambert);
-
-	cube.rotation.x = Math.PI/4;
-	cube.rotation.y = 0.3;
-
-	scene.add(cube);
-
-	/* var screen = new THREE.Mesh(
-			new THREE.PlaneGeometry(80, 80),
-			greenLambert);
-
-		screen.position.x = 0;
-		screen.position.y = 15;
-		screen.position.z = 140;
-
-		scene.add(screen); */
-};
-/*chess.drawBack = function(scene) {
-	
-	
-};*/
-chess.drawFrontAndBack = function(scene) {
-	chess.drawFront(scene);
-//	chess.drawBack(scene);
-};
-chess.setUpKeyboard = function(keyboard) {
-	var left = new VRK.Button(1, 3, 1, 1);
-	var right = new VRK.Button(3, 3, 1, 1);
-	var up = new VRK.Button(2, 4, 1, 1);
-	var down = new VRK.Button(2, 2, 1, 1);
-
-	keyboard.add(left);
-	keyboard.add(right);
-	keyboard.add(up);
-	keyboard.add(down);
-
-	left.onClick(function() {
-		console.log('left click');
-	});
-}
-
-var export1 = chess;
-</script>
 
 
-<script>
-var galaxy = {};
-galaxy.setUpKeyboard = function(keyboard) {
-	var right = new VRK.Button(8, 1, 2, 1);
-	keyboard.add(right);
-	right.onClick(function() {
-		console.log('right click');
-	});
-}
-/*galaxy.drawFront = function(scene) {
+//Make registry of javascript apps.
 
-};*/
-galaxy.drawBack = function(scene) {
-	var blueLambert = new THREE.MeshLambertMaterial({ color: 0x0000CC });
-	var radius = 20,
-    segments = 16,
-    rings = 16;
+var apps = [
+	'file://localhost/Users/Gavin/Google%20Drive/Development/VR-Keyboard/public/galaxy.js',
+	'file://localhost/Users/Gavin/Google%20Drive/Development/VR-Keyboard/public/chess.js'
+];
 
-	var sphere = new THREE.Mesh(
-	  new THREE.SphereGeometry(
-	    radius,
-	    segments,
-	    rings),
-	  blueLambert);
+$.getScript(apps[0]);
+$.getScript(apps[1]);
 
-	var angle = (Date.now()%5000)/5000*2*Math.PI;
-	sphere.position.x = 200*Math.cos(angle);
-	sphere.position.y = 40;
+//Keyboard
+//make buttons work.
+//make joysticks
 
-	sphere.position.z = 100+200*Math.sin(angle);
-
-	scene.add(sphere);
-};
-galaxy.drawFrontAndBack = function(scene) {
-//	galaxy.drawFront(scene);
-	galaxy.drawBack(scene);
-};
-
-export2 = galaxy;
-</script>
-
-<script>
-
-
-
-var WIDTH = 600,
-  HEIGHT = 400;
+var WIDTH = 1200,
+  HEIGHT = 800;
 
 var VIEW_ANGLE = 45,
   ASPECT = WIDTH / HEIGHT,
