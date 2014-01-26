@@ -111,7 +111,7 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 		x: 0,
 		y: 0
 	};
-	this.radius = 0.1;
+	this.radius = 0.04;
 	this.available = true;
 	this.point = undefined;
 	this.contains = function(x, y) {
@@ -423,7 +423,7 @@ kM.drawKeyboard = function(scene) {
 			for (var i = 0; i < kM.points.length; i++) {
 				if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
 					var circle = makeCircle(circle_amplitude);
-					setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
+					setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.02);
 					scene.add(circle);
 				}
 			}
