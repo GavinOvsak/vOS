@@ -12,6 +12,27 @@ var makeCircle = function(amplitude) {
 	return new THREE.Line(circle_geometry, greenLine);
 };
 
+var makeFullCircle = function(amplitude) {
+
+	var circle_resolution = 40;
+	var green = new THREE.LineBasicMaterial({color: 0x333333});
+	var circle = new THREE.Shape();
+
+	for(var j = 0; j <= circle_resolution; j++) {
+		var theta = (j / circle_resolution) * Math.PI * 2;
+		var x = amplitude * Math.cos(theta);
+		var y = amplitude * Math.sin(theta) * eccentricity;
+		if (ij== 0) {
+		    circle.moveTo(x, y);
+		} else {
+		    circle.lineTo(x, y);
+		}
+	}
+
+	var geometry = circle.makeGeometry();
+	return new THREE.Mesh(geometry, green);
+};
+
 var setKeyboardPosition = function(board, Mesh, x_disp, y_disp, z_disp){
 	var width = 0,
 		height = 0;
