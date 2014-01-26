@@ -7,7 +7,7 @@ var makeCircle = function(amplitude) {
 	var circle_geometry = new THREE.Geometry();
 	for(var j = 0; j <= circle_resolution; j++) {
 		var theta = (j / circle_resolution) * Math.PI * 2;
-		circle_geometry.vertices.push( new THREE.Vector3(amplitude * Math.cos(theta) * eccentricity, amplitude * Math.sin(theta), 0));
+		circle_geometry.vertices.push( new THREE.Vector3(amplitude * Math.cos(theta), amplitude * Math.sin(theta)* eccentricity, 0));
 	}
 	return new THREE.Line(circle_geometry, greenLine);
 };
