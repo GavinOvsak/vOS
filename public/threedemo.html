@@ -40,6 +40,7 @@ VRK.Button = function(x, y, width, height, text) {
 	this.width = width * unitWidth;
 	this.height = height * unitHeight;
 	this.available = true;
+	this.threshold_distance = 0.04;
 	this.initGrab = {
 		x: 0,
 		y: 0
@@ -56,8 +57,18 @@ VRK.Button = function(x, y, width, height, text) {
 		this.available = true;
 		this.point = undefined;
 		//if far enough, click.
-		this.click();
+		if (this.dragDistance() < this.threshold_distance) {
+			this.click();
+		}
 	};
+	this.dragDistance = function() {
+		if(this.point != undefined) {
+			return = Math.sqrt(
+				Math.pow(this.point.x - (this.x + this.width/2), 2) + 
+				Math.pow(this.point.y - (this.y + this.height/2), 2));
+		}
+		return 0;
+	}
 	this.registerPoint = function(point) {
 		this.initGrab.x = point.x;
 		this.initGrab.y = point.y;
@@ -70,16 +81,16 @@ VRK.Button = function(x, y, width, height, text) {
 	};
 	this.draw = function(scene, board) {
 		//change color based on distance
-		var distance = 0;
-		if(this.point != undefined) {
-			distance = Math.sqrt(
-				Math.pow(this.point.x - (this.x + this.width/2), 2) + 
-				Math.pow(this.point.y - (this.y + this.height/2), 2));
-		}
+		var distance = this.dragDistance();
+
+		var materialOptions = {};
+		materialOptions.color = 0x00CC00;
+		materialOptions.color += 0xFF0000 * Math.min(distance/this.threshold_distance, 1);
+		var material = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
-			greenLambert);
+			material);
 
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
 
