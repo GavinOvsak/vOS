@@ -85,7 +85,11 @@ VRK.Button = function(x, y, width, height, text) {
 
 		var materialOptions = {};
 
-		materialOptions.color = (Math.min(distance/this.threshold_distance, 1)*256 << 16) + (200 << 8) + 0;
+		if (this.point != null) {
+			materialOptions.color = (Math.min(distance/this.threshold_distance, 1)*256 << 16) + (200 << 8) + 0;
+		} else {
+			materialOptions.color = (0 << 16) + (200 << 8) + 0;
+		}
 
 //		materialOptions.color = 0x00CC00;
 //		materialOptions.color += 0xFF0000 * Math.min(distance/this.threshold_distance, 1);
