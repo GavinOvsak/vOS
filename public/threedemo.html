@@ -42,14 +42,6 @@ VRK.Button = function(x, y, width, height, text) {
 		y: 0
 	};
 	this.point = undefined;
-	this.registerPoint = function(point) {
-		this.initGrab.x = point.x;
-		this.initGrab.y = point.y;
-		this.point = point;
-		point.onRelease(this.release);
-		point.onMove(this.move);
-		this.available = false;
-	};
 	this.contains = function(x, y) {
 		return x > this.x/12 && x < (this.x + this.width)/12 && y > this.y/9 && y < (this.y + this.height)/9;
 	};
@@ -62,6 +54,13 @@ VRK.Button = function(x, y, width, height, text) {
 		//if far enough, click.
 
 		this.click();
+	};
+	this.registerPoint = function(point) {
+		this.initGrab.x = point.x;
+		this.initGrab.y = point.y;
+		this.point = point;
+		point.onRelease(this.release);
+		this.available = false;
 	};
 	this.onClick = function(callback) {
 		this.onClick_callback = callback;
@@ -111,16 +110,8 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.radius = 2;
 	this.available = true;
 	this.point = undefined;
-	this.registerPoint = function(point) {
-		this.initGrab.x = point.x;
-		this.initGrab.y = point.y;
-		this.point = point;
-		point.onRelease(this.release);
-		point.onMove(this.move);
-		this.available = false;
-	};
 	this.contains = function(x, y) {
-		return Math.sqrt(Math.pow(x - this.x/12,2)+Math.pow(y - this.y/9,2)) < this.radius;
+		return Math.sqrt(Math.pow(x - this.x/12,2) + Math.pow(y - this.y/9,2)) < this.radius;
 	};
 	this.release = function(x, y) {
 		this.available = true;
@@ -141,6 +132,15 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.onMove = function(callback) {
 		this.onMove_callback = callback;
 	};
+	this.registerPoint = function(point) {
+		this.initGrab.x = point.x;
+		this.initGrab.y = point.y;
+		this.point = point;
+		point.onRelease(this.release);
+		point.onMove(this.move);
+		this.available = false;
+	};
+
 	this.draw = function(scene, board) {
 		//need to fill in circle.
 		var grab = makeCircle(this.radius);
@@ -231,6 +231,18 @@ directLight.position.z = 1;
 
 //var ambientLight =
 //  new THREE.AmbientLight(0xCC0000);
+
+var checkGrab = function(point) {
+	if (kM.keyboardApp != null) {
+		var objects = kM.keyboardApp.keyboard.objects;
+		objects.map(function(object) {
+			if (object.available && object.contains(point.x, point.y)) {
+				object.registerPoint(point);
+				point.taken = true;
+			}
+		});
+	}
+}
 
 var scene = new THREE.Scene();
 
@@ -349,17 +361,7 @@ kM.close = function() {
 	}
 }
 
-var checkGrab = function(point) {
-	if (kM.keyboardApp != null) {
-		var objects = kM.keyboardApp.keyboard.objects;
-		objects.map(function(object) {
-			if (object.available && object.contains(point.x, point.y)) {
-				object.registerPoint(point);
-				point.taken = true;
-			}
-		});
-	}
-}
+
 
 
 /*
