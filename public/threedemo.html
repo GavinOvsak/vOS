@@ -133,7 +133,7 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.available = true;
 	this.point = undefined;
 	this.contains = function(x, y) {
-		return Math.sqrt(Math.pow(x - this.x,2) + Math.pow(y - this.y,2)) < this.radius;
+		return Math.sqrt(Math.pow(x - this.x,2) + Math.pow((y - this.y) * eccentricity,2)) < this.radius;
 	};
 	this.release = function(x, y) {
 		this.available = true;
