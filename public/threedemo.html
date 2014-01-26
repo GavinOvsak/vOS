@@ -51,8 +51,8 @@ VRK.Button = function(x, y, width, height, text) {
 	};
 	this.release = function(x, y) {
 		this.available = true;
+		this.point = undefined;
 		//if far enough, click.
-
 		this.click();
 	};
 	this.registerPoint = function(point) {
@@ -120,6 +120,7 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.release = function(x, y) {
 		this.available = true;
 		this.onRelease_callback(x - this.x, y - this.y);
+		this.point = undefined;
 	};
 	this.onRelease_callback = function(x, y) {};
 	this.onRelease = function(callback) {
