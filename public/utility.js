@@ -22,7 +22,7 @@ var makeFullCircle = function(amplitude) {
 		var theta = (j / circle_resolution) * Math.PI * 2;
 		var x = amplitude * Math.cos(theta);
 		var y = amplitude * Math.sin(theta) * eccentricity;
-		if (ij== 0) {
+		if (j== 0) {
 		    circle.moveTo(x, y);
 		} else {
 		    circle.lineTo(x, y);
