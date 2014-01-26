@@ -223,7 +223,7 @@ kM.add = function(extern) {
 	};
 	kM.apps.push(app);
 	app.external.setUpKeyboard(app.keyboard);
-	kM.open(kM.apps.length-1);
+	kM.open(app);
 };
 
 kM.minimize = function() {
