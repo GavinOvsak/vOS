@@ -12,11 +12,19 @@ var makeCircle = function(amplitude) {
 };
 
 var setKeyboardPosition = function(board, Mesh, x_disp, y_disp, z_disp){
-	var width = Mesh.geometry.width || 0;
-	var height = Mesh.geometry.height || 0;
+	var width = 0,
+		height = 0;
+	if (Mesh.geometry.width) {
+		width = Mesh.geometry.width * board.geometry.width;
+		board.geometry.width = width;
+	}
+	if (Mesh.geometry.height) {
+		height = Mesh.geometry.height * board.geometry.height;
+		board.geometry.height = height;
+	}
 
-	var adjusted_x_disp = x_disp + width/2 - board.geometry.width/2;
-	var adjusted_y_disp = y_disp + height/2 - board.geometry.height/2;
+	var adjusted_x_disp = board.geometry.width * (x_disp - 0.5) + width/2;
+	var adjusted_y_disp = board.geometry.height * (y_disp - 0.5) + height/2;
 
 	Mesh.position.x = board.position.x + adjusted_x_disp;
 	Mesh.position.y = board.position.y + adjusted_y_disp * Math.cos(board.rotation.x) - z_disp * Math.sin(board.rotation.x);

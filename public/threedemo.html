@@ -67,8 +67,8 @@ VRK.Button = function(x, y, width, height, text) {
 	};
 	this.draw = function(scene, board) {
 		//change color based on distance
-		var buttonWidth = board.geometry.width/12;
-		var buttonHeight = board.geometry.height/9;
+		var buttonWidth = 1/12;
+		var buttonHeight = 1/9;
 
 		var distance = 0;
 		if(this.point != undefined) {
@@ -100,8 +100,12 @@ VRK.SystemBar = function(){};
 VRK.Joystick = function(x, y, returnsToCenter) {
 	var greenLambert = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
 
-	this.x = x;
-	this.y = y;
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+	
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
+
 	this.returnsToCenter = returnsToCenter;
 	this.initGrab = {
 		x: 0,
@@ -140,16 +144,14 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.draw = function(scene, board) {
 		//need to fill in circle.
 		var grab = makeCircle(this.radius);
-		var unitWidth = board.geometry.width/12;
-		var unitHeight = board.geometry.height/9;
-
+		
 		var shifted_x = this.x;
 		var shifted_y = this.y;
 		if(this.point != undefined) {
 			shifted_x = this.point.x - this.initGrab.x + this.x;
 			shifted_y = this.point.y - this.initGrab.y + this.y;
 		}
-		setKeyboardPosition(board, grab, unitWidth * shifted_x, unitHeight * shifted_y, 0.1);
+		setKeyboardPosition(board, grab, shifted_x, shifted_y, 0.1);
 
 		scene.add(grab);
 	}
@@ -390,8 +392,8 @@ kM.drawKeyboard = function(scene) {
 
 	var greenLambert = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
 
-	var buttonWidth = board.geometry.width/12;
-	var buttonHeight = board.geometry.height/9;
+	var buttonWidth = 1/12;
+	var buttonHeight = 1/9;
 
 	switch(kM.state) {
 		case kM.State.Normal:
