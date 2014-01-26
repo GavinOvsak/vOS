@@ -419,11 +419,11 @@ kM.drawKeyboard = function(scene) {
 			}
 
 			//Draw fingers
-			var circle_amplitude = 0.05;
+			var circle_amplitude = 0.02;
 			for (var i = 0; i < kM.points.length; i++) {
 				if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
 					var circle = makeCircle(circle_amplitude);
-					setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.02);
+					setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
 					scene.add(circle);
 				}
 			}
