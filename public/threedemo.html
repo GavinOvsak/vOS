@@ -401,7 +401,7 @@ kM.drawKeyboard = function(scene) {
 	
 			//Draw Top Bar;
 			topBar = new THREE.Mesh(
-				new THREE.PlaneGeometry(board.geometry.width, buttonHeight),
+				new THREE.PlaneGeometry(1, buttonHeight),
 				greenLambert);
 
 			setKeyboardPosition(board, topBar, 0, buttonHeight * (8 + 1/2), 0.1);
@@ -444,7 +444,7 @@ kM.drawKeyboard = function(scene) {
 
 			//Draw Top Bar;
 			topBar = new THREE.Mesh(
-				new THREE.PlaneGeometry(board.geometry.width, buttonHeight),
+				new THREE.PlaneGeometry(1, buttonHeight),
 				greenLambert);
 
 			setKeyboardPosition(board, topBar, 0, buttonHeight * (8 + 1/2), 0.1);
