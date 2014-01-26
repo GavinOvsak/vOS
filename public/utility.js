@@ -16,13 +16,13 @@ var setKeyboardPosition = function(board, Mesh, x_disp, y_disp, z_disp){
 		height = 0;
 	if (Mesh.geometry.width) {
 		width = Mesh.geometry.width * board.geometry.width;
-		Mesh.scale.x = board.geometry.width;
 	}
 	if (Mesh.geometry.height) {
 		height = Mesh.geometry.height * board.geometry.height;
-		Mesh.scale.y = board.geometry.height;
 	}
-
+	Mesh.scale.x = board.geometry.width;
+	Mesh.scale.y = board.geometry.height;
+	
 	var adjusted_x_disp = board.geometry.width * (x_disp - 0.5) + width/2;
 	var adjusted_y_disp = board.geometry.height * (y_disp - 0.5) + height/2;
 
