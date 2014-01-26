@@ -111,29 +111,30 @@ io.sockets.on('connection', function (socket) {
   socket.on('declare-type', function (data) {
     if (data == 'input') {
         socket.on('code', function (data) {
-          if(!!outputs[data] && !inputs[data]) {
+          var password = data.toUpperCase();
+          if(!!outputs[password] && !inputs[password]) {
             //Todo: Consider if output is already used.
 
-            inputs[data] = socket;
+            inputs[password] = socket;
 
             //On input action, send to output
-            bind(inputs[data], outputs[data]);
+            bind(inputs[password], outputs[password]);
 
             //Notify on disconnect, should work if only one input per output.
-            outputs[data].on('disconnect', function() {
-              if (!!inputs[data]) {
-                inputs[data].emit('connection', 'disconnected output');
+            outputs[password].on('disconnect', function() {
+              if (!!inputs[password]) {
+                inputs[password].emit('connection', 'disconnected output');
               }
-              delete outputs[data]; //should set to undefined?
+              delete outputs[password]; //should set to undefined?
             });
-            inputs[data].on('disconnect', function() {
-              if (!!outputs[data]) {
-                outputs[data].emit('connection', 'disconnected input');
+            inputs[password].on('disconnect', function() {
+              if (!!outputs[password]) {
+                outputs[password].emit('connection', 'disconnected input');
               }
-              delete inputs[data]; //should set to undefined?
+              delete inputs[password]; //should set to undefined?
             });
 
-            inputs[data].emit('code', 'success');
+            inputs[password].emit('code', 'success');
           } else {
             socket.emit('code', 'failure');
           }
