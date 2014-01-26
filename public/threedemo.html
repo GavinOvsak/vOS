@@ -115,10 +115,6 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	};
 	this.release = function(x, y) {
 		this.available = true;
-		if (this.returnsToCenter) {
-			this.currentPos.x = this.x;
-			this.currentPos.y = this.y;
-		}
 		this.onRelease_callback(x - this.x, y - this.y);
 	};
 	this.onRelease_callback = function(x, y) {};
