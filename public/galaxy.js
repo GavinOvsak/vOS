@@ -35,4 +35,4 @@ galaxy.drawFrontAndBack = function(scene) {
 	galaxy.drawBack(scene);
 };
 
-export2 = galaxy;
+var exports = galaxy;

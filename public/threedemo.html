@@ -38,13 +38,6 @@ var apps = [
 	'/chess.js'
 ];
 
-$.getScript(apps[0], function() {
-	console.log('app 0 loaded');
-});
-$.getScript(apps[1], function() {
-	console.log('app 1 loaded');
-});
-
 //Keyboard
 //make buttons work.
 //make joysticks
@@ -200,21 +193,6 @@ socket.on('end', function (data) {
 //	repaint();
 });
 
-
-kM.add = function(extern) {
-	var app = {
-		external: extern,
-		keyboard: {
-			buttons: [],
-			add: function(button){
-				app.keyboard.buttons.push(button);
-			}
-		}
-	};
-	kM.apps.push(app);
-	app.external.setUpKeyboard(app.keyboard);
-};
-
 kM.open = function(app) {
 	if (app.external.drawFront != null) {
 		//if front and back app has back, push to back
@@ -232,6 +210,22 @@ kM.open = function(app) {
 		kM.back = app;
 	}
 };
+
+kM.add = function(extern) {
+	var app = {
+		external: extern,
+		keyboard: {
+			buttons: [],
+			add: function(button){
+				app.keyboard.buttons.push(button);
+			}
+		}
+	};
+	kM.apps.push(app);
+	app.external.setUpKeyboard(app.keyboard);
+	kM.open(kM.apps.length-1);
+};
+
 kM.minimize = function() {
 	if (kM.front_and_back != null && kM.front_and_back.external.drawFront != null) {
 		kM.front = kM.front_and_back;
@@ -389,11 +383,18 @@ kM.drawKeyboard = function(scene) {
 	}
 };
 
-kM.add(export1);
-kM.add(export2);
+$.getScript(apps[0], function() {
+	console.log('app 0 loaded');
+	kM.add(exports);
+});
+$.getScript(apps[1], function() {
+	console.log('app 1 loaded');
+	kM.add(exports);
+});
 
+/*
 kM.open(kM.apps[1]);
-kM.open(kM.apps[0]);
+kM.open(kM.apps[0]);*/
 //kM.maximize();
 //kM.minimize();
 
