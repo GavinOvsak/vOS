@@ -86,7 +86,7 @@ VRK.Button = function(x, y, width, height, text) {
 		var materialOptions = {};
 		materialOptions.color = 0x00CC00;
 		materialOptions.color += 0xFF0000 * Math.min(distance/this.threshold_distance, 1);
-		var material = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
+		var material = new THREE.MeshLambertMaterial(materialOptions);
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
