@@ -10,16 +10,6 @@ chess.drawFront = function(scene) {
 	cube.rotation.y = 0.3;
 
 	scene.add(cube);
-
-	/* var screen = new THREE.Mesh(
-			new THREE.PlaneGeometry(80, 80),
-			greenLambert);
-
-		screen.position.x = 0;
-		screen.position.y = 15;
-		screen.position.z = 140;
-
-		scene.add(screen); */
 };
 /*chess.drawBack = function(scene) {
 	
@@ -29,6 +19,7 @@ chess.drawFrontAndBack = function(scene) {
 	chess.drawFront(scene);
 //	chess.drawBack(scene);
 };
+
 chess.setUpKeyboard = function(keyboard) {
 	var left = new VRK.Button(1, 3, 1, 1);
 	var right = new VRK.Button(3, 3, 1, 1);
@@ -43,6 +34,12 @@ chess.setUpKeyboard = function(keyboard) {
 	left.onClick(function() {
 		console.log('left click');
 	});
+
+	var joystick = new VRK.Joystick(4, 4, true);
+	joystick.onMove(function(x, y){
+
+	});
+	keyboard.add(joystick);
 }
 
 var exports = chess;
