@@ -68,12 +68,12 @@ VRK.Button = function(x, y, width, height, text) {
 	};
 	this.draw = function(scene, board) {
 		//change color based on distance
+		var buttonWidth = board.geometry.width/12;
+		var buttonHeight = board.geometry.height/9;
+
 		var distance = Math.sqrt(
 			Math.pow(this.point.x - (this.x + this.width/2)*buttonWidth, 2) + 
 			Math.pow(this.point.y - (this.y + this.height/2)*buttonHeight, 2));
-
-		var buttonWidth = board.geometry.width/12;
-		var buttonHeight = board.geometry.height/9;
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(buttonWidth*this.width, buttonHeight*this.height),
@@ -384,6 +384,9 @@ kM.drawKeyboard = function(scene) {
 	board.rotation.x = -1.1;
 
 	var greenLambert = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
+
+	var buttonWidth = board.geometry.width/12;
+	var buttonHeight = board.geometry.height/9;
 
 	switch(kM.state) {
 		case kM.State.Normal:
