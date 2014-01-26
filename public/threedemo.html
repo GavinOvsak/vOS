@@ -82,7 +82,7 @@ VRK.Button = function(x, y, width, height, text) {
 	this.draw = function(scene, board) {
 		//change color based on distance
 		var distance = this.dragDistance();
-		var percentClicked = Math.min(distance/this.threshold_distance, 1;
+		var percentClicked = Math.min(distance/this.threshold_distance, 1);
 		var materialOptions = {};
 
 		if (this.point != null) {
