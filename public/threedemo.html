@@ -38,8 +38,12 @@ var apps = [
 	'/chess.js'
 ];
 
-$.getScript(apps[0]);
-$.getScript(apps[1]);
+$.getScript(apps[0], function() {
+	console.log('app 0 loaded');
+});
+$.getScript(apps[1], function() {
+	console.log('app 1 loaded');
+});
 
 //Keyboard
 //make buttons work.
