@@ -379,26 +379,26 @@ VRK.SystemBar = function(x, y, width, height){
 				var buttonMesh = new THREE.Mesh(
 					new THREE.PlaneGeometry(unitWidth, unitHeight), buttonMaterial);
 
-				setKeyboardPosition(board, buttonMesh, this.x + this.buttonPosition[this.buttonSelected], adjusted_y, 0.12);
+				setKeyboardPosition(board, buttonMesh, this.x + this.buttonPosition[this.buttonSelected], adjusted_y, 0.11);
 
 				scene.add(buttonMesh);
 			}
 			scene.add(barMesh);
 
-			var closeMesh = makeText('X', 30, unitWidth, unitHeight);
-			setKeyboardPosition(board, closeMesh, this.x + this.buttonPosition['inClose'], adjusted_y, 0.13);
+			var closeMesh = makeText('  X', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, closeMesh, this.x + this.buttonPosition['inClose'], adjusted_y, 0.12);
 			scene.add(closeMesh);
 	
-			var notifyMesh = makeText(' !', 30, unitWidth, unitHeight);
-			setKeyboardPosition(board, notifyMesh, this.x + this.buttonPosition['inNotifications'], adjusted_y, 0.13);
+			var notifyMesh = makeText('  !', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, notifyMesh, this.x + this.buttonPosition['inNotifications'], adjusted_y, 0.12);
 			scene.add(notifyMesh);
 	
-			var appSwitchMesh = makeText('<->', 30, unitWidth, unitHeight);
-			setKeyboardPosition(board, appSwitchMesh, this.x + this.buttonPosition['inAppSwitch'], adjusted_y, 0.13);
+			var appSwitchMesh = makeText('  <->', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, appSwitchMesh, this.x + this.buttonPosition['inAppSwitch'], adjusted_y, 0.12);
 			scene.add(appSwitchMesh);
 	
-			var maxMinMesh = makeText('+/-', 30, unitWidth, unitHeight);
-			setKeyboardPosition(board, maxMinMesh, this.x + this.buttonPosition['inMaxMin'], adjusted_y, 0.13);
+			var maxMinMesh = makeText('  +/-', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, maxMinMesh, this.x + this.buttonPosition['inMaxMin'], adjusted_y, 0.12);
 			scene.add(maxMinMesh);
 		}
 	}
