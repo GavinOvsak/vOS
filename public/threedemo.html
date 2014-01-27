@@ -574,7 +574,7 @@ var checkGrab = function(point) {
 			}
 		});
 	}
-	if (kM.state = kM.State.Hidden && kM.topBar.available && !point.taken) {
+	if (kM.state == kM.State.Hidden && kM.topBar.available && !point.taken) {
 		kM.topBar.registerPoint(point);
 		point.taken = true;
 	}
