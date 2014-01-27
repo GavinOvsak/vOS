@@ -9,6 +9,9 @@ galaxy.setUpKeyboard = function(keyboard) {
 /*galaxy.drawFront = function(scene) {
 
 };*/
+galaxy.name = 'Galaxy Viewer';
+galaxy.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
+
 galaxy.drawBack = function(scene) {
 	var blueLambert = new THREE.MeshLambertMaterial({ color: 0x0000CC });
 	var radius = 20,

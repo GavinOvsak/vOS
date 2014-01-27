@@ -11,6 +11,8 @@ chess.drawFront = function(scene) {
 
 	scene.add(cube);
 };
+chess.name = "Chess";
+chess.icon = "http://icons.iconarchive.com/icons/aha-soft/chess/256/chess-icon.png";
 /*chess.drawBack = function(scene) {
 	
 	

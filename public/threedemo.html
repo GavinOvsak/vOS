@@ -16,21 +16,12 @@
 //Required for apps
 var VRK = {};
 
-//keyboard is an 8 x 12 grid
-VRK.Keyboard = function(app) {
-	this.objects = [];
-	this.add = function(button){
-		this.objects.push(button);
-	};
-};
-
-//Keyboard
-//make buttons work.
-//make joysticks work.
+//focus on top bar
+//make close button
+//maximize and minimize buttons
+//app switcher button
 
 VRK.Button = function(x, y, width, height, text) {
-	var greenLambert = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
-
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 
@@ -53,6 +44,9 @@ VRK.Button = function(x, y, width, height, text) {
 	this.click = function(){
 		this.onClick_callback();
 	};
+	this.onClick = function(callback) {
+		this.onClick_callback = callback;
+	};
 	this.release = function(x, y) {
 		this.available = true;
 		this.point = undefined;
@@ -68,7 +62,7 @@ VRK.Button = function(x, y, width, height, text) {
 				Math.pow(this.point.y - this.initGrab.y, 2));
 		}
 		return 0;
-	}
+	};
 	this.registerPoint = function(point) {
 		this.initGrab.x = point.x;
 		this.initGrab.y = point.y;
@@ -76,23 +70,43 @@ VRK.Button = function(x, y, width, height, text) {
 		point.onRelease(this.release.bind(this));
 		this.available = false;
 	};
-	this.onClick = function(callback) {
-		this.onClick_callback = callback;
-	};
 	this.draw = function(scene, board) {
 		//change color based on distance
 		var distance = this.dragDistance();
 		var percentClicked = Math.min(distance/this.threshold_distance, 1);
-		var materialOptions = {};
 
+		var materialOptions = {};
 		if (this.point != null) {
 			materialOptions.color = (0 << 16) + (200*(1-percentClicked) << 8) + percentClicked*255;
 		} else {
 			materialOptions.color = (0 << 16) + (200 << 8) + 0;
 		}
 
-//		materialOptions.color = 0x00CC00;
-//		materialOptions.color += 0xFF0000 * Math.min(distance/this.threshold_distance, 1);
+		var material = new THREE.MeshLambertMaterial(materialOptions);
+
+		buttonMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.width, this.height),
+			material);
+
+		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
+
+		//Draw this.text
+
+		scene.add(buttonMesh);
+	}
+};
+
+VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.length = length;
+	this.returnsToCenter = returnsToCenter;
+	this.direction = direction;
+	this.contains = function(x, y) {
+		return false;
+	};
+	this.show = function(scene, board) {
 		var material = new THREE.MeshLambertMaterial(materialOptions);
 
 		buttonMesh = new THREE.Mesh(
@@ -102,22 +116,250 @@ VRK.Button = function(x, y, width, height, text) {
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
 
 		scene.add(buttonMesh);
+		//draw this.text;
+	};
+};
+
+VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
+	this.x = x;
+	this.y = y;
+	this.returnsToCenter = returnsToCenter;
+	this.radius = radius;
+	this.beginAngle = beginAngle;
+	this.endAngle = endAngle;
+	this.contains = function(x, y) {
+		return false;
+	};
+	this.show = function(scene, board) {
+		var material = new THREE.MeshLambertMaterial(materialOptions);
+
+		buttonMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.width, this.height),
+			material);
+
+		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
+
+		scene.add(buttonMesh);
+		//draw this.text;
+	};
+};
+VRK.Label = function(x, y, width, height, text){
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.text = text;
+	this.contains = function(x, y) {
+		return false;
+	};
+	this.show = function(scene, board) {
+		var material = new THREE.MeshLambertMaterial(materialOptions);
+
+		buttonMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.width, this.height),
+			material);
+
+		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
+
+		scene.add(buttonMesh);
+		//draw this.text;
+	};
+};
+
+VRK.Treadmill = function(x, y, width, height, canZoom, canRotate){
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.contains = function(x, y) {
+		return false;
+	};
+	this.show = function(scene, board) {
+		var material = new THREE.MeshLambertMaterial(materialOptions);
+
+		buttonMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.width, this.height),
+			material);
+
+		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
+
+		scene.add(buttonMesh);
+		//draw this.text;
+	};
+};
+
+VRK.KeyboardObject = function(x, y, width, height){
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.contains = function(x, y) {
+		return false;
+	};
+	this.show = function(scene, board) {
+		var material = new THREE.MeshLambertMaterial(materialOptions);
+
+		buttonMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.width, this.height),
+			material);
+
+		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
+
+		scene.add(buttonMesh);
+
+        
+		//draw this.text;
+		var canvas1 = document.createElement('canvas');
+        var context1 = canvas1.getContext('2d');
+        context1.font = "Bold 40px Arial";
+        context1.fillStyle = "rgba(255,0,0,0.95)";
+	    context1.fillText('Hello, world!', 0, 50);
+	    
+        // canvas contents will be used for a texture
+        var texture1 = new THREE.Texture(canvas1) 
+        texture1.needsUpdate = true;
+	      
+	    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+	    material1.transparent = true;
+
+	    var mesh1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), material1);
+	    
+	    setKeyboardPosition(board, mesh1, 0, 0, 0.2);
+        //mesh1.position.set(0,50,0);
+        scene.add( mesh1 );
+	};
+};
+
+//moves whole keyboard down when dragged. When buttons are pressed, changes state
+VRK.SystemBar = function(x, y, width, height){
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.buttonPosition = {
+		'inClose': 0 * unitWidth,
+		'inNotifications': 1 * unitWidth,
+		'inAppSwitch': 10 * unitWidth,
+		'inMaxMin': 11 * unitWidth
+	};
+	this.initGrab = {
+		x: 0,
+		y: 0
+	};
+	this.available = true;
+	this.point = undefined;
+	this.buttonSelected = undefined;
+	this.contains = function(x, y) {
+		return this.whichButton(x, y) != 'none';
+	};
+	this.moving = false;
+	this.whichButton = function(x,y) {
+		if (kM.state == 'hidden') {
+			return 'hideBar';
+		} else {
+			if (y > this.y) {
+				if (x > 2 * unitWidth && x < 10 * unitWidth) {
+					return 'hideBar';
+				}
+				for (state in this.buttonPosition) {
+					if (x < this.buttonPosition[state] && x > this.buttonPosition[state] + unitWidth) {
+						return state;
+					}
+				}
+			}
+			return 'none';
+		}
+	}
+	this.release = function(x, y) {
+		this.available = true;
+		this.point = undefined;
+
+		//if far enough, click.
+		if (this.buttonPosition.contains(this.buttonSelected) && this.dragDistance() < this.threshold_distance) {
+			this.click(this.buttonSelected);
+		} else if (this.buttonSelected == 'hidden') {
+			if (y > 0.5) {
+				kM.state = kM.State.Normal;
+			} else {
+				kM.state = kM.State.Hidden;
+			}
+		}
+	};
+	this.click = function(buttonName){
+		switch(buttonName) {
+			case 'inClose':
+				kM.close();
+				//Either expand other app, or go to app switcher. Try not to have no apps.
+				//kM.state = kM.State.Empty;
+				break;
+			case 'inNotifications':
+				kM.state = kM.State.Notifications;
+				break;
+			case 'inAppSwitch':
+				kM.state = kM.State.AppSwitch;
+				break;
+			case 'inMaxMin':
+				break;
+		}
+	};
+	this.dragDistance = function() {
+		if(this.point != undefined) {
+			return distance(this.point, this.initGrab);
+			/*Math.sqrt(
+				Math.pow(this.point.x - this.initGrab.x, 2) + 
+				Math.pow(this.point.y - this.initGrab.y, 2));*/
+		}
+		return 0;
+	};
+	this.registerPoint = function(point) {
+		this.initGrab.x = point.x;
+		this.initGrab.y = point.y;
+		this.buttonSelected = this.whichButton(point.x, point.y);
+		this.point = point;
+		point.onRelease(this.release.bind(this));
+		point.onMove(this.move.bind(this));
+		this.available = false;
+	};
+	this.draw = function(scene, board) {
+		var distance = this.dragDistance();
+		var percentClicked = Math.min(distance/this.threshold_distance, 1);
+
+		if (kM.state != 'hidden' || this.buttonSelected == 'hideBar') {
+			var barMaterial = new THREE.MeshLambertMaterial({color: 0x00CC00});
+
+			var barMesh = new THREE.Mesh(
+				new THREE.PlaneGeometry(this.width, this.height), material);
+			
+			setKeyboardPosition(board, barMesh, this.x, this.y, 0.1);
+
+			this.moving = false;
+			if (this.buttonSelected == 'hideBar') {
+				setKeyboardPosition(board, barMesh, this.x, this.y + (this.point.y - this.initGrab.y), 0.1);
+				this.moving = true;
+			} else if (this.buttonSelected != 'none') {
+				//change color based on distance
+				var materialOptions = {color: 0x00CC00};
+				if (this.point != null) {
+					materialOptions.color = (0 << 16) + (200*(1-percentClicked) << 8) + percentClicked*255;
+				}
+
+				var buttonMaterial = new THREE.MeshLambertMaterial(materialOptions);
+				var buttonMesh = new THREE.Mesh(
+					new THREE.PlaneGeometry(buttonWidth, buttonHeight), buttonMaterial);
+
+				setKeyboardPosition(board, buttonMesh, this.x + this.buttonPosition[this.buttonSelected], this.y, 0.12);
+
+				scene.add(buttonMesh);
+			}
+			scene.add(barMesh);
+		}
 	}
 };
 
-//slider can be a super class of joystick;
-
-VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {};
-VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {};
-VRK.Label = function(x, y, width, height, text){};
-VRK.Treadmill = function(x, y, width, height, canZoom, canRotate){};
-VRK.KeyboardObject = function(x, y, width, height){};
-VRK.SystemBar = function(){};
-//moves whole keyboard down when dragged. When buttons are pressed, changes state
-
 VRK.Joystick = function(x, y, returnsToCenter) {
-	var greenLambert = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
-
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 	
@@ -161,7 +403,6 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	};
 
 	this.draw = function(scene, board) {
-		//need to fill in circle.
 		var grab = makeFullCircle(this.radius);
 		
 		var shifted_x = this.x;
@@ -173,7 +414,7 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 		setKeyboardPosition(board, grab, shifted_x, shifted_y, 0.12);
 
 		scene.add(grab);
-	}
+	};
 };
 
 var Point = function(x, y) {
@@ -200,6 +441,25 @@ var Point = function(x, y) {
 	this.onMove = function(callback) {
 		this.onMove_callback = callback;
 	}
+};
+
+var kM = {
+	apps: [],
+	front: null,
+	back: null,
+	front_and_back: null,
+	keyboardApp: null,
+	points: []
+};
+
+kM.topBar = new VRK.SystemBar(0, 1/9 * (8 + 1/2), 1, 1/9);
+
+//keyboard is an 8 x 12 grid
+VRK.Keyboard = function(app) {
+	this.objects = [kM.topBar];
+	this.add = function(button){
+		this.objects.push(button);
+	};
 };
 
 var apps = [
@@ -230,10 +490,6 @@ $container.mousemove(function(event) {
 renderer.setSize(WIDTH, HEIGHT);
 $container.append(renderer.domElement);
 
-var redLambert = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
-var blueLambert = new THREE.MeshLambertMaterial({ color: 0x0000CC });
-var greenLambert = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
-
 var pointLight = new THREE.PointLight(0xFFFFFF);
 
 pointLight.position.x = 50;
@@ -250,7 +506,7 @@ directLight.position.z = 1;
 //  new THREE.AmbientLight(0xCC0000);
 
 var checkGrab = function(point) {
-	if (kM.keyboardApp != null) {
+	if (kM.keyboardApp != null && !kM.topBar.moving) {
 		var objects = kM.keyboardApp.keyboard.objects;
 		objects.map(function(object) {
 			if (object.available && object.contains(point.x, point.y)) {
@@ -259,18 +515,14 @@ var checkGrab = function(point) {
 			}
 		});
 	}
+	if (kM.state = kM.State.Hidden && kM.topBar.available && !point.taken) {
+		kM.topBar.registerPoint(point);
+		point.taken = true;
+	}
 }
 
 var scene = new THREE.Scene();
 
-var kM = {
-	apps: [],
-	front: null,
-	back: null,
-	front_and_back: null,
-	keyboardApp: null,
-	points: []
-};
 kM.State = {
 	Normal: 'normal',
 	Hidden: 'hidden',
@@ -342,6 +594,8 @@ kM.add = function(extern) {
 	var app = {};
 	app.external = extern;
 	app.keyboard = new VRK.Keyboard(app);
+	app.name = extern.name;
+	app.icon = extern.icon;
 	kM.apps.push(app);
 	app.external.setUpKeyboard(app.keyboard);
 	kM.open(app);
@@ -379,8 +633,6 @@ kM.close = function() {
 }
 
 
-
-
 /*
 
 Apps can have any set of the three functions f, b, f_b
@@ -400,6 +652,8 @@ Left = close. Left button 2 is notifications. Center bar has name and can drag d
 */
 
 kM.drawKeyboard = function(scene) {
+	var redLambert = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
+
 	var board = new THREE.Mesh(
 		new THREE.PlaneGeometry(80, 30),
 		redLambert);
@@ -409,65 +663,59 @@ kM.drawKeyboard = function(scene) {
 	board.position.z = 210;
 	board.rotation.x = -1.1;
 
-	var greenLambert = new THREE.MeshLambertMaterial({ color: 0x00CC00 });
-
 	var buttonWidth = 1/12;
 	var buttonHeight = 1/9;
 
 	switch(kM.state) {
 		case kM.State.Normal:
 			scene.add(board);
-	
+			//when going down, don't show keyboard objects, just bar.
+			//If the bar is let go below the hald way, continue to hide. If let go above half way, don't hide.
+
 			//Draw Top Bar;
-			topBar = new THREE.Mesh(
+			
+			/*	new THREE.Mesh(
 				new THREE.PlaneGeometry(1, buttonHeight),
-				greenLambert);
-
-			setKeyboardPosition(board, topBar, 0, buttonHeight * (8 + 1/2), 0.1);
-			scene.add(topBar);
-
-			//Draw Keyboard Objects
-			if (kM.keyboardApp != null) {
-				var objects = kM.keyboardApp.keyboard.objects;
-				if (kM.front_and_back != null || kM.front != null) {
-					objects.map(function(object) {
-						object.draw(scene, board);
-					});
+				greenLambert);*/
+			//topBar.draw(scene, board);
+			if (kM.topBar.moving) {
+				kM.topBar.show(scene, board);
+			} else {
+				//Draw Keyboard Objects
+				if (kM.keyboardApp != null) {
+					var objects = kM.keyboardApp.keyboard.objects;
+					if (kM.front_and_back != null || kM.front != null) {
+						objects.map(function(object) {
+							object.draw(scene, board);
+						});
+					}
 				}
-			}
 
-			//Draw fingers
-			var circle_amplitude = 0.01;
-			for (var i = 0; i < kM.points.length; i++) {
-				if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
-					var circle = makeCircle(circle_amplitude);
-					setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
-					scene.add(circle);
+				//Draw fingers
+				var circle_amplitude = 0.01;
+				for (var i = 0; i < kM.points.length; i++) {
+					if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
+						var circle = makeCircle(circle_amplitude);
+						setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
+						scene.add(circle);
+					}
 				}
 			}
 			break;
 
 		case kM.State.Hidden:
+			//To unhide, drag up at least a threshold and show bar rising from bottom. Jump on let go.
+			kM.topBar.show(scene, board);
 			break;
 
 		case kM.State.Notifications:
 			scene.add(board);
+			kM.topBar.show(scene, board);
 			break;
 
 		case kM.State.AppSwitch:
 			scene.add(board);
-			break;
-
-		case kM.State.Empty:
-			scene.add(board);
-
-			//Draw Top Bar;
-			topBar = new THREE.Mesh(
-				new THREE.PlaneGeometry(1, buttonHeight),
-				greenLambert);
-
-			setKeyboardPosition(board, topBar, 0, buttonHeight * (8 + 1/2), 0.1);
-			scene.add(topBar);
+			kM.topBar.show(scene, board);
 			break;
 	}
 };
