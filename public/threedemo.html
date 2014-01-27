@@ -374,7 +374,6 @@ VRK.SystemBar = function(x, y, width, height){
 		this.buttonSelected = 'none';
 	};
 	this.click = function(buttonName){
-		console.log('Clicked: ' + buttonName);
 		switch(buttonName) {
 			case 'inClose':
 				if (kM.state == kM.State.Normal) {
@@ -874,10 +873,7 @@ kM.drawKeyboard = function(scene) {
 
 					for (var i = 0; i < kM.apps.length; i++) {
 						app = kM.apps[i];
-						var icon = new VRK.Button(
-							(2 + row * 2)*unitWidth, 
-							(7 - 2 * column)*unitHeight, 
-							unitWidth, unitHeight, '', app.icon);
+						var icon = new VRK.Button(2 + row * 2, 7 - 2 * column, 1, 1, '', app.icon);
 						icon.draw(scene, board);
 
 						if (row >= 4) {
