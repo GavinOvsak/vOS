@@ -680,7 +680,7 @@ kM.minimize = function() {
 	if (kM.front_and_back != null && kM.front_and_back.external.drawFront != null) {
 		kM.front = kM.front_and_back;
 		kM.front_and_back = null;
-		kM.keyboardApp = kM.front_and_back;
+		kM.keyboardApp = kM.front;
 	}
 };
 
@@ -689,6 +689,7 @@ kM.maximize = function() {
 		kM.front_and_back = kM.front;
 		kM.front = null;
 		kM.back = null;
+		kM.keyboardApp = kM.front_and_back;
 	}
 };
 
