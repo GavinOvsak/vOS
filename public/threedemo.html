@@ -625,7 +625,12 @@ directLight.position.z = 1;
 
 var checkGrab = function(point) {
 	var keyboardApp = kM.getKeyboardApp()
-	if (keyboardApp != null && !kM.topBar.moving) {
+	if (keyboardApp == null) {
+		if (kM.topBar.available && kM.topBar.contains(point.x, point.y)) {
+			kM.topBar.registerPoint(point);
+			point.taken = true;
+		}
+	} else if (!kM.topBar.moving) {
 		var objects = keyboardApp.keyboard.objects;
 		objects.map(function(object) {
 			if (object.available && object.contains(point.x, point.y)) {
