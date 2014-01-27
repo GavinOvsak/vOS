@@ -321,7 +321,7 @@ VRK.SystemBar = function(x, y, width, height){
 		//if far enough, click.
 		if (this.buttonPosition[this.buttonSelected] != undefined && this.dragDistance() > this.threshold_distance) {
 			this.click(this.buttonSelected);
-		} else if (this.buttonSelected == 'hidden') {
+		} else if (this.buttonSelected == 'hideBar') {
 			if (y > 0.5) {
 				kM.state = kM.State.Normal; //Or what it was before hiding
 			} else {
