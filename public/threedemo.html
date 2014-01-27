@@ -345,7 +345,6 @@ VRK.SystemBar = function(x, y, width, height){
 		this.buttonSelected = this.whichButton(point.x, point.y);
 		this.point = point;
 		point.onRelease(this.release.bind(this));
-		point.onMove(this.move.bind(this));
 		this.available = false;
 	};
 	this.draw = function(scene, board) {
