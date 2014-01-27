@@ -347,7 +347,7 @@ VRK.SystemBar = function(x, y, width, height){
 
 				var buttonMaterial = new THREE.MeshLambertMaterial(materialOptions);
 				var buttonMesh = new THREE.Mesh(
-					new THREE.PlaneGeometry(buttonWidth, buttonHeight), buttonMaterial);
+					new THREE.PlaneGeometry(unitWidth, unitHeight), buttonMaterial);
 
 				setKeyboardPosition(board, buttonMesh, this.x + this.buttonPosition[this.buttonSelected], this.y, 0.12);
 
