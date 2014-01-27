@@ -73,9 +73,7 @@ VRK.Button = function(x, y, width, height, text) {
 	};
 	this.dragDistance = function() {
 		if(this.point != undefined) {
-			return Math.sqrt(
-				Math.pow(this.point.x - this.initGrab.x, 2) + 
-				Math.pow(this.point.y - this.initGrab.y, 2));
+			return distance(this.point, this.initGrab);
 		}
 		return 0;
 	};
@@ -314,6 +312,12 @@ VRK.SystemBar = function(x, y, width, height){
 			return 'none';
 		}
 	}
+	this.dragDistance = function() {
+		if(this.point != undefined) {
+			return distance(this.point, this.initGrab);
+		}
+		return 0;
+	};
 	this.release = function(x, y) {
 		this.available = true;
 		this.point = undefined;
@@ -331,6 +335,7 @@ VRK.SystemBar = function(x, y, width, height){
 		this.buttonSelected = 'none';
 	};
 	this.click = function(buttonName){
+		console.log('Clicked: ' + buttonName);
 		switch(buttonName) {
 			case 'inClose':
 				kM.close();
@@ -349,9 +354,6 @@ VRK.SystemBar = function(x, y, width, height){
 	this.dragDistance = function() {
 		if(this.point != undefined) {
 			return distance(this.point, this.initGrab);
-			/*Math.sqrt(
-				Math.pow(this.point.x - this.initGrab.x, 2) + 
-				Math.pow(this.point.y - this.initGrab.y, 2));*/
 		}
 		return 0;
 	};
