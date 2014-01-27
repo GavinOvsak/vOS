@@ -759,21 +759,22 @@ kM.drawKeyboard = function(scene) {
 		//To unhide, drag up at least a threshold and show bar rising from bottom. Jump on let go.
 		kM.topBar.draw(scene, board);
 	} else {
-		switch(kM.state) {
-			case kM.State.Normal:
-				scene.add(board);
-				//when going down, don't show keyboard objects, just bar.
-				//If the bar is let go below the hald way, continue to hide. If let go above half way, don't hide.
+		if (kM.topBar.moving) {
+			kM.topBar.draw(scene, board);
+		} else {
+			switch(kM.state) {
+				case kM.State.Normal:
+					scene.add(board);
+					//when going down, don't show keyboard objects, just bar.
+					//If the bar is let go below the hald way, continue to hide. If let go above half way, don't hide.
 
-				//Draw Top Bar;
-				
-				/*	new THREE.Mesh(
-					new THREE.PlaneGeometry(1, buttonHeight),
-					greenLambert);*/
-				//topBar.draw(scene, board);
-				if (kM.topBar.moving) {
-					kM.topBar.draw(scene, board);
-				} else {
+					//Draw Top Bar;
+					
+					/*	new THREE.Mesh(
+						new THREE.PlaneGeometry(1, buttonHeight),
+						greenLambert);*/
+					//topBar.draw(scene, board);
+					
 					//Draw Keyboard Objects
 					if (kM.keyboardApp != null) {
 						var objects = kM.keyboardApp.keyboard.objects;
@@ -783,30 +784,30 @@ kM.drawKeyboard = function(scene) {
 							});
 						}
 					}
+					break;
 
-					//Draw fingers
-					var circle_amplitude = 0.01;
-					for (var i = 0; i < kM.points.length; i++) {
-						if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
-							var circle = makeCircle(circle_amplitude);
-							setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
-							scene.add(circle);
-						}
-					}
+				case kM.State.Notifications:
+					scene.add(board);
+					kM.topBar.draw(scene, board);
+
+					var notificationLabel = new VRK.Label(4, 6, 3, 1, 'Notifications');
+					break;
+
+				case kM.State.AppSwitch:
+					scene.add(board);
+					kM.topBar.draw(scene, board);
+					break;
+			}
+		
+			//Draw fingers
+			var circle_amplitude = 0.01;
+			for (var i = 0; i < kM.points.length; i++) {
+				if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
+					var circle = makeCircle(circle_amplitude);
+					setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
+					scene.add(circle);
 				}
-				break;
-
-			case kM.State.Notifications:
-				scene.add(board);
-				kM.topBar.draw(scene, board);
-
-				var notificationLabel = new VRK.Label(4, 6, 3, 1, 'Notifications');
-				break;
-
-			case kM.State.AppSwitch:
-				scene.add(board);
-				kM.topBar.draw(scene, board);
-				break;
+			}
 		}
 	}
 };
