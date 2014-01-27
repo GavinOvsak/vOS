@@ -43,6 +43,9 @@ chess.setUpKeyboard = function(keyboard) {
 	});
 	keyboard.add(joystick);
 
+	var label = new VRK.Label(10, 0, 1, 1, 'Earth');
+	keyboard.add(label);
+
 	var joystick2 = new VRK.Joystick(9, 4, true);
 	keyboard.add(joystick2);
 }
