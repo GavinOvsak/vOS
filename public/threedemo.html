@@ -696,6 +696,7 @@ kM.close = function() {
 	if (kM.front != null) {
 		if (kM.back != null && kM.back.external.drawFrontAndBack != null) {
 			kM.front_and_back = kM.back;
+			kM.keyboardApp = kM.front_and_back;
 			kM.back = null;
 		}
 		kM.front = null;
