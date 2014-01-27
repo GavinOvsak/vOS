@@ -41,7 +41,7 @@ chess.setUpKeyboard = function(keyboard) {
 	});
 	keyboard.add(joystick);
 
-	var label = new VRK.Label(7, 2, 1, 1, 'Earth', 30);
+	var label = new VRK.Label(2, 6, 1, 1, 'Earth', 30);
 	keyboard.add(label);
 
 	var joystick2 = new VRK.Joystick(10, 4, true);
