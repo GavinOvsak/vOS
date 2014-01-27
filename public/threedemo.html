@@ -36,13 +36,14 @@ var makeText = function(text, px, width, height) {
     return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
 };
 
-VRK.Button = function(x, y, width, height, text) {
+VRK.Button = function(x, y, width, height, text, opt_image) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 
 	this.x = x * unitWidth;
 	this.y = y * unitHeight;
 	this.text = text || '';
+	this.image = opt_image;
 	this.px = 30;
 	this.width = width * unitWidth;
 	this.height = height * unitHeight;
@@ -107,20 +108,41 @@ VRK.Button = function(x, y, width, height, text) {
 		scene.add(buttonMesh);
 
 		var canvas1 = document.createElement('canvas');
-		canvas1.height = this.px;
-		canvas1.width = 100;
-        var context1 = canvas1.getContext('2d');
-        context1.font = "Bold " + this.px + "px Arial";
-        context1.fillStyle = "rgba(255,255,255,0.95)";
-	    context1.fillText(this.text, 0, this.px);
-        var texture1 = new THREE.Texture(canvas1) 
-        texture1.needsUpdate = true;
-	    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
-	    material1.transparent = true;
-	    var textmesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
-	    
-	    setKeyboardPosition(board, textmesh, this.x, this.y, 0.2);
-        scene.add( textmesh );
+		
+		if (this.text != '') {
+	        canvas1.height = this.px;
+			canvas1.width = 100;
+	        var context1 = canvas1.getContext('2d');
+	        var texture1 = new THREE.Texture(canvas1) 
+			context1.font = "Bold " + this.px + "px Arial";
+	        context1.fillStyle = "rgba(255,255,255,0.95)";
+		    context1.fillText(this.text, 0, this.px);
+	        texture1.needsUpdate = true;
+		    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+		    material1.transparent = true;
+		    var contentMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
+		    setKeyboardPosition(board, contentMesh, this.x, this.y, 0.2);
+	        scene.add( contentMesh );
+		} else if (this.image != undefined) {
+	        canvas1.height = 200;
+			canvas1.width = 200;
+        	var context1 = canvas1.getContext('2d');
+       		var texture1 = new THREE.Texture(canvas1) 
+			var imageObj = new Image();
+	        imageObj.src = this.image;
+	        imageObj.onload = function()
+	        {
+	            context1.drawImage(imageObj, 0, 0);
+	            if ( texture1 ) {
+	                texture1.needsUpdate = true;
+				    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+				    material1.transparent = true;
+				    var contentMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
+				    setKeyboardPosition(board, contentMesh, this.x, this.y, 0.2);
+			        scene.add( contentMesh );
+			    }
+	        };  
+		}
 	}
 };
 
@@ -848,18 +870,37 @@ kM.drawKeyboard = function(scene) {
 				case kM.State.Notifications:
 					scene.add(board);
 					kM.topBar.draw(scene, board);
-
-					var notificationLabel = new VRK.Label(4, 6, 3, 1, 'Notifications');
-					notificationLabel.draw(scene, board);
 					break;
 
 				case kM.State.AppSwitch:
 					scene.add(board);
 					kM.topBar.draw(scene, board);
+
+					//for apps, draw images. Four to a row.
+					var row = 0;
+					var column = 0;
+					var index = 0;
+					var app;
+
+					for (var i = 0; i < kM.apps.length; i++) {
+						app = kM.apps[i];
+						var icon = new Button(
+							(2 + row * 2)*unitWidth, 
+							(7 - 2 * column)*unitHeight, 
+							unitWidth, unitHeight, '', app.icon);
+						icon.draw(scene, board);
+
+						if (row >= 4) {
+							row = 0;
+							column++;
+						} else {
+							row++;
+						}
+						});
+					}
 					break;
 			}
 
-			//Draw fingers
 			var circle_amplitude = 0.01;
 			for (var i = 0; i < kM.points.length; i++) {
 				if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
