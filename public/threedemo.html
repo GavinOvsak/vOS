@@ -306,7 +306,7 @@ VRK.SystemBar = function(x, y, width, height){
 					return 'hideBar';
 				}
 				for (state in this.buttonPosition) {
-					if (x < this.buttonPosition[state] && x > this.buttonPosition[state] + unitWidth) {
+					if (x > this.buttonPosition[state] && x < this.buttonPosition[state] + unitWidth) {
 						return state;
 					}
 				}
