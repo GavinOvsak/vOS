@@ -106,8 +106,8 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	this.contains = function(x, y) {
 		return false;
 	};
-	this.show = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial(materialOptions);
+	this.draw = function(scene, board) {
+		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
@@ -130,8 +130,8 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 	this.contains = function(x, y) {
 		return false;
 	};
-	this.show = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial(materialOptions);
+	this.draw = function(scene, board) {
+		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
@@ -153,7 +153,7 @@ VRK.Label = function(x, y, width, height, text){
 		return false;
 	};
 	this.draw = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial(materialOptions);
+		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
@@ -174,7 +174,7 @@ VRK.Treadmill = function(x, y, width, height, canZoom, canRotate){
 	this.contains = function(x, y) {
 		return false;
 	};
-	this.show = function(scene, board) {
+	this.draw = function(scene, board) {
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
@@ -196,8 +196,8 @@ VRK.KeyboardObject = function(x, y, width, height){
 	this.contains = function(x, y) {
 		return false;
 	};
-	this.show = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial(materialOptions);
+	this.draw = function(scene, board) {
+		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
