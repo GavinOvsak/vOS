@@ -831,8 +831,8 @@ kM.drawKeyboard = function(scene) {
 	board.position.z = 210;
 	board.rotation.x = -1.1;
 
-	var buttonWidth = 1/12;
-	var buttonHeight = 1/9;
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
 
 	var keyboardApp = kM.getKeyboardApp();
 
@@ -846,17 +846,7 @@ kM.drawKeyboard = function(scene) {
 			switch(kM.state) {
 				case kM.State.Normal:
 					scene.add(board);
-					//when going down, don't show keyboard objects, just bar.
-					//If the bar is let go below the hald way, continue to hide. If let go above half way, don't hide.
 
-					//Draw Top Bar;
-					
-					/*	new THREE.Mesh(
-						new THREE.PlaneGeometry(1, buttonHeight),
-						greenLambert);*/
-					//topBar.draw(scene, board);
-					
-					//Draw Keyboard Objects
 					if (keyboardApp != null) {
 						var objects = keyboardApp.keyboard.objects;
 						if (kM.front_and_back != null || kM.front != null) {
