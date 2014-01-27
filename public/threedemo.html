@@ -363,7 +363,7 @@ VRK.SystemBar = function(x, y, width, height){
 			this.moving = true;
 		}
 		this.point = point;
-		point.onRelease(this.release.bind(this, point.x, point.y));
+		point.onRelease(this.release.bind(this));
 		this.available = false;
 	};
 	this.draw = function(scene, board) {
@@ -494,8 +494,8 @@ var Point = function(x, y) {
 	this.y = y;
 	this.taken = false;
 	this.onRelease_callback = function() {};
-	this.release = function() {
-		this.onRelease_callback();
+	this.release = function(x, y) {
+		this.onRelease_callback(x, y);
 	};
 	this.onRelease = function(callback) {
 		this.onRelease_callback = callback;
