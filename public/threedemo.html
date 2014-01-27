@@ -303,7 +303,7 @@ VRK.SystemBar = function(x, y, width, height){
 		this.point = undefined;
 
 		//if far enough, click.
-		if (this.buttonPosition.contains(this.buttonSelected) && this.dragDistance() < this.threshold_distance) {
+		if (this.buttonPosition[this.buttonSelected] != undefined && this.dragDistance() < this.threshold_distance) {
 			this.click(this.buttonSelected);
 		} else if (this.buttonSelected == 'hidden') {
 			if (y > 0.5) {
