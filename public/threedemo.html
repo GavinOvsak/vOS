@@ -196,8 +196,7 @@ VRK.Label = function(x, y, width, height, text, px){
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.width, this.height),
-			material);
+			new THREE.PlaneGeometry(this.width, this.height), material);
 
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
 
@@ -217,7 +216,7 @@ VRK.Label = function(x, y, width, height, text, px){
 	    var textmesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
 	    
 	    setKeyboardPosition(board, textmesh, this.x, this.y, 0.2);
-        scene.add( textmesh );		
+        scene.add(textmesh);
 	};
 };
 
