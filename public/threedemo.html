@@ -293,7 +293,8 @@ VRK.SystemBar = function(x, y, width, height){
 	this.point = undefined;
 	this.buttonSelected = undefined;
 	this.contains = function(x, y) {
-		return this.whichButton(x, y) != 'none';
+		var which = this.whichButton(x, y);
+		return which != 'none';
 	};
 	this.moving = false;
 	this.whichButton = function(x,y) {
@@ -394,7 +395,6 @@ VRK.SystemBar = function(x, y, width, height){
 					new THREE.PlaneGeometry(unitWidth, unitHeight), buttonMaterial);
 
 				setKeyboardPosition(board, buttonMesh, this.x + this.buttonPosition[this.buttonSelected], adjusted_y, 0.11);
-
 				scene.add(buttonMesh);
 			}
 			scene.add(barMesh);
