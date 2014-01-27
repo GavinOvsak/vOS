@@ -33,7 +33,7 @@ var makeText = function(text, px, width, height) {
     texture1.needsUpdate = true;
     var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
     material1.transparent = true;
-    var closeMesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
+    return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
 };
 
 VRK.Button = function(x, y, width, height, text) {
