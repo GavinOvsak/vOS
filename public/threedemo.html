@@ -465,9 +465,9 @@ VRK.SystemBar = function(x, y, width, height){
 			var title = '';
 			if (kM.state == kM.State.Normal && kM.getKeyboardApp() != null) {
 				title = kM.getKeyboardApp().name;
-			} else if (kM.state = kM.State.AppSwitch) {
+			} else if (kM.state == kM.State.AppSwitch) {
 				title = 'App Switcher';
-			} else if (kM.state = kM.State.Notifications) {
+			} else if (kM.state == kM.State.Notifications) {
 				title = 'Notifications';
 			}
 
