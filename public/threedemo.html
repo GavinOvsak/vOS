@@ -317,13 +317,13 @@ VRK.SystemBar = function(x, y, width, height){
 	this.release = function(x, y) {
 		this.available = true;
 		this.point = undefined;
-
+		this.moving = false;
 		//if far enough, click.
 		if (this.buttonPosition[this.buttonSelected] != undefined && this.dragDistance() > this.threshold_distance) {
 			this.click(this.buttonSelected);
 		} else if (this.buttonSelected == 'hidden') {
 			if (y > 0.5) {
-				kM.state = kM.State.Normal;
+				kM.state = kM.State.Normal; //Or what it was before hiding
 			} else {
 				kM.state = kM.State.Hidden;
 			}
@@ -359,6 +359,9 @@ VRK.SystemBar = function(x, y, width, height){
 		this.initGrab.x = point.x;
 		this.initGrab.y = point.y;
 		this.buttonSelected = this.whichButton(point.x, point.y);
+		if (this.buttonSelected == 'hideBar') {
+			this.moving = true;
+		}
 		this.point = point;
 		point.onRelease(this.release.bind(this));
 		this.available = false;
@@ -375,7 +378,6 @@ VRK.SystemBar = function(x, y, width, height){
 			
 			setKeyboardPosition(board, barMesh, this.x, this.y, 0.1);
 
-			this.moving = false;
 			var adjusted_y = this.y
 			if (this.point != undefined) {
 				adjusted_y = this.y + (this.point.y - this.initGrab.y);
