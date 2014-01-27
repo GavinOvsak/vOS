@@ -28,6 +28,7 @@ VRK.Button = function(x, y, width, height, text) {
 	this.x = x * unitWidth;
 	this.y = y * unitHeight;
 	this.text = text;
+	this.px = 30;
 	this.width = width * unitWidth;
 	this.height = height * unitHeight;
 	this.available = true;
@@ -90,9 +91,24 @@ VRK.Button = function(x, y, width, height, text) {
 
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
 
-		//Draw this.text
-
 		scene.add(buttonMesh);
+
+		var canvas1 = document.createElement('canvas');
+		canvas1.height = this.px;
+		canvas1.width = 100;
+        var context1 = canvas1.getContext('2d');
+        context1.font = "Bold " + this.px + "px Arial";
+        context1.fillStyle = "rgba(255,0,0,0.95)";
+	    context1.fillText(this.text, 0, this.px);
+        var texture1 = new THREE.Texture(canvas1) 
+        texture1.needsUpdate = true;
+	    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+	    material1.transparent = true;
+	    var textmesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
+	    
+	    setKeyboardPosition(board, textmesh, this.x, this.y, 0.2);
+        scene.add( mesh1 );		
+
 	}
 };
 
@@ -146,8 +162,8 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 VRK.Label = function(x, y, width, height, text, px){
 	this.x = x;
 	this.y = y;
-	this.width = width;
-	this.height = height;
+	this.width = width/12;
+	this.height = height/9;
 	this.text = text;
 	this.px = px || 30;
 	this.contains = function(x, y) {
@@ -171,19 +187,14 @@ VRK.Label = function(x, y, width, height, text, px){
         context1.font = "Bold " + this.px + "px Arial";
         context1.fillStyle = "rgba(255,0,0,0.95)";
 	    context1.fillText(this.text, 0, this.px);
-
         var texture1 = new THREE.Texture(canvas1) 
         texture1.needsUpdate = true;
-	      
 	    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
 	    material1.transparent = true;
-
-	    var mesh1 = new THREE.Mesh(new THREE.PlaneGeometry(2/12, 1/9), material1);
+	    var textmesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
 	    
-	    setKeyboardPosition(board, mesh1, 0, 0, 0.2);
+	    setKeyboardPosition(board, textmesh, this.x, this.y, 0.2);
         scene.add( mesh1 );		
-
-		//draw this.text;
 	};
 };
 
