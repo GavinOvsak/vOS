@@ -615,7 +615,7 @@ socket.on('code', function (code) {
 
 socket.on('start', function (data) {
 	var parsed = JSON.parse(data);
-	var point = new Point(parsed.x, 1 - parsed.y);
+	var point = new Point(parsed.x, parsed.y);
 	kM.points[parsed.i] = point;
 	checkGrab(point);
 });
@@ -623,7 +623,7 @@ socket.on('start', function (data) {
 socket.on('move', function (data) {
 	var parsed = JSON.parse(data);
 	var point = kM.points[parsed.i];
-	point.move(parsed.x, 1 - parsed.y);
+	point.move(parsed.x, parsed.y);
 	if (!point.taken) {
 		checkGrab(point);
 	}
@@ -631,7 +631,7 @@ socket.on('move', function (data) {
 
 socket.on('end', function (data) {
 	var parsed = JSON.parse(data);
-	kM.points[parsed.i].release(parsed.x, 1 - parsed.y);
+	kM.points[parsed.i].release(parsed.x, parsed.y);
 	kM.points[parsed.i] = {};
 });
 
