@@ -315,6 +315,7 @@ VRK.SystemBar = function(x, y, width, height){
 		}
 	}
 	this.release = function(x, y) {
+		//not sure why x and y are null
 		this.available = true;
 		this.point = undefined;
 		this.moving = false;
@@ -322,7 +323,7 @@ VRK.SystemBar = function(x, y, width, height){
 		if (this.buttonPosition[this.buttonSelected] != undefined && this.dragDistance() > this.threshold_distance) {
 			this.click(this.buttonSelected);
 		} else if (this.buttonSelected == 'hideBar') {
-			if (y > 0.5) {
+			if (this.point.y - this.initGrab.y > 0.5) {
 				kM.state = kM.State.Normal; //Or what it was before hiding
 			} else {
 				kM.state = kM.State.Hidden;
@@ -363,7 +364,7 @@ VRK.SystemBar = function(x, y, width, height){
 			this.moving = true;
 		}
 		this.point = point;
-		point.onRelease(this.release.bind(this));
+		point.onRelease(this.release.bind(this, point.x, point.y));
 		this.available = false;
 	};
 	this.draw = function(scene, board) {
