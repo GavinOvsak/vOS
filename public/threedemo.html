@@ -143,12 +143,13 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 		//draw this.text;
 	};
 };
-VRK.Label = function(x, y, width, height, text){
+VRK.Label = function(x, y, width, height, text, px){
 	this.x = x;
 	this.y = y;
 	this.width = width;
 	this.height = height;
 	this.text = text;
+	this.px = px || 20;
 	this.contains = function(x, y) {
 		return false;
 	};
@@ -163,14 +164,12 @@ VRK.Label = function(x, y, width, height, text){
 
 		scene.add(buttonMesh);
 		
-		//draw this.text;
 		var canvas1 = document.createElement('canvas');
         var context1 = canvas1.getContext('2d');
-        context1.font = "Bold 40px Arial";
+        context1.font = "Bold " + this.px + "px Arial";
         context1.fillStyle = "rgba(255,0,0,0.95)";
-	    context1.fillText('Hello, world!', 0, 50);
-	    
-        // canvas contents will be used for a texture
+	    context1.fillText(this.text, 0, 0);
+
         var texture1 = new THREE.Texture(canvas1) 
         texture1.needsUpdate = true;
 	      
@@ -180,7 +179,6 @@ VRK.Label = function(x, y, width, height, text){
 	    var mesh1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), material1);
 	    
 	    setKeyboardPosition(board, mesh1, 0, 0, 0.2);
-        //mesh1.position.set(0,50,0);
         scene.add( mesh1 );		
 
 		//draw this.text;
