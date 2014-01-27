@@ -43,41 +43,6 @@ var makeKey = function() {
   return key;
 }
 
-/*var newInputSocket = function(socket) {
-  socket.on('start', function (data) {
-    parsed = JSON.parse(data);
-    for (var i = 0; i < outputSockets.length; i++) {
-      console.log('emit: start, ' + data);
-      outputSockets[i].emit('start', data);      
-    }
-    console.log(parsed);
-  });
-  socket.on('move', function (data) {
-    parsed = JSON.parse(data);
-    for (var i = 0; i < outputSockets.length; i++) {
-      console.log('emit: move, ' + data);
-      outputSockets[i].emit('move', data);      
-    }
-    console.log(parsed);
-  });
-  socket.on('end', function (data) {
-    parsed = JSON.parse(data);
-    for (var i = 0; i < outputSockets.length; i++) {
-      console.log('emit: end, ' + data);
-      outputSockets[i].emit('end', data);      
-    }
-    console.log(parsed);
-  });
-  socket.on('size', function (data) {
-    parsed = JSON.parse(data);
-    for (var i = 0; i < outputSockets.length; i++) {
-      console.log('emit: size, ' + data);
-      outputSockets[i].emit('size', data);      
-    }
-    console.log(parsed);
-  });
-}*/
-
 var bind = function(input, output) {
   input.on('start', function (data) {
     parsed = JSON.parse(data);
@@ -102,56 +67,45 @@ var bind = function(input, output) {
 }
 
 io.sockets.on('connection', function (socket) {
-  /*socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log('from: my other event');
-    console.log(data);
-  });*/
   console.log('connected');
   socket.on('declare-type', function (data) {
     if (data == 'input') {
-        socket.on('code', function (data) {
-          var password = data.toUpperCase();
-          if(!!outputs[password] && !inputs[password]) {
-            //Todo: Consider if output is already used.
+      socket.on('code', function (data) {
+        var password = data.toUpperCase();
+        if(!!outputs[password] && !inputs[password]) {
+          //Todo: Consider if output is already used.
 
-            inputs[password] = socket;
+          inputs[password] = socket;
 
-            //On input action, send to output
-            bind(inputs[password], outputs[password]);
+          //On input action, send to output
+          bind(inputs[password], outputs[password]);
 
-            //Notify on disconnect, should work if only one input per output.
-            outputs[password].on('disconnect', function() {
-              if (!!inputs[password]) {
-                inputs[password].emit('connection', 'disconnected output');
-              }
-              delete outputs[password]; //should set to undefined?
-            });
-            inputs[password].on('disconnect', function() {
-              if (!!outputs[password]) {
-                outputs[password].emit('connection', 'disconnected input');
-              }
-              delete inputs[password]; //should set to undefined?
-            });
+          //Notify on disconnect, should work if only one input per output.
+          outputs[password].on('disconnect', function() {
+            if (!!inputs[password]) {
+              inputs[password].emit('connection', 'disconnected output');
+            }
+            delete outputs[password]; //should set to undefined?
+          });
+          inputs[password].on('disconnect', function() {
+            if (!!outputs[password]) {
+              outputs[password].emit('connection', 'disconnected input');
+            }
+            delete inputs[password]; //should set to undefined?
+          });
 
-            inputs[password].emit('code', 'success');
-          } else {
-            socket.emit('code', 'failure');
-          }
-        });
-
-      //inputSockets.push(socket);
-      //newInputSocket(socket);
+          inputs[password].emit('code', 'success');
+        } else {
+          socket.emit('code', 'failure');
+        }
+      });
     } else if (data == 'output') {
       var key = makeKey();
       console.log(key);
       socket.emit('code', key);
       outputs[key] = socket;
-      //outputSockets.push(socket);
     }
     console.log(data);
-//    console.log(inputSockets);
-//    console.log(outputSockets);
   });
 });
 
@@ -164,19 +118,6 @@ io.sockets.on('connection', function (socket) {
 //To do:
 //on disconnected output, send disconnected message to its input if there is one.
 //on code received from input, either send correct-code or bad-code or collision-code
-
-/*
-// Load the http module to create an http server.
-var http = require('http');
-
-// Configure our HTTP server to respond with Hello World to all requests.
-var server = http.createServer(function (request, response) {
-  response.writeHead(200, {"Content-Type": "text/plain"});
-  response.end("Hello World\n");
-});
-
-// Listen on port 8000, IP defaults to 127.0.0.1
-server.listen(80);
 
 // Put a friendly message on the terminal
 console.log("Server running at http://127.0.0.1:80/");

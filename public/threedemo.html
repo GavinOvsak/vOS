@@ -298,7 +298,7 @@ VRK.SystemBar = function(x, y, width, height){
 	this.moving = false;
 	this.threshold_distance = 0.1;
 	this.whichButton = function(x,y) {
-		if (kM.state == 'hidden') {
+		if (kM.hidden) {
 			return 'hideBar';
 		} else {
 			if (y > this.y) {
@@ -323,9 +323,9 @@ VRK.SystemBar = function(x, y, width, height){
 			this.click(this.buttonSelected);
 		} else if (this.buttonSelected == 'hideBar') {
 			if (y > 0.5) {
-				kM.state = kM.State.Normal; //Or what it was before hiding
+				kM.hidden = false;
 			} else {
-				kM.state = kM.State.Hidden;
+				kM.hidden = true;
 			}
 		}
 		this.buttonSelected = 'none';
@@ -334,8 +334,6 @@ VRK.SystemBar = function(x, y, width, height){
 		switch(buttonName) {
 			case 'inClose':
 				kM.close();
-				//Either expand other app, or go to app switcher. Try not to have no apps.
-				//kM.state = kM.State.Empty;
 				break;
 			case 'inNotifications':
 				kM.state = kM.State.Notifications;
@@ -344,6 +342,7 @@ VRK.SystemBar = function(x, y, width, height){
 				kM.state = kM.State.AppSwitch;
 				break;
 			case 'inMaxMin':
+				kM.toggleMaxMin();
 				break;
 		}
 	};
@@ -371,14 +370,14 @@ VRK.SystemBar = function(x, y, width, height){
 		var distance = this.dragDistance();
 		var percentClicked = Math.min(distance/this.threshold_distance, 1);
 
-		if (kM.state != 'hidden' || this.buttonSelected == 'hideBar') {
+		if (!kM.hidden || this.buttonSelected == 'hideBar') {
 			var barMaterial = new THREE.MeshLambertMaterial({color: 0x00CC00});
 
 			var barMesh = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.width, this.height), barMaterial);
 			
 			var adjusted_y = this.y;
-			if (kM.state == 'hidden') {
+			if (kM.hidden) {
 				adjusted_y = 0;
 				if (this.point != undefined) {
 					adjusted_y = this.point.y - this.initGrab.y;
@@ -583,7 +582,7 @@ var checkGrab = function(point) {
 			}
 		});
 	}
-	if (kM.state == kM.State.Hidden && kM.topBar.available && !point.taken) {
+	if (kM.hidden && kM.topBar.available && !point.taken) {
 		kM.topBar.registerPoint(point);
 		point.taken = true;
 	}
@@ -593,7 +592,6 @@ var scene = new THREE.Scene();
 
 kM.State = {
 	Normal: 'normal',
-	Hidden: 'hidden',
 	AppSwitch: 'app-switch',
 	Notifications: 'notifications'
 };
@@ -617,7 +615,7 @@ socket.on('code', function (code) {
 
 socket.on('start', function (data) {
 	var parsed = JSON.parse(data);
-	var point = new Point(parsed.x/device_width, 1 - parsed.y/device_height);
+	var point = new Point(parsed.x, 1 - parsed.y);
 	kM.points[parsed.i] = point;
 	checkGrab(point);
 });
@@ -625,7 +623,7 @@ socket.on('start', function (data) {
 socket.on('move', function (data) {
 	var parsed = JSON.parse(data);
 	var point = kM.points[parsed.i];
-	point.move(parsed.x/device_width, 1 - parsed.y/device_height);
+	point.move(parsed.x, 1 - parsed.y);
 	if (!point.taken) {
 		checkGrab(point);
 	}
@@ -633,7 +631,7 @@ socket.on('move', function (data) {
 
 socket.on('end', function (data) {
 	var parsed = JSON.parse(data);
-	kM.points[parsed.i].release(parsed.x/device_width, 1 - parsed.y/device_height);
+	kM.points[parsed.i].release(parsed.x, 1 - parsed.y);
 	kM.points[parsed.i] = {};
 });
 
@@ -675,11 +673,20 @@ kM.minimize = function() {
 		kM.keyboardApp = kM.front_and_back;
 	}
 };
+
 kM.maximize = function() {
 	if (kM.front != null && kM.front.external.drawFrontAndBack != null) {
 		kM.front_and_back = kM.front;
 		kM.front = null;
 		kM.back = null;
+	}
+};
+
+kM.toggleMaxMin = function() {
+	if (kM.front != null) {
+		kM.maximize();
+	} else if(kM.front_and_back != null) {
+		kM.minimize();
 	}
 };
 
@@ -696,6 +703,9 @@ kM.close = function() {
 		kM.keyboardApp = null;
 	} else if (kM.back != null) {
 		kM.back = null;
+	}
+	if (kM.front == null && kM.front_and_back == null) {
+		kM.state = kM.State.AppSwitch;
 	}
 }
 
@@ -733,57 +743,59 @@ kM.drawKeyboard = function(scene) {
 	var buttonWidth = 1/12;
 	var buttonHeight = 1/9;
 
-	switch(kM.state) {
-		case kM.State.Normal:
-			scene.add(board);
-			//when going down, don't show keyboard objects, just bar.
-			//If the bar is let go below the hald way, continue to hide. If let go above half way, don't hide.
+	if (kM.hidden) {
+		//To unhide, drag up at least a threshold and show bar rising from bottom. Jump on let go.
+		kM.topBar.draw(scene, board);
+	} else {
+		switch(kM.state) {
+			case kM.State.Normal:
+				scene.add(board);
+				//when going down, don't show keyboard objects, just bar.
+				//If the bar is let go below the hald way, continue to hide. If let go above half way, don't hide.
 
-			//Draw Top Bar;
-			
-			/*	new THREE.Mesh(
-				new THREE.PlaneGeometry(1, buttonHeight),
-				greenLambert);*/
-			//topBar.draw(scene, board);
-			if (kM.topBar.moving) {
+				//Draw Top Bar;
+				
+				/*	new THREE.Mesh(
+					new THREE.PlaneGeometry(1, buttonHeight),
+					greenLambert);*/
+				//topBar.draw(scene, board);
+				if (kM.topBar.moving) {
+					kM.topBar.draw(scene, board);
+				} else {
+					//Draw Keyboard Objects
+					if (kM.keyboardApp != null) {
+						var objects = kM.keyboardApp.keyboard.objects;
+						if (kM.front_and_back != null || kM.front != null) {
+							objects.map(function(object) {
+								object.draw(scene, board);
+							});
+						}
+					}
+
+					//Draw fingers
+					var circle_amplitude = 0.01;
+					for (var i = 0; i < kM.points.length; i++) {
+						if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
+							var circle = makeCircle(circle_amplitude);
+							setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
+							scene.add(circle);
+						}
+					}
+				}
+				break;
+
+			case kM.State.Notifications:
+				scene.add(board);
 				kM.topBar.draw(scene, board);
-			} else {
-				//Draw Keyboard Objects
-				if (kM.keyboardApp != null) {
-					var objects = kM.keyboardApp.keyboard.objects;
-					if (kM.front_and_back != null || kM.front != null) {
-						objects.map(function(object) {
-							object.draw(scene, board);
-						});
-					}
-				}
 
-				//Draw fingers
-				var circle_amplitude = 0.01;
-				for (var i = 0; i < kM.points.length; i++) {
-					if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
-						var circle = makeCircle(circle_amplitude);
-						setKeyboardPosition(board, circle, kM.points[i].x, kM.points[i].y, 0.15);
-						scene.add(circle);
-					}
-				}
-			}
-			break;
+				var notificationLabel = new VRK.Label(4, 6, 3, 1, 'Notifications');
+				break;
 
-		case kM.State.Hidden:
-			//To unhide, drag up at least a threshold and show bar rising from bottom. Jump on let go.
-			kM.topBar.draw(scene, board);
-			break;
-
-		case kM.State.Notifications:
-			scene.add(board);
-			kM.topBar.draw(scene, board);
-			break;
-
-		case kM.State.AppSwitch:
-			scene.add(board);
-			kM.topBar.draw(scene, board);
-			break;
+			case kM.State.AppSwitch:
+				scene.add(board);
+				kM.topBar.draw(scene, board);
+				break;
+		}
 	}
 };
 
