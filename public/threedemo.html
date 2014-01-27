@@ -149,7 +149,7 @@ VRK.Label = function(x, y, width, height, text, px){
 	this.width = width;
 	this.height = height;
 	this.text = text;
-	this.px = px || 20;
+	this.px = px || 30;
 	this.contains = function(x, y) {
 		return false;
 	};
@@ -168,7 +168,7 @@ VRK.Label = function(x, y, width, height, text, px){
         var context1 = canvas1.getContext('2d');
         context1.font = "Bold " + this.px + "px Arial";
         context1.fillStyle = "rgba(255,0,0,0.95)";
-	    context1.fillText(this.text, 0, 0);
+	    context1.fillText(this.text, 0, 50);
 
         var texture1 = new THREE.Texture(canvas1) 
         texture1.needsUpdate = true;
