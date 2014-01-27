@@ -27,7 +27,7 @@ var makeText = function(text, px, width, height) {
 	canvas1.width = 100;
     var context1 = canvas1.getContext('2d');
     context1.font = "Bold "+px+"px Arial";
-    context1.fillStyle = "rgba(255,0,0,0.95)";
+    context1.fillStyle = "rgba(255,255,255,0.95)";
     context1.fillText(text, 0, 30);
     var texture1 = new THREE.Texture(canvas1) 
     texture1.needsUpdate = true;
@@ -385,11 +385,11 @@ VRK.SystemBar = function(x, y, width, height){
 			}
 			scene.add(barMesh);
 
-			var closeMesh = makeText('  X', 30, unitWidth, unitHeight);
+			var closeMesh = makeText('   X', 30, unitWidth, unitHeight);
 			setKeyboardPosition(board, closeMesh, this.x + this.buttonPosition['inClose'], adjusted_y, 0.12);
 			scene.add(closeMesh);
 	
-			var notifyMesh = makeText('  !', 30, unitWidth, unitHeight);
+			var notifyMesh = makeText('   !', 30, unitWidth, unitHeight);
 			setKeyboardPosition(board, notifyMesh, this.x + this.buttonPosition['inNotifications'], adjusted_y, 0.12);
 			scene.add(notifyMesh);
 	
