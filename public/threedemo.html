@@ -738,7 +738,7 @@ kM.drawKeyboard = function(scene) {
 				greenLambert);*/
 			//topBar.draw(scene, board);
 			if (kM.topBar.moving) {
-				kM.topBar.show(scene, board);
+				kM.topBar.draw(scene, board);
 			} else {
 				//Draw Keyboard Objects
 				if (kM.keyboardApp != null) {
@@ -764,17 +764,17 @@ kM.drawKeyboard = function(scene) {
 
 		case kM.State.Hidden:
 			//To unhide, drag up at least a threshold and show bar rising from bottom. Jump on let go.
-			kM.topBar.show(scene, board);
+			kM.topBar.draw(scene, board);
 			break;
 
 		case kM.State.Notifications:
 			scene.add(board);
-			kM.topBar.show(scene, board);
+			kM.topBar.draw(scene, board);
 			break;
 
 		case kM.State.AppSwitch:
 			scene.add(board);
-			kM.topBar.show(scene, board);
+			kM.topBar.draw(scene, board);
 			break;
 	}
 };
