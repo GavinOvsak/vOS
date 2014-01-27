@@ -152,7 +152,7 @@ VRK.Label = function(x, y, width, height, text){
 	this.contains = function(x, y) {
 		return false;
 	};
-	this.show = function(scene, board) {
+	this.draw = function(scene, board) {
 		var material = new THREE.MeshLambertMaterial(materialOptions);
 
 		buttonMesh = new THREE.Mesh(
