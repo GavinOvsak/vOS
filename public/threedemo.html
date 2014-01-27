@@ -463,7 +463,7 @@ VRK.SystemBar = function(x, y, width, height){
 			scene.add(appSwitchMesh);
 
 			var title = '';
-			if (kM.state = kM.State.Normal && kM.getKeyboardApp() != null) {
+			if (kM.state == kM.State.Normal && kM.getKeyboardApp() != null) {
 				title = kM.getKeyboardApp().name;
 			} else if (kM.state = kM.State.AppSwitch) {
 				title = 'App Switcher';
