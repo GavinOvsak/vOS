@@ -127,8 +127,11 @@ VRK.Button = function(x, y, width, height, text) {
 };
 
 VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
-	this.x = x;
-	this.y = y;
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
 	this.width = width;
 	this.length = length;
 	this.returnsToCenter = returnsToCenter;
@@ -151,8 +154,11 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 };
 
 VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
-	this.x = x;
-	this.y = y;
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
 	this.returnsToCenter = returnsToCenter;
 	this.radius = radius;
 	this.beginAngle = beginAngle;
@@ -174,8 +180,11 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 	};
 };
 VRK.Label = function(x, y, width, height, text, px){
-	this.x = x;
-	this.y = y;
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
 	this.width = width/12;
 	this.height = height/9;
 	this.text = text;
@@ -213,8 +222,11 @@ VRK.Label = function(x, y, width, height, text, px){
 };
 
 VRK.Treadmill = function(x, y, width, height, canZoom, canRotate){
-	this.x = x;
-	this.y = y;
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
 	this.width = width;
 	this.height = height;
 	this.contains = function(x, y) {
@@ -235,8 +247,11 @@ VRK.Treadmill = function(x, y, width, height, canZoom, canRotate){
 };
 
 VRK.KeyboardObject = function(x, y, width, height){
-	this.x = x;
-	this.y = y;
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
 	this.width = width;
 	this.height = height;
 	this.contains = function(x, y) {
@@ -260,10 +275,10 @@ VRK.SystemBar = function(x, y, width, height){
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 
-	this.x = x;
-	this.y = y;
-	this.width = width;
-	this.height = height;
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
+	this.width = width * unitWidth;
+	this.height = height * unitHeight;
 	this.buttonPosition = {
 		'inClose': 0 * unitWidth,
 		'inNotifications': 1 * unitWidth,
@@ -496,7 +511,7 @@ var kM = {
 	points: []
 };
 
-kM.topBar = new VRK.SystemBar(0, 1/9 * (8 + 1/2), 1, 1/9);
+kM.topBar = new VRK.SystemBar(0, 8 + 1/2, 1, 1);
 
 //keyboard is an 8 x 12 grid
 VRK.Keyboard = function(app) {
