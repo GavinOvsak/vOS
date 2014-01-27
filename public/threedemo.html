@@ -65,12 +65,11 @@ VRK.Button = function(x, y, width, height, text, opt_image) {
 		this.onClick_callback = callback;
 	};
 	this.release = function(x, y) {
-		this.available = true;
-		this.point = undefined;
-		//if far enough, click.
 		if (this.dragDistance() > this.threshold_distance) {
 			this.click();
 		}
+		this.available = true;
+		this.point = undefined;
 	};
 	this.dragDistance = function() {
 		if(this.point != undefined) {
