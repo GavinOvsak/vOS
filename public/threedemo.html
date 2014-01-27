@@ -206,8 +206,7 @@ VRK.KeyboardObject = function(x, y, width, height){
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
 
 		scene.add(buttonMesh);
-
-        
+		
 		//draw this.text;
 		var canvas1 = document.createElement('canvas');
         var context1 = canvas1.getContext('2d');
@@ -331,7 +330,7 @@ VRK.SystemBar = function(x, y, width, height){
 			var barMaterial = new THREE.MeshLambertMaterial({color: 0x00CC00});
 
 			var barMesh = new THREE.Mesh(
-				new THREE.PlaneGeometry(this.width, this.height), material);
+				new THREE.PlaneGeometry(this.width, this.height), barMaterial);
 			
 			setKeyboardPosition(board, barMesh, this.x, this.y, 0.1);
 
