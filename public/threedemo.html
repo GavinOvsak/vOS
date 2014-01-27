@@ -379,9 +379,17 @@ VRK.SystemBar = function(x, y, width, height){
 			setKeyboardPosition(board, barMesh, this.x, this.y, 0.1);
 
 			var adjusted_y = this.y
-			if (this.point != undefined) {
-				adjusted_y = this.y + (this.point.y - this.initGrab.y);
+			if (kM.state == 'hidden') {
+				adjusted_y = 0;
+				if (this.point != undefined) {
+					adjusted_y = this.point.y - this.initGrab.y;
+				}
+			} else {
+				if (this.point != undefined) {
+					adjusted_y = this.y + (this.point.y - this.initGrab.y);
+				}
 			}
+
 			if (this.buttonSelected == 'hideBar') {
 				setKeyboardPosition(board, barMesh, this.x, adjusted_y, 0.1);
 			} else if (this.buttonSelected != 'none') {
