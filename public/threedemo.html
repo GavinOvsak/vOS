@@ -297,6 +297,7 @@ VRK.SystemBar = function(x, y, width, height){
 		return which != 'none';
 	};
 	this.moving = false;
+	this.threshold_distance = 0.1;
 	this.whichButton = function(x,y) {
 		if (kM.state == 'hidden') {
 			return 'hideBar';
@@ -397,7 +398,7 @@ VRK.SystemBar = function(x, y, width, height){
 				setKeyboardPosition(board, barMesh, this.x, adjusted_y, 0.1);
 				var materialOptions = {color: 0x00CC00};
 				if (this.point != null) {
-					materialOptions.color = (0 << 16) + (200*(1-percentClicked) << 8) + percentClicked*255;
+					materialOptions.color = (0 << 16) + (200 * (1 - percentClicked) << 8) + percentClicked * 255;
 				}
 
 				var buttonMaterial = new THREE.MeshLambertMaterial(materialOptions);
