@@ -319,9 +319,6 @@ VRK.SystemBar = function(x, y, width, height){
 		return 0;
 	};
 	this.release = function(x, y) {
-		this.available = true;
-		this.point = undefined;
-		this.moving = false;
 		//if far enough, click.
 		if (this.buttonPosition[this.buttonSelected] != undefined && this.dragDistance() > this.threshold_distance) {
 			this.click(this.buttonSelected);
@@ -332,6 +329,9 @@ VRK.SystemBar = function(x, y, width, height){
 				kM.hidden = true;
 			}
 		}
+		this.available = true;
+		this.point = undefined;
+		this.moving = false;
 		this.buttonSelected = 'none';
 	};
 	this.click = function(buttonName){
