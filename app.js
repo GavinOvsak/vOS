@@ -118,7 +118,3 @@ io.sockets.on('connection', function (socket) {
 //To do:
 //on disconnected output, send disconnected message to its input if there is one.
 //on code received from input, either send correct-code or bad-code or collision-code
-
-// Put a friendly message on the terminal
-console.log("Server running at http://127.0.0.1:80/");
-*/
