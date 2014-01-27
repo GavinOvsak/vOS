@@ -23,10 +23,10 @@ chess.drawFrontAndBack = function(scene) {
 };
 
 chess.setUpKeyboard = function(keyboard) {
-	var left = new VRK.Button(1, 3, 1, 1, '<');
-	var right = new VRK.Button(3, 3, 1, 1, '>');
-	var up = new VRK.Button(2, 4, 1, 1, '/\\');
-	var down = new VRK.Button(2, 2, 1, 1, '\\/');
+	var left = new VRK.Button(1, 3, 1, 1, '   <');
+	var right = new VRK.Button(3, 3, 1, 1, '   >');
+	var up = new VRK.Button(2, 4, 1, 1, '   /\\');
+	var down = new VRK.Button(2, 2, 1, 1, '   \\/');
 
 	keyboard.add(left);
 	keyboard.add(right);
