@@ -341,7 +341,11 @@ VRK.SystemBar = function(x, y, width, height){
 				kM.close();
 				break;
 			case 'inNotifications':
-				kM.state = kM.State.Notifications;
+				if (kM.state == kM.State.Notifications) {
+					kM.state = kM.State.Normal;
+				} else {
+					kM.state = kM.State.Notifications;
+				}
 				break;
 			case 'inAppSwitch':
 				if (kM.state == kM.State.AppSwitch) {
@@ -417,7 +421,11 @@ VRK.SystemBar = function(x, y, width, height){
 			setKeyboardPosition(board, closeMesh, this.x + this.buttonPosition['inClose'], adjusted_y, 0.12);
 			scene.add(closeMesh);
 	
-			var notifyMesh = makeText('   !', 30, unitWidth, unitHeight);
+			var notificationText = '   !';
+			if (kM.state == kM.State.Notifications) {
+				notificationText = '   <';
+			}
+			var notifyMesh = makeText(notificationText, 30, unitWidth, unitHeight);
 			setKeyboardPosition(board, notifyMesh, this.x + this.buttonPosition['inNotifications'], adjusted_y, 0.12);
 			scene.add(notifyMesh);
 	
@@ -798,7 +806,7 @@ kM.drawKeyboard = function(scene) {
 					kM.topBar.draw(scene, board);
 					break;
 			}
-		
+
 			//Draw fingers
 			var circle_amplitude = 0.01;
 			for (var i = 0; i < kM.points.length; i++) {
