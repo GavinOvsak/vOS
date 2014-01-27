@@ -175,7 +175,7 @@ VRK.Treadmill = function(x, y, width, height, canZoom, canRotate){
 		return false;
 	};
 	this.show = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial(materialOptions);
+		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
