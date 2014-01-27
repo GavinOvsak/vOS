@@ -318,7 +318,7 @@ VRK.SystemBar = function(x, y, width, height){
 								return state;
 								break;
 							case 'inMaxMin':
-								if (kM.minimize() || kM.maximize()) {
+								if (kM.canMinimize() || kM.canMaximize()) {
 									return state;
 								}
 								break;
