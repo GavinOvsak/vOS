@@ -344,7 +344,11 @@ VRK.SystemBar = function(x, y, width, height){
 				kM.state = kM.State.Notifications;
 				break;
 			case 'inAppSwitch':
-				kM.state = kM.State.AppSwitch;
+				if (kM.state == kM.State.AppSwitch) {
+					kM.state = kM.State.Normal;
+				} else {
+					kM.state = kM.State.AppSwitch;
+				}
 				break;
 			case 'inMaxMin':
 				kM.toggleMaxMin();
@@ -417,7 +421,11 @@ VRK.SystemBar = function(x, y, width, height){
 			setKeyboardPosition(board, notifyMesh, this.x + this.buttonPosition['inNotifications'], adjusted_y, 0.12);
 			scene.add(notifyMesh);
 	
-			var appSwitchMesh = makeText('  <->', 30, unitWidth, unitHeight);
+			var appSwitchText = '  <->';
+			if (kM.state == kM.State.AppSwitch) {
+				appSwitchText = '   <';
+			}
+			var appSwitchMesh = makeText(appSwitchText, 30, unitWidth, unitHeight);
 			setKeyboardPosition(board, appSwitchMesh, this.x + this.buttonPosition['inAppSwitch'], adjusted_y, 0.12);
 			scene.add(appSwitchMesh);
 	
