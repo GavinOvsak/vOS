@@ -14,19 +14,17 @@ chess.drawFront = function(scene) {
 chess.name = "Chess";
 chess.icon = "http://icons.iconarchive.com/icons/aha-soft/chess/256/chess-icon.png";
 /*chess.drawBack = function(scene) {
-	
-	
 };*/
 chess.drawFrontAndBack = function(scene) {
 	chess.drawFront(scene);
-//	chess.drawBack(scene);
+	//chess.drawBack(scene);
 };
 
 chess.setUpKeyboard = function(keyboard) {
-	var left = new VRK.Button(1, 3, 1, 1, '      <');
-	var right = new VRK.Button(3, 3, 1, 1, '      >');
-	var up = new VRK.Button(2, 4, 1, 1, '      /\\');
-	var down = new VRK.Button(2, 2, 1, 1, '      \\/');
+	var left = new VRK.Button(1, 3, 1, 1, '     <');
+	var right = new VRK.Button(3, 3, 1, 1, '     >');
+	var up = new VRK.Button(2, 4, 1, 1, '     /\\');
+	var down = new VRK.Button(2, 2, 1, 1, '     \\/');
 
 	keyboard.add(left);
 	keyboard.add(right);

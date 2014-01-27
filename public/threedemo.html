@@ -21,6 +21,21 @@ var VRK = {};
 //maximize and minimize buttons
 //app switcher button
 
+var makeText = function(text, px, width, height) {
+	var canvas1 = document.createElement('canvas');
+	canvas1.height = px;
+	canvas1.width = 100;
+    var context1 = canvas1.getContext('2d');
+    context1.font = "Bold "+px+"px Arial";
+    context1.fillStyle = "rgba(255,0,0,0.95)";
+    context1.fillText(text, 0, 30);
+    var texture1 = new THREE.Texture(canvas1) 
+    texture1.needsUpdate = true;
+    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+    material1.transparent = true;
+    var closeMesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
+};
+
 VRK.Button = function(x, y, width, height, text) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
@@ -107,8 +122,7 @@ VRK.Button = function(x, y, width, height, text) {
 	    var textmesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
 	    
 	    setKeyboardPosition(board, textmesh, this.x, this.y, 0.2);
-        scene.add( textmesh );		
-
+        scene.add( textmesh );
 	}
 };
 
@@ -347,8 +361,12 @@ VRK.SystemBar = function(x, y, width, height){
 			setKeyboardPosition(board, barMesh, this.x, this.y, 0.1);
 
 			this.moving = false;
+			var adjusted_y = this.y
+			if (this.point != undefined) {
+				adjusted_y = this.y + (this.point.y - this.initGrab.y);
+			}
 			if (this.buttonSelected == 'hideBar') {
-				setKeyboardPosition(board, barMesh, this.x, this.y + (this.point.y - this.initGrab.y), 0.1);
+				setKeyboardPosition(board, barMesh, this.x, adjusted_y, 0.1);
 				this.moving = true;
 			} else if (this.buttonSelected != 'none') {
 				//change color based on distance
@@ -361,11 +379,27 @@ VRK.SystemBar = function(x, y, width, height){
 				var buttonMesh = new THREE.Mesh(
 					new THREE.PlaneGeometry(unitWidth, unitHeight), buttonMaterial);
 
-				setKeyboardPosition(board, buttonMesh, this.x + this.buttonPosition[this.buttonSelected], this.y, 0.12);
+				setKeyboardPosition(board, buttonMesh, this.x + this.buttonPosition[this.buttonSelected], adjusted_y, 0.12);
 
 				scene.add(buttonMesh);
 			}
 			scene.add(barMesh);
+
+			var closeMesh = makeText('X', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, closeMesh, this.x + this.buttonPosition['inClose'], adjusted_y, 0.13);
+			scene.add(closeMesh);
+	
+			var notifyMesh = makeText(' !', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, notifyMesh, this.x + this.buttonPosition['inNotifications'], adjusted_y, 0.13);
+			scene.add(notifyMesh);
+	
+			var appSwitchMesh = makeText('<->', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, appSwitchMesh, this.x + this.buttonPosition['inAppSwitch'], adjusted_y, 0.13);
+			scene.add(appSwitchMesh);
+	
+			var maxMinMesh = makeText('+/-', 30, unitWidth, unitHeight);
+			setKeyboardPosition(board, maxMinMesh, this.x + this.buttonPosition['inMaxMin'], adjusted_y, 0.13);
+			scene.add(maxMinMesh);
 		}
 	}
 };
