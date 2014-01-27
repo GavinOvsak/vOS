@@ -305,7 +305,24 @@ VRK.SystemBar = function(x, y, width, height){
 				}
 				for (state in this.buttonPosition) {
 					if (x > this.buttonPosition[state] && x < this.buttonPosition[state] + unitWidth) {
-						return state;
+						switch (state) {
+							case 'inClose':
+								if (kM.getKeyboardApp()) {
+									return state;
+								}
+								break;
+							case 'inNotifications':
+								return state;
+								break;
+							case 'inAppSwitch':
+								return state;
+								break;
+							case 'inMaxMin':
+								if (kM.minimize() || kM.maximize()) {
+									return state;
+								}
+								break;
+						}
 					}
 				}
 			}
@@ -338,21 +355,17 @@ VRK.SystemBar = function(x, y, width, height){
 		console.log('Clicked: ' + buttonName);
 		switch(buttonName) {
 			case 'inClose':
-				kM.close();
+				if (kM.state == kM.State.Normal) {
+					kM.close();
+				} else {
+					kM.state = kM.State.Normal;
+				}
 				break;
 			case 'inNotifications':
-				if (kM.state == kM.State.Notifications) {
-					kM.state = kM.State.Normal;
-				} else {
-					kM.state = kM.State.Notifications;
-				}
+				kM.state = kM.State.Notifications;
 				break;
 			case 'inAppSwitch':
-				if (kM.state == kM.State.AppSwitch) {
-					kM.state = kM.State.Normal;
-				} else {
-					kM.state = kM.State.AppSwitch;
-				}
+				kM.state = kM.State.AppSwitch;
 				break;
 			case 'inMaxMin':
 				kM.toggleMaxMin();
@@ -417,29 +430,37 @@ VRK.SystemBar = function(x, y, width, height){
 				scene.add(buttonMesh);
 			}
 
-			var closeMesh = makeText('   X', 30, unitWidth, unitHeight);
-			setKeyboardPosition(board, closeMesh, this.x + this.buttonPosition['inClose'], adjusted_y, 0.12);
-			scene.add(closeMesh);
+			if (kM.state == kM.State.Normal) {
+				var closeMesh = makeText('   X', 30, unitWidth, unitHeight);
+				setKeyboardPosition(board, closeMesh, this.x + this.buttonPosition['inClose'], adjusted_y, 0.12);
+				scene.add(closeMesh);
+
+				if (kM.canMaximize()) {
+					var maxMinMesh = makeText('   +', 30, unitWidth, unitHeight);
+					setKeyboardPosition(board, maxMinMesh, this.x + this.buttonPosition['inMaxMin'], adjusted_y, 0.12);
+					scene.add(maxMinMesh);
+				} else if (kM.canMinimize()) {
+					var maxMinMesh = makeText('   -', 30, unitWidth, unitHeight);
+					setKeyboardPosition(board, maxMinMesh, this.x + this.buttonPosition['inMaxMin'], adjusted_y, 0.12);
+					scene.add(maxMinMesh);
+				}
+			} else {
+				if (kM.getKeyboardApp() != null) {
+					var maxMinMesh = makeText('   <', 30, unitWidth, unitHeight);
+					setKeyboardPosition(board, maxMinMesh, this.x + this.buttonPosition['inMaxMin'], adjusted_y, 0.12);
+					scene.add(maxMinMesh);
+				}
+			}
 	
 			var notificationText = '   !';
-			if (kM.state == kM.State.Notifications) {
-				notificationText = '   <';
-			}
 			var notifyMesh = makeText(notificationText, 30, unitWidth, unitHeight);
 			setKeyboardPosition(board, notifyMesh, this.x + this.buttonPosition['inNotifications'], adjusted_y, 0.12);
 			scene.add(notifyMesh);
 	
 			var appSwitchText = '  <->';
-			if (kM.state == kM.State.AppSwitch) {
-				appSwitchText = '   <';
-			}
 			var appSwitchMesh = makeText(appSwitchText, 30, unitWidth, unitHeight);
 			setKeyboardPosition(board, appSwitchMesh, this.x + this.buttonPosition['inAppSwitch'], adjusted_y, 0.12);
 			scene.add(appSwitchMesh);
-	
-			var maxMinMesh = makeText('  +/-', 30, unitWidth, unitHeight);
-			setKeyboardPosition(board, maxMinMesh, this.x + this.buttonPosition['inMaxMin'], adjusted_y, 0.12);
-			scene.add(maxMinMesh);
 		}
 	}
 };
@@ -533,7 +554,6 @@ var kM = {
 	front: null,
 	back: null,
 	front_and_back: null,
-	keyboardApp: null,
 	points: []
 };
 
@@ -591,8 +611,9 @@ directLight.position.z = 1;
 //  new THREE.AmbientLight(0xCC0000);
 
 var checkGrab = function(point) {
-	if (kM.keyboardApp != null && !kM.topBar.moving) {
-		var objects = kM.keyboardApp.keyboard.objects;
+	var keyboardApp = kM.getKeyboardApp()
+	if (keyboardApp != null && !kM.topBar.moving) {
+		var objects = keyboardApp.keyboard.objects;
 		objects.map(function(object) {
 			if (object.available && object.contains(point.x, point.y)) {
 				object.registerPoint(point);
@@ -661,12 +682,10 @@ kM.open = function(app) {
 		}
 		kM.front_and_back = null;
 		kM.front = app;
-		kM.keyboardApp = app;
 	} else if(app.external.drawFrontAndBack) {
 		kM.front = null;
 		kM.back = null;
 		kM.front_and_back = app;
-		kM.keyboardApp = app;
 	} else if(app.external.drawBack) {
 		kM.front_and_back = null;
 		kM.back = app;
@@ -684,20 +703,35 @@ kM.add = function(extern) {
 	kM.open(app);
 };
 
+kM.canMaximize = function() {
+	return kM.front != null && kM.front.external.drawFrontAndBack != null;
+};
+
+kM.canMinimize = function() {
+	return kM.front_and_back != null && kM.front_and_back.external.drawFront != null;
+};
+
+kM.getKeyboardApp = function() {
+	if (kM.front != null) {
+		return kM.front;
+	} else if (kM.front_and_back != null) {
+		return kM.front_and_back;
+	} 
+	return null;
+}
+
 kM.minimize = function() {
-	if (kM.front_and_back != null && kM.front_and_back.external.drawFront != null) {
+	if (kM.canMinimize()) {
 		kM.front = kM.front_and_back;
 		kM.front_and_back = null;
-		kM.keyboardApp = kM.front;
 	}
 };
 
 kM.maximize = function() {
-	if (kM.front != null && kM.front.external.drawFrontAndBack != null) {
+	if (kM.canMaximize()) {
 		kM.front_and_back = kM.front;
 		kM.front = null;
 		kM.back = null;
-		kM.keyboardApp = kM.front_and_back;
 	}
 };
 
@@ -713,14 +747,11 @@ kM.close = function() {
 	if (kM.front != null) {
 		if (kM.back != null && kM.back.external.drawFrontAndBack != null) {
 			kM.front_and_back = kM.back;
-			kM.keyboardApp = kM.front_and_back;
 			kM.back = null;
 		}
 		kM.front = null;
-		kM.keyboardApp = null;
 	} else if (kM.front_and_back != null) {
 		kM.front_and_back = null;
-		kM.keyboardApp = null;
 	} else if (kM.back != null) {
 		kM.back = null;
 	}
@@ -763,6 +794,8 @@ kM.drawKeyboard = function(scene) {
 	var buttonWidth = 1/12;
 	var buttonHeight = 1/9;
 
+	var keyboardApp = kM.getKeyboardApp();
+
 	if (kM.hidden) {
 		//To unhide, drag up at least a threshold and show bar rising from bottom. Jump on let go.
 		kM.topBar.draw(scene, board);
@@ -784,8 +817,8 @@ kM.drawKeyboard = function(scene) {
 					//topBar.draw(scene, board);
 					
 					//Draw Keyboard Objects
-					if (kM.keyboardApp != null) {
-						var objects = kM.keyboardApp.keyboard.objects;
+					if (keyboardApp != null) {
+						var objects = keyboardApp.keyboard.objects;
 						if (kM.front_and_back != null || kM.front != null) {
 							objects.map(function(object) {
 								object.draw(scene, board);
@@ -799,6 +832,7 @@ kM.drawKeyboard = function(scene) {
 					kM.topBar.draw(scene, board);
 
 					var notificationLabel = new VRK.Label(4, 6, 3, 1, 'Notifications');
+					notificationLabel.draw(scene, board);
 					break;
 
 				case kM.State.AppSwitch:
