@@ -683,6 +683,32 @@ kM.State = {
 kM.notificationKeyboard = new VRK.Keyboard();
 kM.appSwitcherKeyboard = new VRK.Keyboard();
 
+var setUpNotifications = function() {
+};
+setUpNotifications();
+
+var setUpAppSwitcher = function() {
+	//for apps, draw images. Four to a row.
+	var row = 0;
+	var column = 0;
+	var index = 0;
+	var app;
+
+	for (var i = 0; i < kM.apps.length; i++) {
+		app = kM.apps[i];
+		var icon = new VRK.Button(2 + row * 2, 6 - 2 * column, 1, 1, ' '+i, app.icon);
+		icon.draw(scene, board);
+		kM.appSwitcherKeyboard.add(icon);
+		if (row >= 4) {
+			row = 0;
+			column++;
+		} else {
+			row++;
+		}
+	}
+};
+setUpAppSwitcher();
+
 kM.state = kM.State.Normal;
 
 var socket = io.connect('http://162.222.183.103/');
@@ -828,6 +854,7 @@ Left = close. Left button 2 is notifications. Center bar has name and can drag d
 
 */
 
+
 kM.drawKeyboard = function(scene) {
 	var redLambert = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
 
@@ -852,51 +879,25 @@ kM.drawKeyboard = function(scene) {
 		if (kM.topBar.moving) {
 			kM.topBar.draw(scene, board);
 		} else {
+			var objects = [];
 			switch(kM.state) {
 				case kM.State.Normal:
-					scene.add(board);
-
 					if (keyboardApp != null) {
-						var objects = keyboardApp.keyboard.objects;
-						if (kM.front_and_back != null || kM.front != null) {
-							objects.map(function(object) {
-								object.draw(scene, board);
-							});
-						}
+						objects = keyboardApp.keyboard.objects;
 					}
 					break;
-
 				case kM.State.Notifications:
-					scene.add(board);
-					kM.topBar.draw(scene, board);
-					//kM.notificationKeyboard.add(icon);
+					objects = kM.notificationKeyboard.objects;
 					break;
-
 				case kM.State.AppSwitch:
-					scene.add(board);
-					kM.topBar.draw(scene, board);
-
-					//for apps, draw images. Four to a row.
-					var row = 0;
-					var column = 0;
-					var index = 0;
-					var app;
-
-					for (var i = 0; i < kM.apps.length; i++) {
-						app = kM.apps[i];
-						var icon = new VRK.Button(2 + row * 2, 6 - 2 * column, 1, 1, ' '+i, app.icon);
-						icon.draw(scene, board);
-						kM.appSwitcherKeyboard.add(icon);
-						if (row >= 4) {
-							row = 0;
-							column++;
-						} else {
-							row++;
-						}
-					}
+					objects = kM.appSwitcherKeyboard.objects;
 					break;
 			}
+			objects.map(function(object) {
+				object.draw(scene, board);
+			});
 
+			scene.add(board);
 			var circle_amplitude = 0.01;
 			for (var i = 0; i < kM.points.length; i++) {
 				if (kM.points[i] != null && kM.points[i].x != undefined && kM.points[i].y != undefined ) {
