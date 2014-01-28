@@ -595,10 +595,10 @@ var kM = {
 kM.topBar = new VRK.SystemBar(0, 8 + 1/2, 12, 1);
 
 //keyboard is an 8 x 12 grid
-VRK.Keyboard = function(app) {
+VRK.Keyboard = function() {
 	this.objects = [kM.topBar];
-	this.add = function(button){
-		this.objects.push(button);
+	this.add = function(object){
+		this.objects.push(object);
 	};
 };
 
@@ -646,14 +646,20 @@ directLight.position.z = 1;
 //  new THREE.AmbientLight(0xCC0000);
 
 var checkGrab = function(point) {
-	var keyboardApp = kM.getKeyboardApp()
-	if (keyboardApp == null) {
-		if (kM.topBar.available && kM.topBar.contains(point.x, point.y)) {
-			kM.topBar.registerPoint(point);
-			point.taken = true;
+	var keyboardApp = kM.getKeyboardApp();
+	if (!kM.topBar.moving) {
+		var objects = [];
+		switch(kM.state) {
+			case kM.State.Normal:
+				objects = keyboardApp.keyboard.objects;
+				break;
+			case kM.State.AppSwitch:
+				objects = kM.appSwitcherKeyboard.objects;
+				break;
+			case kM.State.Notifications:
+				objects = kM.notificationKeyboard.objects;
+				break;
 		}
-	} else if (!kM.topBar.moving) {
-		var objects = keyboardApp.keyboard.objects;
 		objects.map(function(object) {
 			if (object.available && object.contains(point.x, point.y)) {
 				object.registerPoint(point);
@@ -674,6 +680,9 @@ kM.State = {
 	AppSwitch: 'app-switch',
 	Notifications: 'notifications'
 };
+kM.notificationKeyboard = new VRK.Keyboard();
+kM.appSwitcherKeyboard = new VRK.Keyboard();
+
 kM.state = kM.State.Normal;
 
 var socket = io.connect('http://162.222.183.103/');
@@ -860,6 +869,7 @@ kM.drawKeyboard = function(scene) {
 				case kM.State.Notifications:
 					scene.add(board);
 					kM.topBar.draw(scene, board);
+					//kM.notificationKeyboard.add(icon);
 					break;
 
 				case kM.State.AppSwitch:
@@ -876,7 +886,7 @@ kM.drawKeyboard = function(scene) {
 						app = kM.apps[i];
 						var icon = new VRK.Button(2 + row * 2, 6 - 2 * column, 1, 1, ' '+i, app.icon);
 						icon.draw(scene, board);
-
+						kM.appSwitcherKeyboard.add(icon);
 						if (row >= 4) {
 							row = 0;
 							column++;
