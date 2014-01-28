@@ -684,11 +684,13 @@ kM.notificationKeyboard = new VRK.Keyboard();
 kM.appSwitcherKeyboard = new VRK.Keyboard();
 
 var setUpNotifications = function() {
+	kM.appSwitcherKeyboard.objects = [kM.topBar];
 };
 setUpNotifications();
 
 var setUpAppSwitcher = function() {
 	//for apps, draw images. Four to a row.
+	kM.appSwitcherKeyboard.objects = [kM.topBar];
 	var row = 0;
 	var column = 0;
 	var index = 0;
@@ -854,6 +856,7 @@ Left = close. Left button 2 is notifications. Center bar has name and can drag d
 
 */
 
+var oldState = kM.State.Normal;
 
 kM.drawKeyboard = function(scene) {
 	var redLambert = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
@@ -887,12 +890,19 @@ kM.drawKeyboard = function(scene) {
 					}
 					break;
 				case kM.State.Notifications:
+					if (oldState != kM.state) {
+						setUpNotifications();
+					}
 					objects = kM.notificationKeyboard.objects;
 					break;
 				case kM.State.AppSwitch:
+					if (oldState != kM.state) {
+						setUpAppSwitcher();
+					}
 					objects = kM.appSwitcherKeyboard.objects;
 					break;
 			}
+			oldState = kM.state;
 			objects.map(function(object) {
 				object.draw(scene, board);
 			});
@@ -909,6 +919,7 @@ kM.drawKeyboard = function(scene) {
 		}
 	}
 };
+
 
 $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+apps[0]) + '&callback=?', function(data){
 	eval(data.contents);
