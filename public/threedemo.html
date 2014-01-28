@@ -699,9 +699,11 @@ var setUpAppSwitcher = function() {
 	for (var i = 0; i < kM.apps.length; i++) {
 		app = kM.apps[i];
 		var icon = new VRK.Button(2 + row * 2, 6 - 2 * column, 1, 1, ' '+i, app.icon);
-		icon.onClick(function(){
-			kM.open(kM.apps[i]);
-		});
+		icon.onClick((function(index){
+			return function(){
+				kM.open(kM.apps[index]);
+			};
+		})(i));
 		kM.appSwitcherKeyboard.add(icon);
 		if (row >= 4) {
 			row = 0;
