@@ -9,7 +9,8 @@ app.setUpKeyboard = function(keyboard) {
 app.name = 'Vertex Colors Demo';
 app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
 
-var cubes = [];
+var cubeMaterials = [];
+var cubeGeometries = [];
 
 app.drawFront = function(scene) {
     var light = new THREE.PointLight(0xffffff);
@@ -32,37 +33,37 @@ app.drawFront = function(scene) {
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
-    console.log(cubes);
+/*    console.log(cubes);
     console.log(cubes[0]);
     console.log(cubes[0] == undefined);
-    debugger;
-    if (cubes[0] == undefined) {
-	    var cubeMaterial = new THREE.MeshBasicMaterial( 
+    debugger;*/
+    if (cubeMaterials[0] == undefined || cubeGeometries[0] == undefined) {
+	    cubeMaterials[0] = new THREE.MeshBasicMaterial( 
 	    { color: 0xffffff, vertexColors: THREE.FaceColors } );
 	    
-	    var cubeGeometry = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
-	    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
+	    cubeGeometries[0] = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
+	    for ( var i = 0; i < cubeGeometries[0].faces.length; i++ ) 
 	    {
-	            face  = cubeGeometry.faces[ i ];
+	            face  = cubeGeometries[0].faces[ i ];
 	            face.color.setRGB( Math.random(), Math.random(), Math.random() );                
 	    }
-	    cubes[0] = new THREE.Mesh( cubeGeometry, cubeMaterial );
-	    cubes[0].position.set(-100, 50, 0);
     }
-    scene.add(cubes[0]);
+    var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
+    cube.position.set(-100, 50, 0);
+    scene.add(cube);
 
-    if (cubes[1] == undefined) {
-	    var cubeMaterial = new THREE.MeshBasicMaterial( 
+    if (cubeMaterials[1] == undefined || cubeGeometries[1] == undefined) {
+	    var cubeMaterials[1] = new THREE.MeshBasicMaterial( 
 	    { color: 0xffffff, vertexColors: THREE.VertexColors } );
 	    
 	    var color, face, numberOfSides, vertexIndex;
 	    
 	    var faceIndices = [ 'a', 'b', 'c', 'd' ];
 	    
-	    var cubeGeometry = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
-	    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
+	    var cubeGeometries[1] = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
+	    for ( var i = 0; i < cubeGeometries[1].faces.length; i++ ) 
 	    {
-	            face  = cubeGeometry.faces[ i ];        
+	            face  = cubeGeometries[1].faces[ i ];        
 
 	            numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
 
@@ -75,32 +76,32 @@ app.drawFront = function(scene) {
 	                    face.vertexColors[ j ] = color;
 	            }
 	    }
-	    cubes[1] = new THREE.Mesh( cubeGeometry, cubeMaterial );
-	    cubes[1].position.set(0, 50, 0);
 	}
-    scene.add(cubes[1]);
+    cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
+    cube.position.set(0, 50, 0);
+    scene.add(cube);
 
-    if (cubes[2] == undefined) {
+    if (cubeGeometries[2] == undefined) {
 	    var size = 80;
 	    var point;
-	    var cubeGeometry = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
-	    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
+	    var cubeGeometries[2] = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
+	    for ( var i = 0; i < cubeGeometries[2].faces.length; i++ ) 
 	    {
-	            face = cubeGeometry.faces[ i ];
+	            face = cubeGeometries[2].faces[ i ];
 	            numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
 	            for( var j = 0; j < numberOfSides; j++ ) 
 	            {
 	                    vertexIndex = face[ faceIndices[ j ] ];
-	                    point = cubeGeometry.vertices[ vertexIndex ];
+	                    point = cubeGeometries[2].vertices[ vertexIndex ];
 	                    color = new THREE.Color( 0xffffff );
 	                    color.setRGB( 0.5 + point.x / size, 0.5 + point.y / size, 0.5 + point.z / size );
 	                    face.vertexColors[ j ] = color;
 	            }
 	    }
-	    cubes[2] = new THREE.Mesh( cubeGeometry, cubeMaterial );
-	    cubes[2].position.set( 100, 50, 0 );
     }
-    scene.add(cubes[2]);
+    cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
+    cube.position.set( 100, 50, 0 );
+    scene.add(cube);
 };
 
 var exports = app;
