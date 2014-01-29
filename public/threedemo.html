@@ -637,7 +637,7 @@ directLight.position.z = 1;
 
 //var ambientLight =
 //  new THREE.AmbientLight(0xCC0000);
-
+/*
 var checkGrab = function(point) {
 	var keyboardApp = kM.getKeyboardApp();
 	if (!kM.topBar.moving) {
@@ -832,7 +832,7 @@ kM.close = function() {
 	}
 }
 
-
+*/
 /*
 
 Apps can have any set of the three functions f, b, f_b
@@ -847,6 +847,7 @@ Only way to get background app if to be in f_b and open a new f.
 => If you have a b, you must have an fb.
 
 */
+/*
 
 var oldState = kM.State.Normal;
 
@@ -911,7 +912,7 @@ kM.drawKeyboard = function(scene) {
 		}
 	}
 };
-
+*/
 /*
 apps.map(function(appURL) {
 	var url = 'http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+appURL) + '&callback=?';
@@ -942,7 +943,7 @@ var render = function() {
 	window.requestAnimationFrame(render);
 
 	scene = new THREE.Scene();
-
+/*
 	if(kM.front_and_back != null) {
 		kM.front_and_back.external.drawFrontAndBack(scene);
 	} else {
@@ -953,7 +954,7 @@ var render = function() {
 			kM.back.external.drawBack(scene);
 		}
 	}
-	kM.drawKeyboard(scene);
+	kM.drawKeyboard(scene);*/
 
 	scene.add(camera);
 	scene.add(directLight);
