@@ -108,6 +108,7 @@ var init = function()
     );
     lightbulb.position = light.position;
             
+    var cubeGeometry = new THREE.CubeGeometry( 85, 85, 85 );
     var crateTexture = new THREE.ImageUtils.loadTexture( 'images/crate.gif' );
     var crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
     crate = new THREE.Mesh( cubeGeometry.clone(), crateMaterial );
