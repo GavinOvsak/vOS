@@ -63,6 +63,14 @@ directLight.position.z = 1;
 init(scene);
 renderer.render(scene, camera);
 
+
+function animate() 
+{
+    requestAnimationFrame( animate );
+	renderer.render( scene, camera );
+}
+
+
 // FUNCTIONS                 
 function init(scene) 
 {
