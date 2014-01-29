@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8"> 
-	<title>Three JS Demo</title>
+	<title>vOS Demo</title>
 </head>
 <body>
 <script src="http://162.222.183.103/socket.io/socket.io.js"></script>
@@ -13,13 +13,7 @@
 <div id="container"></div>
 <script>
 
-//Required for apps
 var VRK = {};
-
-//focus on top bar
-//make close button
-//maximize and minimize buttons
-//app switcher button
 
 var makeText = function(text, px, width, height) {
 	var canvas1 = document.createElement('canvas');
@@ -110,18 +104,6 @@ VRK.Button = function(x, y, width, height, text, opt_image) {
 		
 		if (this.text != '') {
 			var contentMesh = makeText(this.text, this.px, this.width, this.height);
-/*
-	        canvas1.height = this.px;
-			canvas1.width = 100;
-	        var context1 = canvas1.getContext('2d');
-	        var texture1 = new THREE.Texture(canvas1) 
-			context1.font = "Bold " + this.px + "px Arial";
-	        context1.fillStyle = "rgba(255,255,255,0.95)";
-		    context1.fillText(this.text, 0, this.px);
-	        texture1.needsUpdate = true;
-		    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
-		    material1.transparent = true;
-		    var contentMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);*/
 		    setKeyboardPosition(board, contentMesh, this.x, this.y, 0.2);
 	        scene.add( contentMesh );
 		} else if (this.image != undefined) {
@@ -603,8 +585,9 @@ VRK.Keyboard = function() {
 };
 
 var apps = [
-	'/galaxy.js',
-	'/chess.js'
+	'stemkoski-vertex-colors.js'
+/*	'/galaxy.js',
+	'/chess.js'*/
 ];
 
 var WIDTH = 1200,
@@ -689,7 +672,6 @@ var setUpNotifications = function() {
 setUpNotifications();
 
 var setUpAppSwitcher = function() {
-	//for apps, draw images. Four to a row.
 	kM.appSwitcherKeyboard.objects = [kM.topBar];
 	var row = 0;
 	var column = 0;
@@ -855,9 +837,6 @@ Only can control with keyboard in f and f_b. Maximize and minimize goes between 
 Only way to get background app if to be in f_b and open a new f.
 
 => If you have a b, you must have an fb.
-
-Keyboard top bar:
-Left = close. Left button 2 is notifications. Center bar has name and can drag down. Right button max/min. Right button 2 app is app switcher.
 
 */
 
