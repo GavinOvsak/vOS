@@ -23,9 +23,9 @@ app.drawFront = function(scene) {
     var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
     var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.y = -0.5;
+    floor.position.y = -20.5;
     floor.rotation.x = Math.PI / 2;
-    floor.position.z = -20;
+//    floor.position.z = -20;
     scene.add(floor);
 
     var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
