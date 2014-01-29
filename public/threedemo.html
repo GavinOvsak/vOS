@@ -602,7 +602,8 @@ camera.position.set(0,150,400);
 camera.lookAt(scene.position);        
 
 renderer = new THREE.WebGLRenderer( {antialias:true} );
-renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+renderer.setSize(WIDTH, HEIGHT);
+
 container = document.getElementById( 'ThreeJS' );
 container.appendChild( renderer.domElement );
 
@@ -620,7 +621,6 @@ $('#container').mousemove(function(event) {
 	camera.position.y = (event.pageY - 200) / 30;
 });
 
-renderer.setSize(WIDTH, HEIGHT);
 //$container.append(renderer.domElement);
 
 var pointLight = new THREE.PointLight(0xFFFFFF);
