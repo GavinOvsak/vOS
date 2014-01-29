@@ -18,12 +18,13 @@ app.drawFront = function(scene) {
     scene.add(light);
 
     var floorTexture = new THREE.ImageUtils.loadTexture( 'http://stemkoski.github.io/Three.js/images/checkerboard.jpg' );
+    debugger;
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
     floorTexture.repeat.set( 10, 10 );
     var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
     var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.y = -20.5;
+    floor.position.y = -25.5;
     floor.rotation.x = Math.PI / 2;
 //    floor.position.z = -20;
     scene.add(floor);
