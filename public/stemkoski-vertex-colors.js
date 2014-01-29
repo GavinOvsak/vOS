@@ -12,24 +12,25 @@ app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
 var cubeMaterials = [];
 var cubeGeometries = [];
 
+var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
+floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+floorTexture.repeat.set( 10, 10 );
+var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+
+var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
+var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
+    
 app.drawFront = function(scene) {
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,250,0);
     scene.add(light);
 
-    var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
-    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
-    floorTexture.repeat.set( 10, 10 );
-    var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-    var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -25.5;
     floor.rotation.x = Math.PI / 2;
-	//floor.position.z = -20;
     scene.add(floor);
 
-    var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
-    var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
     var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
     scene.add(skyBox);
 
@@ -49,7 +50,6 @@ app.drawFront = function(scene) {
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
     cube.position.set(-100, 50, 0);
     scene.add(cube);
-
 
     if (cubeMaterials[1] == undefined || cubeGeometries[1] == undefined) {
 	    cubeMaterials[1] = new THREE.MeshBasicMaterial( 
