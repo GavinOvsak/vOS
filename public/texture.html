@@ -1,115 +1,52 @@
-var app = {};
-app.setUpKeyboard = function(keyboard) {
-/*	var right = new VRK.Button(8, 1, 2, 1);
-	keyboard.add(right);
-	right.onClick(function() {
-		console.log('right click');
-	});*/
-}
-app.name = 'Textures Demo';
-app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
+<!doctype html>
+<html lang="en">
+<head>
+        <title>Textures (Three.js)</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel=stylesheet href="css/base.css"/>
+</head>
+<body>
 
-var cubeMaterials = [];
-var cubeGeometries = [];
+<script src="http://162.222.183.103/three.min.js"></script>
+<script src="http://162.222.183.103/jquery-1.10.1.min.js"></script>
 
-app.drawFront = function(scene) {
-    // LIGHT
-    var light = new THREE.PointLight(0xffffff);
-    light.position.set(0,150,100);
-    scene.add(light);
-    // FLOOR
-    var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
-    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
-    floorTexture.repeat.set( 10, 10 );
-    var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-    var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-    var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.y = -0.5;
-    floor.rotation.x = Math.PI / 2;
-//    scene.add(floor);
-    // SKYBOX/FOG
-    var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
-    var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
-    var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-    scene.add(skyBox);
-    scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
-    
-    // radius, segmentsWidth, segmentsHeight
-    var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 ); 
-    
-    var light2 = new THREE.AmbientLight(0x444444);
-    scene.add(light2);
-    
-    // basic moon
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' , new THREE.UVMapping(), function(result) { 
-//        console.log('Success?');
-//        console.log(result);
-    }, function(err) {
-        console.log(err);
-    });
-    var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
-    moon.position.set(-100, 50, 0);
-    scene.add( moon );
-    
-    // shaded moon -- side away from light picks up AmbientLight's color.
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
-    moon.position.set(0, 50, 0);
-    scene.add( moon );
-    
-    // colored moon
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
-    moon.position.set(100, 50, 0);
-    scene.add( moon );
-    
-    // create a small sphere to show position of light
-    var lightbulb = new THREE.Mesh( 
-            new THREE.SphereGeometry( 10, 16, 8 ), 
-            new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
-    );
-    scene.add( lightbulb );
-    lightbulb.position = light.position;
-    
-    // Cubes
-    //   Note: when using a single image, it will appear on each of the faces.
-    //   Six different images (one per face) may be used if desired.
-    
-    var cubeGeometry = new THREE.CubeGeometry( 85, 85, 85 );
-    
-    var crateTexture = new THREE.ImageUtils.loadTexture( 'images/crate.gif' );
-    var crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
-    var crate = new THREE.Mesh( cubeGeometry.clone(), crateMaterial );
-    crate.position.set(-60, 50, -100);
-    scene.add( crate );                
-    
-    // create an array with six textures for a cool cube
-    var materialArray = [];
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-1.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-6.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-2.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-5.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-3.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-4.png' ) }));
-    var DiceBlueMaterial = new THREE.MeshFaceMaterial(materialArray);
-    
-    var DiceBlueGeom = new THREE.CubeGeometry( 85, 85, 85, 1, 1, 1 );
-    var DiceBlue = new THREE.Mesh( DiceBlueGeom, DiceBlueMaterial );
-    DiceBlue.position.set(60, 50, -100);
-    scene.add( DiceBlue );      
-};
+<!--
+<script src="js/Three.js"></script>
+<script src="js/Detector.js"></script>
+<script src="js/Stats.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/THREEx.KeyboardState.js"></script>
+<script src="js/THREEx.FullScreen.js"></script>
+<script src="js/THREEx.WindowResize.js"></script> -->
 
-var exports = app;
+<!-- jQuery code to display an information button and box when clicked. -->
+<!--
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui.js"></script>
+<link rel=stylesheet href="css/jquery-ui.css" />
+<link rel=stylesheet href="css/info.css"/>
+<script src="js/info.js"></script>
+<div id="infoButton"></div>
+<div id="infoBox" title="Demo Information">
+This three.js demo is part of a collection at
+<a href="http://stemkoski.github.io/Three.js/">http://stemkoski.github.io/Three.js/</a>
+</div>
+-->
 
+<div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+<script>
 /*
+        Three.js "tutorials by example"
+        Author: Lee Stemkoski
+        Date: July 2013 (three.js v59dev)
+*/
+
 // MAIN
 
 // standard global variables
 var container, scene, camera, renderer, controls, stats;
-var keyboard = new THREEx.KeyboardState();
+//var keyboard = new THREEx.KeyboardState();
 var clock = new THREE.Clock();
 // custom global variables
 var cube;
@@ -130,7 +67,7 @@ function init()
         camera.position.set(0,150,400);
         camera.lookAt(scene.position);        
         // RENDERER
-        if ( Detector.webgl )
+        if ( true )//Detector.webgl )
                 renderer = new THREE.WebGLRenderer( {antialias:true} );
         else
                 renderer = new THREE.CanvasRenderer(); 
@@ -138,16 +75,16 @@ function init()
         container = document.getElementById( 'ThreeJS' );
         container.appendChild( renderer.domElement );
         // EVENTS
-        THREEx.WindowResize(renderer, camera);
-        THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+//        THREEx.WindowResize(renderer, camera);
+//        THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
         // CONTROLS
-        controls = new THREE.OrbitControls( camera, renderer.domElement );
+//        controls = new THREE.OrbitControls( camera, renderer.domElement );
         // STATS
-        stats = new Stats();
+/*        stats = new Stats();
         stats.domElement.style.position = 'absolute';
         stats.domElement.style.bottom = '0px';
         stats.domElement.style.zIndex = 100;
-        container.appendChild( stats.domElement );
+        container.appendChild( stats.domElement );*/
         // LIGHT
         var light = new THREE.PointLight(0xffffff);
         light.position.set(0,150,100);
@@ -238,7 +175,6 @@ function init()
         var DiceBlue = new THREE.Mesh( DiceBlueGeom, DiceBlueMaterial );
         DiceBlue.position.set(60, 50, -100);
         scene.add( DiceBlue );        
-        
 }
 
 function animate() 
@@ -250,13 +186,8 @@ function animate()
 
 function update()
 {
-        if ( keyboard.pressed("z") ) 
-        { 
-                // do something
-        }
-        
-        controls.update();
-        stats.update();
+//        controls.update();
+//        stats.update();
 }
 
 function render() 
@@ -268,9 +199,3 @@ function render()
 
 </body>
 </html>
-
-</script>
-
-</body>
-</html>
-*/
