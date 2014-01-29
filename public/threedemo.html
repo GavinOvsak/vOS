@@ -909,18 +909,20 @@ kM.drawKeyboard = function(scene) {
 	}
 };
 
-
+/*
 apps.map(function(appURL) {
 	var url = 'http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+appURL) + '&callback=?';
-/*	var url = 'http://162.222.183.103'+appURL;
-	$.getScript(url, function() {
-		kM.add(exports);
-	});*/
+//	var url = 'http://162.222.183.103'+appURL;
+//	$.getScript(url, function() {
+//		kM.add(exports);
+//	});
 	$.getJSON(url, function(data){
 		eval(data.contents); //Find way to sanitize this.
 		kM.add(exports);
 	});
 });
+*/
+
 /*
 $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+apps[1]) + '&callback=?', function(data){
 	eval(data.contents);
@@ -956,6 +958,19 @@ var render = function() {
 	renderer.render(scene, camera);
 };
 //render();
+
+/*    var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+    camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+    scene.add(camera);
+    camera.position.set(0,150,400);
+    camera.lookAt(scene.position);        
+
+    renderer = new THREE.WebGLRenderer( {antialias:true} );
+    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    container = document.getElementById( 'ThreeJS' );
+    container.appendChild( renderer.domElement );*/
+
 
 var scene = new THREE.Scene();
 init(scene);
