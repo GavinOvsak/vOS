@@ -9,6 +9,7 @@ app.setUpKeyboard = function(keyboard) {
 app.name = 'Vertex Colors Demo';
 app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
 
+console.log('D');
 var cubeMaterials = [];
 var cubeGeometries = [];
 
@@ -63,7 +64,7 @@ app.drawFront = function(scene) {
 	    
 	    var faceIndices = [ 'a', 'b', 'c', 'd' ];
 	    
-	    var cubeGeometries[1] = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
+	    cubeGeometries[1] = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
 	    for ( var i = 0; i < cubeGeometries[1].faces.length; i++ ) 
 	    {
 	            face  = cubeGeometries[1].faces[ i ];        
@@ -89,7 +90,7 @@ app.drawFront = function(scene) {
     if (cubeGeometries[2] == undefined) {
 	    var size = 80;
 	    var point;
-	    var cubeGeometries[2] = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
+	    cubeGeometries[2] = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
 	    for ( var i = 0; i < cubeGeometries[2].faces.length; i++ ) 
 	    {
 	            face = cubeGeometries[2].faces[ i ];

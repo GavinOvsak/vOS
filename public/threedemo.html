@@ -912,7 +912,7 @@ apps.map(function(appURL) {
 		kM.add(exports);
 	});*/
 	$.getJSON(url, function(data){
-		eval(data.contents);
+		eval(data.contents); //Find way to sanitize this.
 		kM.add(exports);
 	});
 });
