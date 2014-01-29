@@ -906,10 +906,15 @@ kM.drawKeyboard = function(scene) {
 
 
 apps.map(function(appURL) {
-	$.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+appURL) + '&callback=?', function(data){
-		eval(data.contents);
+//	var url = 'http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+appURL) + '&callback=?';
+	var url = 'http://162.222.183.103'+appURL;
+	$.getScript(url, function() {
 		kM.add(exports);
 	});
+/*	$.getJSON(url, function(data){
+		eval(data.contents);
+		kM.add(exports);
+	});*/
 });
 /*
 $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+apps[1]) + '&callback=?', function(data){
