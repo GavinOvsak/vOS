@@ -66,7 +66,7 @@ app.drawFront = function(scene) {
 
 var init = function() 
 {
-    var light = new THREE.PointLight(0xffffff);
+    light = new THREE.PointLight(0xffffff);
     light.position.set(0,150,100);
 
     var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
