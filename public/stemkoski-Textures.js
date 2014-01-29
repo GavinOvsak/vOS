@@ -14,8 +14,6 @@ var cubeGeometries = [];
 
 app.drawFront = function(scene) {
     scene = new THREE.Scene();
-    // CONTROLS
-    controls = new THREE.OrbitControls( camera, renderer.domElement );
     // LIGHT
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,150,100);
