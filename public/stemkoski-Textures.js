@@ -41,25 +41,27 @@ app.drawFront = function(scene) {
     scene.add(light2);
     
     // basic moon
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
+    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' , new THREE.UVMapping(), function() { 
+        console.log('TEST');
+    });
     var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
     moon.position.set(-100, 50, 0);
-    scene.add( moon );        
+    scene.add( moon );
     
     // shaded moon -- side away from light picks up AmbientLight's color.
     var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
     var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture } );
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
     moon.position.set(0, 50, 0);
-    scene.add( moon );                
+    scene.add( moon );
     
     // colored moon
     var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
     var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
     moon.position.set(100, 50, 0);
-    scene.add( moon );        
+    scene.add( moon );
     
     // create a small sphere to show position of light
     var lightbulb = new THREE.Mesh( 

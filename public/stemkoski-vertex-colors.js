@@ -17,7 +17,7 @@ app.drawFront = function(scene) {
     light.position.set(0,250,0);
     scene.add(light);
 
-    var floorTexture = new THREE.ImageUtils.loadTexture( '/images/checkerboard.jpg' );
+    var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
     floorTexture.repeat.set( 10, 10 );
     var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
@@ -25,7 +25,7 @@ app.drawFront = function(scene) {
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -25.5;
     floor.rotation.x = Math.PI / 2;
-//    floor.position.z = -20;
+	//floor.position.z = -20;
     scene.add(floor);
 
     var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
