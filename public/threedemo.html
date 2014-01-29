@@ -10,7 +10,7 @@
 <script src="http://162.222.183.103/jquery-1.10.1.min.js"></script>
 <script src="http://162.222.183.103/utility.js"></script>
 <div id="code"></div>
-<div id="container"></div>
+<div id="ThreeJS"></div>
 <script>
 
 var VRK = {};
@@ -591,32 +591,37 @@ var apps = [
 //	'/chess.js'
 ];
 
-var WIDTH = 1200,
-  HEIGHT = 800;
+//var WIDTH = 1200,
+//  HEIGHT = 800;
+var scene = new THREE.Scene();
+var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
+var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 20000;
+camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+scene.add(camera);
+camera.position.set(0,150,400);
+camera.lookAt(scene.position);        
 
-var VIEW_ANGLE = 45,
-  ASPECT = WIDTH / HEIGHT,
-  NEAR = 0.1,
-  FAR = 10000;
-
-var $container = $('#container');
+renderer = new THREE.WebGLRenderer( {antialias:true} );
+renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+container = document.getElementById( 'ThreeJS' );
+container.appendChild( renderer.domElement );
 
 var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 //THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 //if ( Detector.webgl )
-var renderer = new THREE.WebGLRenderer( {antialias:true} );
+//var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //else
 //    var renderer = new THREE.CanvasRenderer(); 
 
 camera.position.z = 300;
 
-$container.mousemove(function(event) {
+$('#container').mousemove(function(event) {
 	camera.position.x = -1 * (event.pageX - 300) / 30;
 	camera.position.y = (event.pageY - 200) / 30;
 });
 
 renderer.setSize(WIDTH, HEIGHT);
-$container.append(renderer.domElement);
+//$container.append(renderer.domElement);
 
 var pointLight = new THREE.PointLight(0xFFFFFF);
 
@@ -957,22 +962,11 @@ var render = function() {
 	init(scene);
 	renderer.render(scene, camera);
 };
+
 //render();
 
-/*    var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
-    camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-    scene.add(camera);
-    camera.position.set(0,150,400);
-    camera.lookAt(scene.position);        
-
-    renderer = new THREE.WebGLRenderer( {antialias:true} );
-    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    container = document.getElementById( 'ThreeJS' );
-    container.appendChild( renderer.domElement );*/
 
 
-var scene = new THREE.Scene();
 init(scene);
 renderer.render(scene, camera);
 
@@ -980,7 +974,7 @@ renderer.render(scene, camera);
 function init(scene) 
 {
 
-	var container, scene, camera, renderer, controls, stats;
+//	var container, scene, camera, renderer, controls, stats;
 	var clock = new THREE.Clock();
 	var cube;
 //    scene = new THREE.Scene();
