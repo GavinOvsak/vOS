@@ -39,8 +39,6 @@ renderer.setSize(WIDTH, HEIGHT);
 container = document.getElementById( 'ThreeJS' );
 container.appendChild( renderer.domElement );
 
-var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-
 camera.position.z = 300;
 
 $('#container').mousemove(function(event) {
