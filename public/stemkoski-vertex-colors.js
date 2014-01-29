@@ -32,6 +32,7 @@ app.drawFront = function(scene) {
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
+    console.log(cubes);
     if (cubes[0] == undefined) {
 	    var cubeMaterial = new THREE.MeshBasicMaterial( 
 	    { color: 0xffffff, vertexColors: THREE.FaceColors } );
