@@ -17,8 +17,7 @@ app.drawFront = function(scene) {
     light.position.set(0,250,0);
     scene.add(light);
 
-    var floorTexture = new THREE.ImageUtils.loadTexture( 'http://stemkoski.github.io/Three.js/images/checkerboard.jpg' );
-    debugger;
+    var floorTexture = new THREE.ImageUtils.loadTexture( '/images/checkerboard.jpg' );
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
     floorTexture.repeat.set( 10, 10 );
     var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
