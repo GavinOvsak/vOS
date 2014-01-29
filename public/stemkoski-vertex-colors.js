@@ -37,6 +37,7 @@ app.drawFront = function(scene) {
     console.log(cubes[0]);
     console.log(cubes[0] == undefined);
     debugger;*/
+    console.log('A');
     if (cubeMaterials[0] == undefined || cubeGeometries[0] == undefined) {
 	    cubeMaterials[0] = new THREE.MeshBasicMaterial( 
 	    { color: 0xffffff, vertexColors: THREE.FaceColors } );
@@ -51,6 +52,8 @@ app.drawFront = function(scene) {
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
     cube.position.set(-100, 50, 0);
     scene.add(cube);
+
+    console.log('B');
 
     if (cubeMaterials[1] == undefined || cubeGeometries[1] == undefined) {
 	    var cubeMaterials[1] = new THREE.MeshBasicMaterial( 
@@ -80,6 +83,8 @@ app.drawFront = function(scene) {
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
     cube.position.set(0, 50, 0);
     scene.add(cube);
+
+    console.log('C');
 
     if (cubeGeometries[2] == undefined) {
 	    var size = 80;
