@@ -69,7 +69,7 @@ app.drawFront = function(scene) {
 
     var DiceBlueGeom = new THREE.CubeGeometry( 85, 85, 85, 1, 1, 1 );
     var DiceBlue = new THREE.Mesh( DiceBlueGeom, DiceBlueMaterial );
-    var DiceBlue.position.set(60, 50, -100);
+    DiceBlue.position.set(60, 50, -100);
     scene.add( DiceBlue );
 };
 
