@@ -22,6 +22,32 @@ var floorMaterial,
     crateMaterial,
     DiceBlueMaterial;
 
+var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
+floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+floorTexture.repeat.set( 10, 10 );
+floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+
+var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
+var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
+
+var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
+moonMaterial1 = new THREE.MeshBasicMaterial( { map: moonTexture } );
+moonMaterial2 = new THREE.MeshLambertMaterial( { map: moonTexture } );
+moonMaterial3 = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
+      
+var crateTexture = new THREE.ImageUtils.loadTexture( 'images/crate.gif' );
+crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
+
+var materialArray = [];
+materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-1.png' ) }));
+materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-6.png' ) }));
+materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-2.png' ) }));
+materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-5.png' ) }));
+materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-3.png' ) }));
+materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-4.png' ) }));
+DiceBlueMaterial = new THREE.MeshFaceMaterial(materialArray);
+
 var cubeGeometry = new THREE.CubeGeometry( 85, 85, 85 );
 var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 ); 
 
@@ -71,36 +97,6 @@ app.drawFront = function(scene) {
     DiceBlue.position.set(60, 50, -100);
     scene.add( DiceBlue );
 };
-
-var initMaterials = function() 
-{
-    var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
-    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
-    floorTexture.repeat.set( 10, 10 );
-    floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-    floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-    
-    var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
-    var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
-    
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    moonMaterial1 = new THREE.MeshBasicMaterial( { map: moonTexture } );
-    moonMaterial2 = new THREE.MeshLambertMaterial( { map: moonTexture } );
-    moonMaterial3 = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
-          
-    var crateTexture = new THREE.ImageUtils.loadTexture( 'images/crate.gif' );
-    crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
-    
-    var materialArray = [];
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-1.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-6.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-2.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-5.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-3.png' ) }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-4.png' ) }));
-    DiceBlueMaterial = new THREE.MeshFaceMaterial(materialArray);
-};
-init();
 
 var exports = app;
 
