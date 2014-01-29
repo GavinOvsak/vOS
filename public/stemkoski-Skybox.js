@@ -29,7 +29,6 @@ for (var i = 0; i < 6; i++)
 var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 
 app.drawFront = function(scene) {
-    debugger;
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,250,0);
     scene.add(light);

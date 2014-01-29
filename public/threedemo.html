@@ -587,7 +587,8 @@ VRK.Keyboard = function() {
 var apps = [
 //	'/stemkoski-vertex-colors.js',
 //	'/stemkoski-Textures.js',
-	'/stemkoski-Skybox.js'
+//	'/stemkoski-Skybox.js',
+	'/stemkoski-Reflection.js'
 //	'/galaxy.js',
 //	'/chess.js'
 ];
@@ -609,7 +610,7 @@ var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //else
 //    var renderer = new THREE.CanvasRenderer(); 
 
-camera.position.z = 600; //300
+camera.position.z = 400; //300
 
 $container.mousemove(function(event) {
 	camera.position.x = -1 * (event.pageX - 300) / 30;
