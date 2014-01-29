@@ -19,8 +19,10 @@ var floor,
     DiceBlue, 
     light, 
     light2,
-    moonMaterial,
-    crate,
+    moonMaterial1,
+    moonMaterial2,
+    moonMaterial3,
+    crateMaterial,
     DiceBlueMaterial
     ;
 
@@ -33,24 +35,27 @@ app.drawFront = function(scene) {
 
     var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 ); 
     
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
+    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial1 );
     moon.position.set(-100, 50, 0);
     scene.add( moon );        
     
-//    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-//    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
+    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial2 );
     moon.position.set(0, 50, 0);
     scene.add( moon );                
     
-//    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-//    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
+    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial3 );
     moon.position.set(100, 50, 0);
     scene.add( moon );     
 
+    var lightbulb = new THREE.Mesh( 
+            new THREE.SphereGeometry( 10, 16, 8 ), 
+            new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+    );
+    lightbulb.position = light.position;
     scene.add( lightbulb );
     
+    var crate = new THREE.Mesh( cubeGeometry.clone(), crateMaterial );
+    crate.position.set(-60, 50, -100);
     scene.add( crate );      
 
     var DiceBlueGeom = new THREE.CubeGeometry( 85, 85, 85, 1, 1, 1 );
@@ -82,7 +87,9 @@ var init = function()
     var light2 = new THREE.AmbientLight(0x444444);
     
     var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
+    moonMaterial1 = new THREE.MeshBasicMaterial( { map: moonTexture } );
+    moonMaterial2 = new THREE.MeshLambertMaterial( { map: moonTexture } );
+    moonMaterial3 = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
     
 /*    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
     var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
@@ -102,17 +109,10 @@ var init = function()
     moon.position.set(100, 50, 0);
     scene.add( moon );  */      
     
-    lightbulb = new THREE.Mesh( 
-            new THREE.SphereGeometry( 10, 16, 8 ), 
-            new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
-    );
-    lightbulb.position = light.position;
-            
+          
     var cubeGeometry = new THREE.CubeGeometry( 85, 85, 85 );
     var crateTexture = new THREE.ImageUtils.loadTexture( 'images/crate.gif' );
-    var crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
-    crate = new THREE.Mesh( cubeGeometry.clone(), crateMaterial );
-    crate.position.set(-60, 50, -100);
+    crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
     
     var materialArray = [];
     materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'images/Dice-Blue-1.png' ) }));
