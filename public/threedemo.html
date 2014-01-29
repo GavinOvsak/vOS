@@ -585,7 +585,8 @@ VRK.Keyboard = function() {
 };
 
 var apps = [
-	'/stemkoski-vertex-colors.js'
+	'/stemkoski-vertex-colors.js',
+	'/stemkoski-Textures.js'
 //	'/galaxy.js',
 //	'/chess.js'
 ];
@@ -601,8 +602,9 @@ var VIEW_ANGLE = 45,
 var $container = $('#container');
 
 var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 //if ( Detector.webgl )
-    var renderer = new THREE.WebGLRenderer( {antialias:true} );
+var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //else
 //    var renderer = new THREE.CanvasRenderer(); 
 
