@@ -57,7 +57,7 @@ app.drawFront = function(scene) {
     console.log('B');
 
     if (cubeMaterials[1] == undefined || cubeGeometries[1] == undefined) {
-	    var cubeMaterials[1] = new THREE.MeshBasicMaterial( 
+	    cubeMaterials[1] = new THREE.MeshBasicMaterial( 
 	    { color: 0xffffff, vertexColors: THREE.VertexColors } );
 	    
 	    var color, face, numberOfSides, vertexIndex;
