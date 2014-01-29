@@ -14,34 +14,33 @@ var cubeGeometries = [];
 
 var floorMaterial, 
     floorGeometry,
-    skyBox,
-    moon, 
-    lightbulb, 
-    light, 
-    light2,
+    skyBoxGeometry,
+    floorMaterial,
     moonMaterial1,
     moonMaterial2,
     moonMaterial3,
     crateMaterial,
-    DiceBlueMaterial
-    ;
+    DiceBlueMaterial;
 
 var cubeGeometry = new THREE.CubeGeometry( 85, 85, 85 );
 var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 ); 
 
 
 app.drawFront = function(scene) {
-    light = new THREE.PointLight(0xffffff);
+    var light = new THREE.PointLight(0xffffff);
     light.position.set(0,150,100);
     scene.add(light);
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -0.5;
     floor.rotation.x = Math.PI / 2;
-
     scene.add(floor);
+    
+    var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
     scene.add(skyBox);
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+
+    var light2 = new THREE.AmbientLight(0x444444);
     scene.add(light2);
 
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial1 );
@@ -65,7 +64,7 @@ app.drawFront = function(scene) {
     
     var crate = new THREE.Mesh( cubeGeometry.clone(), crateMaterial );
     crate.position.set(-60, 50, -100);
-    scene.add( crate );      
+    scene.add( crate );
 
     var DiceBlueGeom = new THREE.CubeGeometry( 85, 85, 85, 1, 1, 1 );
     var DiceBlue = new THREE.Mesh( DiceBlueGeom, DiceBlueMaterial );
@@ -73,9 +72,8 @@ app.drawFront = function(scene) {
     scene.add( DiceBlue );
 };
 
-var init = function() 
+var initMaterials = function() 
 {
-    
     var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
     floorTexture.repeat.set( 10, 10 );
@@ -84,10 +82,6 @@ var init = function()
     
     var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
     var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
-    skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-    
-    
-    var light2 = new THREE.AmbientLight(0x444444);
     
     var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
     moonMaterial1 = new THREE.MeshBasicMaterial( { map: moonTexture } );
