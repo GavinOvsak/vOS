@@ -9,6 +9,8 @@ app.setUpKeyboard = function(keyboard) {
 app.name = 'Vertex Colors Demo';
 app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
 
+var cubes = [];
+
 app.drawFront = function(scene) {
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,250,0);
@@ -30,65 +32,71 @@ app.drawFront = function(scene) {
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
-    var cubeMaterial = new THREE.MeshBasicMaterial( 
-    { color: 0xffffff, vertexColors: THREE.FaceColors } );
-    
-    var cubeGeometry = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
-    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
-    {
-            face  = cubeGeometry.faces[ i ];        
-            face.color.setRGB( Math.random(), Math.random(), Math.random() );                
+    if (cubes[0] == undefined) {
+	    var cubeMaterial = new THREE.MeshBasicMaterial( 
+	    { color: 0xffffff, vertexColors: THREE.FaceColors } );
+	    
+	    var cubeGeometry = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
+	    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
+	    {
+	            face  = cubeGeometry.faces[ i ];
+	            face.color.setRGB( Math.random(), Math.random(), Math.random() );                
+	    }
+	    cubes[0] = new THREE.Mesh( cubeGeometry, cubeMaterial );
+	    cubes[0].position.set(-100, 50, 0);
     }
-    cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
-    cube.position.set(-100, 50, 0);
-    scene.add(cube);
+    scene.add(cubes[0]);
 
-    var cubeMaterial = new THREE.MeshBasicMaterial( 
-    { color: 0xffffff, vertexColors: THREE.VertexColors } );
-    
-    var color, face, numberOfSides, vertexIndex;
-    
-    var faceIndices = [ 'a', 'b', 'c', 'd' ];
-    
-    var cubeGeometry = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
-    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
-    {
-            face  = cubeGeometry.faces[ i ];        
+    if (cubes[1] == undefined) {
+	    var cubeMaterial = new THREE.MeshBasicMaterial( 
+	    { color: 0xffffff, vertexColors: THREE.VertexColors } );
+	    
+	    var color, face, numberOfSides, vertexIndex;
+	    
+	    var faceIndices = [ 'a', 'b', 'c', 'd' ];
+	    
+	    var cubeGeometry = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
+	    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
+	    {
+	            face  = cubeGeometry.faces[ i ];        
 
-            numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
+	            numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
 
-            for( var j = 0; j < numberOfSides; j++ ) 
-            {
-                    vertexIndex = face[ faceIndices[ j ] ];
+	            for( var j = 0; j < numberOfSides; j++ ) 
+	            {
+	                    vertexIndex = face[ faceIndices[ j ] ];
 
-                    color = new THREE.Color( 0xffffff );
-                    color.setHex( Math.random() * 0xffffff );
-                    face.vertexColors[ j ] = color;
-            }
+	                    color = new THREE.Color( 0xffffff );
+	                    color.setHex( Math.random() * 0xffffff );
+	                    face.vertexColors[ j ] = color;
+	            }
+	    }
+	    cubes[1] = new THREE.Mesh( cubeGeometry, cubeMaterial );
+	    cubes[1].position.set(0, 50, 0);
+	}
+    scene.add(cubes[1]);
+
+    if (cubes[2] == undefined) {
+	    var size = 80;
+	    var point;
+	    var cubeGeometry = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
+	    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
+	    {
+	            face = cubeGeometry.faces[ i ];
+	            numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
+	            for( var j = 0; j < numberOfSides; j++ ) 
+	            {
+	                    vertexIndex = face[ faceIndices[ j ] ];
+	                    point = cubeGeometry.vertices[ vertexIndex ];
+	                    color = new THREE.Color( 0xffffff );
+	                    color.setRGB( 0.5 + point.x / size, 0.5 + point.y / size, 0.5 + point.z / size );
+	                    face.vertexColors[ j ] = color;
+	            }
+	    }
+	    cubes[2] = new THREE.Mesh( cubeGeometry, cubeMaterial );
+	    cubes[2].position.set( 100, 50, 0 );
     }
-    cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
-    cube.position.set(0, 50, 0);
-    scene.add(cube);
-
-    var size = 80;
-    var point;
-    var cubeGeometry = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
-    for ( var i = 0; i < cubeGeometry.faces.length; i++ ) 
-    {
-            face = cubeGeometry.faces[ i ];
-            numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
-            for( var j = 0; j < numberOfSides; j++ ) 
-            {
-                    vertexIndex = face[ faceIndices[ j ] ];
-                    point = cubeGeometry.vertices[ vertexIndex ];
-                    color = new THREE.Color( 0xffffff );
-                    color.setRGB( 0.5 + point.x / size, 0.5 + point.y / size, 0.5 + point.z / size );
-                    face.vertexColors[ j ] = color;
-            }
-    }
-    cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
-    cube.position.set( 100, 50, 0 );
-    scene.add(cube);
+    scene.add(cubes[2]);
 };
 
 var exports = app;
