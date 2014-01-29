@@ -905,16 +905,18 @@ kM.drawKeyboard = function(scene) {
 };
 
 
-$.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+apps[0]) + '&callback=?', function(data){
-	eval(data.contents);
-	kM.add(exports);
+apps.map(function(appURL) {
+	$.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+appURL) + '&callback=?', function(data){
+		eval(data.contents);
+		kM.add(exports);
+	});
 });
-
+/*
 $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+apps[1]) + '&callback=?', function(data){
 	eval(data.contents);
 	kM.add(exports);
 });
-
+*/
 /*
 kM.open(kM.apps[1]);
 kM.open(kM.apps[0]);*/
