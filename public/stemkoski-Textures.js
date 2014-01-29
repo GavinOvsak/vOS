@@ -12,7 +12,8 @@ app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
 var cubeMaterials = [];
 var cubeGeometries = [];
 
-var floor, 
+var floorMaterial, 
+    floorGeometry,
     skyBox,
     moon, 
     lightbulb, 
@@ -31,7 +32,14 @@ var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 );
 
 
 app.drawFront = function(scene) {
+    light = new THREE.PointLight(0xffffff);
+    light.position.set(0,150,100);
     scene.add(light);
+
+    var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.position.y = -0.5;
+    floor.rotation.x = Math.PI / 2;
+
     scene.add(floor);
     scene.add(skyBox);
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
@@ -68,17 +76,12 @@ app.drawFront = function(scene) {
 
 var init = function() 
 {
-    light = new THREE.PointLight(0xffffff);
-    light.position.set(0,150,100);
-
+    
     var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
     floorTexture.repeat.set( 10, 10 );
-    var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+    floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
     var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-    floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.y = -0.5;
-    floor.rotation.x = Math.PI / 2;
     
     var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
     var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
