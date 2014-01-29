@@ -13,7 +13,6 @@ var cubeMaterials = [];
 var cubeGeometries = [];
 
 app.drawFront = function(scene) {
-    scene = new THREE.Scene();
     // LIGHT
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,150,100);
