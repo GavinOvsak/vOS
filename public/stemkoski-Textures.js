@@ -26,12 +26,12 @@ app.drawFront = function(scene) {
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -0.5;
     floor.rotation.x = Math.PI / 2;
-    scene.add(floor);
+//    scene.add(floor);
     // SKYBOX/FOG
     var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
     var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
     var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-    // scene.add(skyBox);
+    scene.add(skyBox);
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
     // radius, segmentsWidth, segmentsHeight
