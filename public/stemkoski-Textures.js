@@ -26,6 +26,10 @@ var floor,
     DiceBlueMaterial
     ;
 
+var cubeGeometry = new THREE.CubeGeometry( 85, 85, 85 );
+var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 ); 
+
+
 app.drawFront = function(scene) {
     scene.add(light);
     scene.add(floor);
@@ -33,8 +37,6 @@ app.drawFront = function(scene) {
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     scene.add(light2);
 
-    var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 ); 
-    
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial1 );
     moon.position.set(-100, 50, 0);
     scene.add( moon );        
@@ -82,7 +84,6 @@ var init = function()
     var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
     skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
     
-    var sphereGeom =  new THREE.SphereGeometry( 40, 32, 16 ); 
     
     var light2 = new THREE.AmbientLight(0x444444);
     
@@ -110,7 +111,6 @@ var init = function()
     scene.add( moon );  */      
     
           
-    var cubeGeometry = new THREE.CubeGeometry( 85, 85, 85 );
     var crateTexture = new THREE.ImageUtils.loadTexture( 'images/crate.gif' );
     crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
     
