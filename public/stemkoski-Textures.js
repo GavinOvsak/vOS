@@ -17,7 +17,6 @@ var floorMaterial,
     skyBox,
     moon, 
     lightbulb, 
-    DiceBlue, 
     light, 
     light2,
     moonMaterial1,
@@ -70,7 +69,7 @@ app.drawFront = function(scene) {
 
     var DiceBlueGeom = new THREE.CubeGeometry( 85, 85, 85, 1, 1, 1 );
     var DiceBlue = new THREE.Mesh( DiceBlueGeom, DiceBlueMaterial );
-    DiceBlue.position.set(60, 50, -100);
+    var DiceBlue.position.set(60, 50, -100);
     scene.add( DiceBlue );
 };
 
@@ -81,7 +80,7 @@ var init = function()
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
     floorTexture.repeat.set( 10, 10 );
     floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-    var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+    floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
     
     var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
     var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
@@ -94,25 +93,6 @@ var init = function()
     moonMaterial1 = new THREE.MeshBasicMaterial( { map: moonTexture } );
     moonMaterial2 = new THREE.MeshLambertMaterial( { map: moonTexture } );
     moonMaterial3 = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
-    
-/*    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
-    moon.position.set(-100, 50, 0);
-    scene.add( moon );        
-    
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
-    moon.position.set(0, 50, 0);
-    scene.add( moon );                
-    
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
-    var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
-    moon.position.set(100, 50, 0);
-    scene.add( moon );  */      
-    
           
     var crateTexture = new THREE.ImageUtils.loadTexture( 'images/crate.gif' );
     crateMaterial = new THREE.MeshBasicMaterial( { map: crateTexture } );
