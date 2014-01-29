@@ -2,7 +2,7 @@ var app = {};
 app.setUpKeyboard = function(keyboard) {
 /*	var right = new VRK.Button(8, 1, 2, 1);
 	keyboard.add(right);
-	right.onClick(function() {
+	right.onClick(function() { 
 		console.log('right click');
 	});*/
 }
