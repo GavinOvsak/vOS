@@ -585,9 +585,9 @@ VRK.Keyboard = function() {
 };
 
 var apps = [
-	'/stemkoski-vertex-colors.js',
-	'/stemkoski-Textures.js'
-//	'/galaxy.js',
+//	'/stemkoski-vertex-colors.js',
+//	'/stemkoski-Textures.js'
+	'/galaxy.js',
 //	'/chess.js'
 ];
 
@@ -952,22 +952,22 @@ var render = function() {
 
 	scene.add(camera);
 	scene.add(directLight);
-	init();
+	init(scene);
 	renderer.render(scene, camera);
 };
 render();
 
 
 // FUNCTIONS                 
-function init() 
+function init(scene) 
 {
 
 	var container, scene, camera, renderer, controls, stats;
 	var clock = new THREE.Clock();
 	var cube;
-    scene = new THREE.Scene();
+//    scene = new THREE.Scene();
 
-    var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+/*    var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
     var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
     camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
     scene.add(camera);
@@ -977,7 +977,7 @@ function init()
     renderer = new THREE.WebGLRenderer( {antialias:true} );
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     container = document.getElementById( 'ThreeJS' );
-    container.appendChild( renderer.domElement );
+    container.appendChild( renderer.domElement );*/
 
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,150,100);
