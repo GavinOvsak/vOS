@@ -601,7 +601,10 @@ var VIEW_ANGLE = 45,
 var $container = $('#container');
 
 var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-var renderer = new THREE.WebGLRenderer();
+if ( Detector.webgl )
+    var renderer = new THREE.WebGLRenderer( {antialias:true} );
+else
+    var renderer = new THREE.CanvasRenderer(); 
 
 camera.position.z = 300;
 
