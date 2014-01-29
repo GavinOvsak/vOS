@@ -41,8 +41,11 @@ app.drawFront = function(scene) {
     scene.add(light2);
     
     // basic moon
-    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' , new THREE.UVMapping(), function() { 
-        console.log('TEST');
+    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' , new THREE.UVMapping(), function(result) { 
+        console.log('Success?');
+        console.log(result);
+    }, function(err) {
+        console.log(err);
     });
     var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
