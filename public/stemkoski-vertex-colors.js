@@ -9,7 +9,6 @@ app.setUpKeyboard = function(keyboard) {
 app.name = 'Vertex Colors Demo';
 app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
 
-console.log('D');
 var cubeMaterials = [];
 var cubeGeometries = [];
 
@@ -26,7 +25,8 @@ app.drawFront = function(scene) {
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -0.5;
     floor.rotation.x = Math.PI / 2;
-//    scene.add(floor);
+    floor.position.z = -20;
+    scene.add(floor);
 
     var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
     var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
@@ -34,11 +34,6 @@ app.drawFront = function(scene) {
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
-/*    console.log(cubes);
-    console.log(cubes[0]);
-    console.log(cubes[0] == undefined);
-    debugger;*/
-    console.log('A');
     if (cubeMaterials[0] == undefined || cubeGeometries[0] == undefined) {
 	    cubeMaterials[0] = new THREE.MeshBasicMaterial( 
 	    { color: 0xffffff, vertexColors: THREE.FaceColors } );
@@ -54,7 +49,6 @@ app.drawFront = function(scene) {
     cube.position.set(-100, 50, 0);
     scene.add(cube);
 
-    console.log('B');
 
     if (cubeMaterials[1] == undefined || cubeGeometries[1] == undefined) {
 	    cubeMaterials[1] = new THREE.MeshBasicMaterial( 
@@ -84,8 +78,6 @@ app.drawFront = function(scene) {
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
     cube.position.set(0, 50, 0);
     scene.add(cube);
-
-    console.log('C');
 
     if (cubeGeometries[2] == undefined) {
 	    var size = 80;
