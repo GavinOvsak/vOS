@@ -38,13 +38,13 @@ app.drawFront = function(scene) {
     scene.add( moon );        
     
 //    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture } );
+//    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture } );
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
     moon.position.set(0, 50, 0);
     scene.add( moon );                
     
 //    var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
+//    var moonMaterial = new THREE.MeshLambertMaterial( { map: moonTexture, color: 0xff8800, ambient: 0x0000ff } );
     var moon = new THREE.Mesh( sphereGeom.clone(), moonMaterial );
     moon.position.set(100, 50, 0);
     scene.add( moon );     
