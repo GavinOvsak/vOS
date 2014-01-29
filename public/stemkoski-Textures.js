@@ -64,6 +64,7 @@ var init = function()
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,150,100);
 
+    var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
     floorTexture.repeat.set( 10, 10 );
     var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
