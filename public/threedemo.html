@@ -792,6 +792,10 @@ VRK.Keyboard = function() {
 	this.add = function(object){
 		this.objects.push(object);
 	};
+	this.set = function(array){
+		this.objects = array;
+		this.objects.push(kM.topBar);
+	};
 };
 
 var apps = [
