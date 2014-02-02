@@ -83,18 +83,18 @@ var faceIndices = [ 'a', 'b', 'c', 'd' ];
 cubeGeometries[1] = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
 for ( var i = 0; i < cubeGeometries[1].faces.length; i++ ) 
 {
-        face  = cubeGeometries[1].faces[ i ];        
+    face  = cubeGeometries[1].faces[ i ];        
 
-        numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
+    numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
 
-        for( var j = 0; j < numberOfSides; j++ ) 
-        {
-                vertexIndex = face[ faceIndices[ j ] ];
+    for( var j = 0; j < numberOfSides; j++ ) 
+    {
+            vertexIndex = face[ faceIndices[ j ] ];
 
-                color = new THREE.Color( 0xffffff );
-                color.setHex( Math.random() * 0xffffff );
-                face.vertexColors[ j ] = color;
-        }
+            color = new THREE.Color( 0xffffff );
+            color.setHex( Math.random() * 0xffffff );
+            face.vertexColors[ j ] = color;
+    }
 }
 
 var size = 80;
@@ -102,16 +102,16 @@ var point;
 cubeGeometries[2] = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
 for ( var i = 0; i < cubeGeometries[2].faces.length; i++ ) 
 {
-        face = cubeGeometries[2].faces[ i ];
-        numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
-        for( var j = 0; j < numberOfSides; j++ ) 
-        {
-                vertexIndex = face[ faceIndices[ j ] ];
-                point = cubeGeometries[2].vertices[ vertexIndex ];
-                color = new THREE.Color( 0xffffff );
-                color.setRGB( 0.5 + point.x / size, 0.5 + point.y / size, 0.5 + point.z / size );
-                face.vertexColors[ j ] = color;
-        }
+    face = cubeGeometries[2].faces[ i ];
+    numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
+    for( var j = 0; j < numberOfSides; j++ ) 
+    {
+            vertexIndex = face[ faceIndices[ j ] ];
+            point = cubeGeometries[2].vertices[ vertexIndex ];
+            color = new THREE.Color( 0xffffff );
+            color.setRGB( 0.5 + point.x / size, 0.5 + point.y / size, 0.5 + point.z / size );
+            face.vertexColors[ j ] = color;
+    }
 }
 
 var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
@@ -178,7 +178,6 @@ app.drawFront = function(scene) {
 	if (state != 'F') {
 		//set keyboard to contained controls
 		setFrontAndBackKeyboard(kb);
-		debugger;
 		state = 'F';
 	}
 

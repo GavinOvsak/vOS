@@ -297,7 +297,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 	this.points = [];
 
 	this.contains = function(x, y) {
-		return false;
+		return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
 	};
 	this.onRelease_callback = function(progress) {};
 	this.onRelease = function(callback) {
