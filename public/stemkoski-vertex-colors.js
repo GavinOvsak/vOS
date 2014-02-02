@@ -178,6 +178,7 @@ app.drawFront = function(scene) {
 	if (state != 'F') {
 		//set keyboard to contained controls
 		setFrontAndBackKeyboard(kb);
+		debugger;
 		state = 'F';
 	}
 
