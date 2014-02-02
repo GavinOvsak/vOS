@@ -738,10 +738,10 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 			shifted_y = this.point.y - this.initGrab.y + this.y;
 		}
 
-		var distance = distance(this.point, this);
+		var dist = distance(this.point, this);
 		var scaling_factor = 1;
-		if (distance > this.max_drag) {
-			scaling_factor = this.max_drag / distance;
+		if (dist > this.max_drag) {
+			scaling_factor = this.max_drag / dist;
 		}
 
 		setKeyboardPosition(board, grab, shifted_x * scaling_factor, shifted_y * scaling_factor, 0.12);
