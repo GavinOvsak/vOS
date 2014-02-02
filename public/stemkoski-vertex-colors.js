@@ -1,7 +1,7 @@
 var app = {};
 var kb;
 
-var mode = 1;//1 or 2. 1 = sliders, 2 = treadmills
+var mode = 2;//1 or 2. 1 = sliders, 2 = treadmills
 
 var back_position = {
 	x: 0,
@@ -46,9 +46,9 @@ var setFrontAndBackKeyboard = function(keyboard) {
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (fineMotion == undefined)
-			fineMotion = new VRK.Treadmill();
+			fineMotion = new VRK.Treadmill(2,2,5,5);
 		if (zTreadmill == undefined)
-			zTreadmill = new VRK.Treadmill();
+			zTreadmill = new VRK.Treadmill(9,2,1,5);
 		keyboard.set([fineMotion, zTreadmill]);
 	}
 };
@@ -150,7 +150,7 @@ app.drawFrontAndBack = function(scene) {
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -25.5;
     floor.rotation.x = Math.PI / 2;
-    //scene.add(floor);
+    scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
     scene.add( skyBox );
