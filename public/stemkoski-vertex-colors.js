@@ -28,7 +28,7 @@ var setFrontKeyboard = function(keyboard) {
 			zoomSlider = new VRK.LinearSlider();
 		if (tiltSlider == undefined)
 			tiltSlider = new VRK.LinearSlider();
-		keyboard.set([rotationSLider, zoomSlider, tiltSlider]);
+		keyboard.set([rotationSlider, zoomSlider, tiltSlider]);
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (rotateAndZoom == undefined)
