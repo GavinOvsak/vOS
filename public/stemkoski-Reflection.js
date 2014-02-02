@@ -30,9 +30,6 @@ var skyboxGeom = new THREE.CubeGeometry( 5000, 5000, 5000, 1, 1, 1 );
 var cubeGeom = new THREE.CubeGeometry(100, 100, 10, 1, 1, 1);
 var sphereGeom =  new THREE.SphereGeometry( 50, 32, 16 ); // radius, segmentsWidth, segmentsHeight
 
-var mirrorCubeCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
-var mirrorCubeMaterial = new THREE.MeshBasicMaterial( { envMap: mirrorCubeCamera.renderTarget } );
-
 app.drawFront = function(scene) {
     var light = new THREE.PointLight(0xffffff);
     light.position.set(0,250,0);
@@ -46,8 +43,10 @@ app.drawFront = function(scene) {
     var skybox = new THREE.Mesh( skyboxGeom, skyboxMaterial );
     scene.add( skybox );
 
+    var mirrorCubeCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
     // mirrorCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( mirrorCubeCamera );
+    var mirrorCubeMaterial = new THREE.MeshBasicMaterial( { envMap: mirrorCubeCamera.renderTarget } );
     mirrorCube = new THREE.Mesh( cubeGeom, mirrorCubeMaterial );
     mirrorCube.position.set(-75,50,0);
     mirrorCubeCamera.position = mirrorCube.position;

@@ -129,25 +129,68 @@ VRK.Button = function(x, y, width, height, text, opt_image) {
 	}
 };
 
-VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
+VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 
 	this.x = x * unitWidth;
 	this.y = y * unitHeight;
-	this.width = width;
-	this.length = length;
+	this.width = width * unitWidth;
+	this.length = length * unitHeight; //Could get weird when tilted..
+
+	this.grip_width = width;
+	this.grip_height = this.grip_width / 3;
+
+	this.progress = 0;
+
 	this.returnsToCenter = returnsToCenter;
-	this.direction = direction;
+	this.angle = angle | 0; //Defaults to sideways
+
+	this.initGrab = {
+		x: 0,
+		y: 0
+	};
+	this.available = true;
+	this.point = undefined;
+	this.getProgress = function() {
+		if (this.point != null) {
+			this.progress = (Math.sin(this.angle) * this.point.x + Math.cos(this.angle) * this.point.y)/this.length;
+		}
+		return this.progress;
+	}
 	this.contains = function(x, y) {
 		return false;
 	};
+	this.onRelease_callback = function(progress) {};
+	this.onRelease = function(callback) {
+		this.onRelease_callback = callback;
+	};
+	this.release = function(x, y) {
+		this.onRelease_callback(this.getProgress());
+		this.available = true;
+		this.point = undefined;
+	}
+	this.registerPoint = function(point) {
+		this.initGrab.x = point.x;
+		this.initGrab.y = point.y;
+		this.point = point;
+		point.onRelease(this.release.bind(this));
+		this.available = false;
+	};
+	this.onMove_callback = function(progress) {};
+	this.onMove = function(callback) {
+		this.onMove_callback = callback;
+	}
+	this.move = function(x, y) {
+		this.onMove_callback(this.getProgress());
+	}
 	this.draw = function(scene, board) {
+		//Draw line and then draw grip on top.
+
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.width, this.height),
-			material);
+			new THREE.PlaneGeometry(this.width, this.height), material);
 
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
 
@@ -166,15 +209,56 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 	this.radius = radius;
 	this.beginAngle = beginAngle;
 	this.endAngle = endAngle;
+	this.progress = this.beginAngle;
+	
+	this.grip_width = width;
+	this.grip_height = this.grip_width / 3;
+	this.initGrab = {
+		x: 0,
+		y: 0
+	};
+	this.available = true;
+	this.point = undefined;
+	this.getProgress = function() {
+		if (this.point != null) {
+			this.progress = Math.min(Math.max(Math.atan2(this.point.x - this.x, 
+				this.point.y - this.y), this.beginAngle), this.endAngle);
+		}
+		return this.progress;
+	}
 	this.contains = function(x, y) {
 		return false;
 	};
+	this.onRelease_callback = function(progress) {};
+	this.onRelease = function(callback) {
+		this.onRelease_callback = callback;
+	};
+	this.release = function(x, y) {
+		this.onRelease_callback(this.getProgress());
+		this.available = true;
+		this.point = undefined;
+	}
+	this.registerPoint = function(point) {
+		this.initGrab.x = point.x;
+		this.initGrab.y = point.y;
+		this.point = point;
+		point.onRelease(this.release.bind(this));
+		this.available = false;
+	};
+	this.onMove_callback = function(progress) {};
+	this.onMove = function(callback) {
+		this.onMove_callback = callback;
+	}
+	this.move = function(x, y) {
+		this.onMove_callback(this.getProgress());
+	}
 	this.draw = function(scene, board) {
+		//Draw line and then draw grip on top.
+
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.width, this.height),
-			material);
+			new THREE.PlaneGeometry(this.width, this.height), material);
 
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
 
@@ -182,6 +266,143 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 		//draw this.text;
 	};
 };
+
+
+VRK.Treadmill = function(x, y, width, height, options){
+	var unitWidth = 1/12;
+	var unitHeight = 1/9;
+
+	this.options = options; //Array of strings
+
+	this.x = x * unitWidth;
+	this.y = y * unitHeight;
+	this.width = width * unitWidth;
+	this.height = height * unitHeight;
+
+	this.max_fingers = 2;//Could modify later to handle more
+
+	this.state = {
+		x: 0,
+		y: 0,
+		angle: 0,
+		zoom: 1
+	};
+	this.startState = {
+		x: 0,
+		y: 0,
+		angle: 0,
+		zoom: 1
+	};
+	this.initPointPositions = [];
+	this.points = [];
+
+	this.contains = function(x, y) {
+		return false;
+	};
+	this.onRelease_callback = function(progress) {};
+	this.onRelease = function(callback) {
+		this.onRelease_callback = callback;
+	};
+	this.release = function(x, y, i) {
+		this.onRelease_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
+		this.available = true;
+		this.startState = this.state;
+		this.points[i] = undefined;
+		//find the point and remove it
+	};
+	this.getTouchAngle = function() {
+		if (this.points.length < 2) {
+			return 0;
+		} else {
+			return Math.atan2(this.points[0].x - this.points[1].x, this.points[0].y - this.points[1].y);
+		}
+	};
+	this.getTouchCenter = function() {
+		var x = 0;
+		var y = 0;
+
+		this.points.map(function(point) {
+			x += point.x;
+			y += point.y;
+		});
+
+		return {
+			x: x/Math.max(1, this.points.length),
+			y: y/Math.max(1, this.points.length)		
+		};
+	};
+	this.getTouchSeparation = function() {
+		if (this.points.length < 2) {
+			return 0;
+		} else {
+			return distance(this.points[0], this.points[1]);
+		}
+	};
+	this.setStartState = function() {
+		var center = this.getTouchCenter();
+		this.startState = {
+			x: center.x,
+			y: center.y,
+			angle: this.Anna
+		};
+	};
+	this.registerPoint = function(point) {
+		this.setStartState();
+		this.initGrab.x = point.x;
+		this.initGrab.y = point.y;
+		this.points[point.i] = point;
+		point.onRelease(this.release.bind(this));
+		if (this.points.length >= this.max_fingers)
+			this.available = false;
+	};
+	this.getNewState = function() {
+		var newState = {};
+		//can calculate new angle and position.
+		//new x and y are difference in position vector, then rotated by old angle + angle change.
+		newState.angle = this.startState.angle + this.getTouchAngle();
+		var disp = vector(this.startState, this.getTouchCenter());
+		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
+		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
+		return newState;
+	};
+	this.onMove_callback = function(x, y, angle, zoom) {};
+	this.onMove = function(callback) {
+		this.onMove_callback = callback;
+	};
+	this.move = function(x, y, angle, zoom) {
+		this.state = this.getNewState();
+		console.log(this.state);
+		this.onMove_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
+	};
+	this.draw = function(scene, board) {
+
+		//Draw rectangle
+		var material = new THREE.MeshLambertMaterial({color: 0x222222});
+		treadMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.width, this.height),
+			material);
+		setKeyboardPosition(board, treadMesh, this.x, this.y, 0.1);
+		scene.add(treadMesh);
+
+
+		//Draw Lines to show movement
+		//start with vertical lines. Ideally would draw only what is needed. Use modulus.
+
+		//Shift then rotate?
+
+		//Line is a point and a direction. Write function to take it in along with bounds to crop.
+
+	};
+};
+
+VRK.Treadmill.option = {
+	X: 'x',
+	Y: 'y',
+	Rotate: 'rotate',
+	ZoomIn: 'Zoom In',
+	ZoomOut: 'Zoom Out'
+};
+
 VRK.Label = function(x, y, width, height, text, px){
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
@@ -220,31 +441,6 @@ VRK.Label = function(x, y, width, height, text, px){
 	    
 	    setKeyboardPosition(board, textmesh, this.x, this.y, 0.2);
         scene.add(textmesh);
-	};
-};
-
-VRK.Treadmill = function(x, y, width, height, canZoom, canRotate){
-	var unitWidth = 1/12;
-	var unitHeight = 1/9;
-
-	this.x = x * unitWidth;
-	this.y = y * unitHeight;
-	this.width = width;
-	this.height = height;
-	this.contains = function(x, y) {
-		return false;
-	};
-	this.draw = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial({color: 0x222222});
-
-		buttonMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.width, this.height),
-			material);
-
-		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
-
-		scene.add(buttonMesh);
-		//draw this.text;
 	};
 };
 
@@ -482,6 +678,7 @@ VRK.SystemBar = function(x, y, width, height){
 	}
 };
 
+//make max draw radius
 VRK.Joystick = function(x, y, returnsToCenter) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
@@ -497,6 +694,7 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.radius = 0.04;
 	this.available = true;
 	this.point = undefined;
+	this.max_drag = 1/4;
 	this.contains = function(x, y) {
 		return Math.sqrt(Math.pow(x - this.x,2) + Math.pow((y - this.y) / eccentricity,2)) < this.radius;
 	};
@@ -524,7 +722,12 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 		point.onMove(this.move.bind(this));
 		this.available = false;
 	};
-
+	this.dragDistance = function() {
+		if(this.point != undefined) {
+			return distance(this.point, this.initGrab);
+		}
+		return 0;
+	};
 	this.draw = function(scene, board) {
 		var grab = makeFullCircle(this.radius);
 		
@@ -534,32 +737,40 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 			shifted_x = this.point.x - this.initGrab.x + this.x;
 			shifted_y = this.point.y - this.initGrab.y + this.y;
 		}
-		setKeyboardPosition(board, grab, shifted_x, shifted_y, 0.12);
+
+		var distance = distance(this.point, this);
+		var scaling_factor = 1;
+		if (distance > this.max_drag) {
+			scaling_factor = this.max_drag / distance;
+		}
+
+		setKeyboardPosition(board, grab, shifted_x * scaling_factor, shifted_y * scaling_factor, 0.12);
 
 		scene.add(grab);
 	};
 };
 
-var Point = function(x, y) {
+var Point = function(x, y, i) {
 	this.start = {
 		x: x,
 		y: y
 	}
 	this.x = x;
 	this.y = y;
+	this.i = i;
 	this.taken = false;
 	this.onRelease_callback = function() {};
-	this.release = function(x, y) {
-		this.onRelease_callback(x, y);
+	this.release = function(x, y, i) {
+		this.onRelease_callback(x, y, i);
 	};
 	this.onRelease = function(callback) {
 		this.onRelease_callback = callback;
 	}
-	this.onMove_callback = function(x, y) {};
-	this.move = function(x, y) {
+	this.onMove_callback = function(x, y, i) {};
+	this.move = function(x, y, i) {
 		this.x = x;
 		this.y = y;
-		this.onMove_callback(x, y);
+		this.onMove_callback(x, y, i);
 	};
 	this.onMove = function(callback) {
 		this.onMove_callback = callback;
@@ -585,12 +796,12 @@ VRK.Keyboard = function() {
 };
 
 var apps = [
-//	'/stemkoski-vertex-colors.js',
-//	'/stemkoski-Textures.js',
-//	'/stemkoski-Skybox.js',
-	'/stemkoski-Reflection.js'
-//	'/galaxy.js',
-//	'/chess.js'
+//	'/stemkoski-vertex-colors.js'
+//	,'/stemkoski-Textures.js'
+//	,'/stemkoski-Skybox.js'
+//	,'/stemkoski-Reflection.js'
+//	,'/galaxy.js',
+	'/chess.js'
 ];
 
 var WIDTH = 1200,
@@ -610,7 +821,7 @@ var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //else
 //    var renderer = new THREE.CanvasRenderer(); 
 
-camera.position.z = 400; //300
+camera.position.z = 300;
 
 $container.mousemove(function(event) {
 	camera.position.x = -1 * (event.pageX - 300) / 30;
@@ -724,7 +935,7 @@ socket.on('code', function (code) {
 
 socket.on('start', function (data) {
 	var parsed = JSON.parse(data);
-	var point = new Point(parsed.x, parsed.y);
+	var point = new Point(parsed.x, parsed.y, parsed.i);
 	kM.points[parsed.i] = point;
 	checkGrab(point);
 });
@@ -732,7 +943,7 @@ socket.on('start', function (data) {
 socket.on('move', function (data) {
 	var parsed = JSON.parse(data);
 	var point = kM.points[parsed.i];
-	point.move(parsed.x, parsed.y);
+	point.move(parsed.x, parsed.y, parsed.i);
 	if (!point.taken) {
 		checkGrab(point);
 	}
@@ -740,7 +951,7 @@ socket.on('move', function (data) {
 
 socket.on('end', function (data) {
 	var parsed = JSON.parse(data);
-	kM.points[parsed.i].release(parsed.x, parsed.y);
+	kM.points[parsed.i].release(parsed.x, parsed.y, parsed.i);
 	kM.points[parsed.i] = {};
 });
 
