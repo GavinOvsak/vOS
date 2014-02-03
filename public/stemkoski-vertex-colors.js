@@ -93,8 +93,8 @@ var setFrontAndBackKeyboard = function(keyboard) {
 
 		keyboard.set([fineMotion, zTreadmill]);
 	}
-    var mode1 = new VRK.Button(0,6,1,1,'Mode 1',20);
-    var mode2 = new VRK.Button(0,4,1,1,'Mode 2',20);
+    var mode1 = new VRK.Button(0,6,1,1,'Mode 1',15);
+    var mode2 = new VRK.Button(0,4,1,1,'Mode 2',15);
 
     mode1.onClick(function() {
         mode = 1;
