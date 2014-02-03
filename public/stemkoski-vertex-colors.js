@@ -62,7 +62,7 @@ var setFrontAndBackKeyboard = function(keyboard) {
 		viewpoint = new VRK.Joystick(9, 5, 1.5);
         viewpoint.onMove(function(x, y) {
             back_position.delta.theta = x * -0.1;
-            back_position.phi = y * 0.4;
+            back_position.phi = y * 1;
         });
         viewpoint.onRelease(function(x, y) {
             back_position.delta.theta = 0;
@@ -250,15 +250,8 @@ app.drawFrontAndBack = function(scene) {
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-
-/*    var rotation = new THREE.Matrix4();
-    rotation.makeRotationX(Math.PI/2);
-    skyBox.applyMatrix(rotation);
-    skyBox.geometry.verticesNeedUpdate = true;*/
-
     skyBox.rotation.x = Math.PI/2;
     set_back_control(skyBox, true);
-    //skyBox.rotation.y = -back_position.theta;
     scene.add( skyBox );
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
