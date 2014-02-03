@@ -9,6 +9,12 @@ var back_position = {
 	z: 0,
 	theta: 0,
 	phi: 0
+    delta: {
+        x: 0,
+        y: 0,
+        z: 0,
+        theta: 0
+    }
 };
 
 var front_position = {
@@ -32,7 +38,7 @@ var setFrontKeyboard = function(keyboard) {
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (rotateAndZoom == undefined)
-			rotateAndZoom = new VRK.Treadmill(4,2,5,5, [VRK.Treadmill.option.X, VRK.Treadmill.option.Y, VRK.Treadmill.option.Zoom]);
+			rotateAndZoom = new VRK.Treadmill(4,2,5,5,[VRK.Treadmill.option.X, VRK.Treadmill.option.Y, VRK.Treadmill.option.Zoom]);
 		keyboard.set([rotateAndZoom]);
 	}
 };
@@ -45,17 +51,17 @@ var setFrontAndBackKeyboard = function(keyboard) {
 		//set up slider front
 		translation = new VRK.Joystick(3, 5, 1.5);
         translation.onMove(function(x,y){
-            back_position.x += x * 2;
-            back_position.y += y * 2;
+            back_position.delta.x = x * 2;
+            back_position.delta.y = y * 2;
         });
 
 		viewpoint = new VRK.Joystick(6, 5, 1.5);
         viewpoint.onMove(function(x, y) {
-            back_position.theta += x * 0.01;
+            back_position.delta.theta = x * 0.01;
         });
 		zSlider = new VRK.LinearSlider(9,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
         zSlider.onMove(function(progress) {
-            back_position.z += (progress - 0.5) * 2;
+            back_position.delta.z = (progress - 0.5) * 2;
         });
         keyboard.set([translation, viewpoint, zSlider]);
 	} else if(mode == 2) {
@@ -179,6 +185,11 @@ app.drawFrontAndBack = function(scene) {
 		setFrontAndBackKeyboard(kb);
 		state = 'FB';
 	}
+
+    back_position.x += back_position.delta.x;
+    back_position.y += back_position.delta.y;
+    back_position.z += back_position.delta.z;
+    back_position.theta += back_position.delta.theta;
 
 	var light = new THREE.PointLight(0xffffff);
     light.position.set(0,250,0);
