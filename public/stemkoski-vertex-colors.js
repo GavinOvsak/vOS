@@ -62,7 +62,7 @@ var setFrontAndBackKeyboard = function(keyboard) {
 		viewpoint = new VRK.Joystick(9, 5, 1.5);
         viewpoint.onMove(function(x, y) {
             back_position.delta.theta = x * -0.1;
-            back_position.phi = y * 1;
+            back_position.phi = y * 2;
         });
         viewpoint.onRelease(function(x, y) {
             back_position.delta.theta = 0;
