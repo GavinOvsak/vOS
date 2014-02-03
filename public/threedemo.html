@@ -129,7 +129,7 @@ VRK.Button = function(x, y, width, height, text, opt_image) {
 	}
 };
 
-VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
+VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction, initProgress) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 
@@ -142,7 +142,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	this.grip_width = width * unitWidth;
 	this.grip_height = 0.5 * unitHeight;
 
-	this.progress = 0.5;
+	this.progress = initProgress | 0.5;
 
 	this.returnsToCenter = returnsToCenter;
 	this.direction = direction;
@@ -155,6 +155,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 		y: 0,
 		progress: 0
 	};
+	
 	this.available = true;
 	this.point = undefined;
 	this.getProgress = function() {
@@ -176,6 +177,9 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	this.onRelease_callback = function(progress) {};
 	this.onRelease = function(callback) {
 		this.onRelease_callback = callback;
+	};
+	this.setProgress = function(progress) {
+		this.progress = progress;
 	};
 	this.release = function(x, y) {
 		this.onRelease_callback(this.getProgress());
