@@ -51,8 +51,8 @@ var setFrontAndBackKeyboard = function(keyboard) {
 		//set up slider front
 		translation = new VRK.Joystick(3, 5, 1.5);
         translation.onMove(function(x,y){
-            back_position.delta.x = x * 2;
-            back_position.delta.y = y * 2;
+            back_position.delta.x = x * 10;
+            back_position.delta.y = y * 10;
         });
         translation.onRelease(function(x,y){
             back_position.delta.x = 0;
