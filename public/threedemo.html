@@ -801,10 +801,10 @@ VRK.Joystick = function(x, y, radius, returnsToCenter) {
 		if(this.point != undefined) {
 			x_shift = this.point.x - this.initGrab.x;
 			y_shift = this.point.y - this.initGrab.y;
-			var dist = distance({x:this.point.x, y:this.point.y * eccentricity}, this);
+			var dist = length({x:(this.point.x - this.x), y:(this.point.y - this.y) * eccentricity});
 			if (dist > this.max_drag) {
 				scaling_factor_x = this.max_drag / dist;
-				scaling_factor_y = this.max_drag / (dist * eccentricity);
+				scaling_factor_y = this.max_drag / dist;
 			}
 		}
 
