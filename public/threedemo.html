@@ -165,6 +165,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/this.length;
 			}
 		}
+		this.progress = Math.max(Math.min(this.progress, 1), 0);
 		return this.progress;
 	}
 	this.contains = function(x, y) {
