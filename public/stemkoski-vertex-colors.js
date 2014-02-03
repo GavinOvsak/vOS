@@ -206,13 +206,13 @@ var set_back_control = function(mesh, no_translate) {
         mesh.applyMatrix(translation);
     }
 
-    var rotation = new THREE.Matrix4();
-    rotation.makeRotationZ(-1 * back_position.theta);
-    mesh.applyMatrix(rotation);
-
     var tilt = new THREE.Matrix4();
     tilt.makeRotationX(-1 * back_position.phi);
     mesh.applyMatrix(tilt);
+
+    var rotation = new THREE.Matrix4();
+    rotation.makeRotationZ(-1 * back_position.theta);
+    mesh.applyMatrix(rotation);
 
     mesh.geometry.verticesNeedUpdate = true;
 };
