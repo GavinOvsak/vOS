@@ -299,7 +299,6 @@ VRK.Treadmill = function(x, y, width, height, options){
 		angle: 0,
 		zoom: 1
 	};
-//	this.initPointPositions = [];
 	this.points = {};
 
 	this.contains = function(x, y) {
@@ -339,29 +338,14 @@ VRK.Treadmill = function(x, y, width, height, options){
 				y += this.points[i].y;
 			}
 		}
-
 		return {
 			x: x/Math.max(1, Object.keys(this.points).length),
 			y: y/Math.max(1, Object.keys(this.points).length)		
 		};
 	};
-	/*this.getInitTouchCenter = function() {
-		var x = 0;
-		var y = 0;
-
-		this.initPointPositions.map(function(point) {
-			x += point.x;
-			y += point.y;
-		});
-
-		return {
-			x: x/Math.max(1, this.initPointPositions.length),
-			y: y/Math.max(1, this.initPointPositions.length)		
-		};
-	};*/
 	this.getTouchSeparation = function() {
 		if (Object.keys(this.points).length < 2) {
-			return 0;
+			return 1;
 		} else {
 			return distance(this.points[0], this.points[1]);
 		}
@@ -371,7 +355,8 @@ VRK.Treadmill = function(x, y, width, height, options){
 		this.grabInfo = {
 			x: center.x,
 			y: center.y,
-			angle: this.getTouchAngle()
+			angle: this.getTouchAngle(),
+			zoom: this.getTouchSeparation()
 		};
 	};
 	this.registerPoint = function(point) {
@@ -381,10 +366,6 @@ VRK.Treadmill = function(x, y, width, height, options){
 			angle: this.state.angle,
 			zoom: this.state.zoom
 		};
-		/*this.initPointPositions[point.i] = {
-			x: point.x,
-			y: point.y
-		};*/
 		this.points[point.i] = point;
 		this.setGrabInfo();
 		point.onRelease(this.release.bind(this));
@@ -394,12 +375,11 @@ VRK.Treadmill = function(x, y, width, height, options){
 	};
 	this.getNewState = function() {
 		var newState = {};
-		//can calculate new angle and position.
-		//new x and y are difference in position vector, then rotated by old angle + angle change.
 		newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
 		var disp = vector(this.getTouchCenter(), this.grabInfo);
 		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
 		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
+		newState.zoom = this.startState.zoom * this.getTouchSeparation() / this.grabInfo.zoom;
 		return newState;
 	};
 	this.onMove_callback = function(x, y, angle, zoom) {};
@@ -412,8 +392,6 @@ VRK.Treadmill = function(x, y, width, height, options){
 		this.onMove_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
 	};
 	this.draw = function(scene, board) {
-
-		//Draw rectangle
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 		treadMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
