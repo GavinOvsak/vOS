@@ -49,6 +49,12 @@ var setFrontAndBackKeyboard = function(keyboard) {
 			fineMotion = new VRK.Treadmill(2,2,5,5);
 		if (zTreadmill == undefined)
 			zTreadmill = new VRK.Treadmill(9,2,1,5);
+        fineMotion.onMove(function(x, y, angle, zoom) {
+            back_position.x = x;
+            back_position.y = y;
+            back_position.angle = angle;
+        });
+
 		keyboard.set([fineMotion, zTreadmill]);
 	}
 };
@@ -69,8 +75,8 @@ cubeMaterials[0] = new THREE.MeshBasicMaterial(
 cubeGeometries[0] = new THREE.CubeGeometry( 80, 80, 80, 3, 3, 3 );
 for ( var i = 0; i < cubeGeometries[0].faces.length; i++ ) 
 {
-        face  = cubeGeometries[0].faces[ i ];
-        face.color.setRGB( Math.random(), Math.random(), Math.random() );                
+    face  = cubeGeometries[0].faces[ i ];
+    face.color.setRGB( Math.random(), Math.random(), Math.random() );                
 }
 
 cubeMaterials[1] = new THREE.MeshBasicMaterial( 
@@ -89,11 +95,11 @@ for ( var i = 0; i < cubeGeometries[1].faces.length; i++ )
 
     for( var j = 0; j < numberOfSides; j++ ) 
     {
-            vertexIndex = face[ faceIndices[ j ] ];
+        vertexIndex = face[ faceIndices[ j ] ];
 
-            color = new THREE.Color( 0xffffff );
-            color.setHex( Math.random() * 0xffffff );
-            face.vertexColors[ j ] = color;
+        color = new THREE.Color( 0xffffff );
+        color.setHex( Math.random() * 0xffffff );
+        face.vertexColors[ j ] = color;
     }
 }
 
@@ -139,7 +145,7 @@ var state = '';
 app.drawFrontAndBack = function(scene) {
 	if (state != 'FB') {
 		//set keyboard to immersive controls
-		setFrontKeyboard(kb);
+		setFrontAndBackKeyboard(kb);
 		state = 'FB';
 	}
 
@@ -150,6 +156,8 @@ app.drawFrontAndBack = function(scene) {
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -25.5;
     floor.rotation.x = Math.PI / 2;
+    floor.position.x = 0 - back_position.x;
+    floor.position.y = 0 - back_position.y;
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
@@ -158,15 +166,15 @@ app.drawFrontAndBack = function(scene) {
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
-    cube.position.set(-100, 50, 0);
+    cube.position.set(-100 - back_position.x, 50 - back_position.y, 0);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
-    cube.position.set(0, 50, 0);
+    cube.position.set(0 - back_position.x, 50 - back_position.y, 0);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
-    cube.position.set( 100, 50, 0 );
+    cube.position.set( 100 - back_position.x, 50 - back_position.y, 0 );
     scene.add(cube);
 };
 
@@ -177,7 +185,7 @@ app.drawBack = function(scene) {
 app.drawFront = function(scene) {
 	if (state != 'F') {
 		//set keyboard to contained controls
-		setFrontAndBackKeyboard(kb);
+		setFrontKeyboard(kb);
 		state = 'F';
 	}
 
