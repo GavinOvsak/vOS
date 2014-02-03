@@ -839,11 +839,12 @@ var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //else
 //    var renderer = new THREE.CanvasRenderer(); 
 
-camera.position.z = 300;
+camera.position.y = -300;
+camera.rotation.x = Math.PI/2;
 
 $container.mousemove(function(event) {
 	camera.position.x = -1 * (event.pageX - 300) / 30;
-	camera.position.y = (event.pageY - 200) / 30;
+	camera.position.z = (event.pageY - 200) / 30;
 });
 
 renderer.setSize(WIDTH, HEIGHT);

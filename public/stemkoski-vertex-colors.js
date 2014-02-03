@@ -157,7 +157,7 @@ app.drawFrontAndBack = function(scene) {
     floor.position.y = -25.5;
     floor.rotation.x = Math.PI / 2;
     floor.position.x = 0 - back_position.x;
-    floor.position.y = 0 - back_position.y;
+    floor.position.z = 0 - back_position.y;
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
@@ -166,15 +166,15 @@ app.drawFrontAndBack = function(scene) {
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
-    cube.position.set(-100 - back_position.x, 50 - back_position.y, 0);
+    cube.position.set(-100 - back_position.x, 50, 0 - back_position.y);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
-    cube.position.set(0 - back_position.x, 50 - back_position.y, 0);
+    cube.position.set(0 - back_position.x, 50, 0 - back_position.y);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
-    cube.position.set( 100 - back_position.x, 50 - back_position.y, 0 );
+    cube.position.set( 100 - back_position.x, 50, 0  - back_position.y);
     scene.add(cube);
 };
 
