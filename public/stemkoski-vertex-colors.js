@@ -1,7 +1,7 @@
 var app = {};
 var kb;
 
-var mode = 2;//1 or 2. 1 = sliders, 2 = treadmills
+var mode = 1;//1 or 2. 1 = sliders, 2 = treadmills
 
 var back_position = {
 	x: 0,
