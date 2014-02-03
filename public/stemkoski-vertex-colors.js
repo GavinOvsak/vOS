@@ -210,9 +210,9 @@ var set_back_control = function(mesh, no_translate) {
     var x_tilt = new THREE.Matrix4();
     x_tilt.makeRotationX(-1 * back_position.phi);
 
-    var y_tilt = new THREE.Matrix4();
-    debugger;
-    y_tilt.makeRotationY(mesh.rotation.y);
+    var o_tilt = new THREE.Matrix4();
+//    debugger;
+    o_tilt.makeRotationX(mesh.rotation.x);
 
     var rotation = new THREE.Matrix4();
     rotation.makeRotationZ(-1 * back_position.theta);
@@ -220,7 +220,7 @@ var set_back_control = function(mesh, no_translate) {
     var product = new THREE.Matrix4();
     product.multiplyMatrices(x_tilt, rotation);
     product.multiplyMatrices(product, translation);
-    product.multiplyMatrices(product, y_tilt);
+    product.multiplyMatrices(product, o_tilt);
 
     mesh.applyMatrix(product);
 
