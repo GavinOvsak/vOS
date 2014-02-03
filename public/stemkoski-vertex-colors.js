@@ -146,6 +146,7 @@ var state = '';
 
 var set_back_control = function(mesh) {
     var back_mat = new THREE.Matrix4();
+    debugger;
     back_mat.setTranslation(back_position.x, back_position.y, back_position.z);
     mesh.applyMatrix(back_mat);
 };
