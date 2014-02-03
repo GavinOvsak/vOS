@@ -149,13 +149,15 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 
 	this.initGrab = {
 		x: 0,
-		y: 0
+		y: 0,
+		progress: 0
 	};
 	this.available = true;
 	this.point = undefined;
 	this.getProgress = function() {
 		if (this.point != null) {
-			this.progress = (Math.sin(this.angle) * this.point.x + Math.cos(this.angle) * this.point.y)/this.length;
+			this.progress = this.initGrab.progress + (Math.sin(this.angle) * (this.point.x - this.initGrab.x) + 
+				Math.cos(this.angle) * (this.point.y - this.initGrab.y))/this.length;
 		}
 		return this.progress;
 	}
@@ -183,6 +185,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	this.registerPoint = function(point) {
 		this.initGrab.x = point.x;
 		this.initGrab.y = point.y;
+		this.initGrab.progress = this.progress;
 		this.point = point;
 		point.onRelease(this.release.bind(this));
 		point.onMove(this.move.bind(this));
