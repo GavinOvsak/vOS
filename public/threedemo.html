@@ -376,6 +376,10 @@ VRK.Treadmill = function(x, y, width, height, options){
 			this.available = false;
 	};
 	this.getNewState = function() {
+		var isContained = function(array, item) {
+			return array.indexOf(item) >= 0;
+		}
+		var options = VRK.Treadmill.option;
 		var newState = this.cloneState(this.startState);
 		if (isContained(this.options, options.Rotate)) {
 			newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
@@ -390,10 +394,6 @@ VRK.Treadmill = function(x, y, width, height, options){
 		newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
 		return newState;
 
-		var isContained = function(array, item) {
-			return array.indexOf(item) >= 0;
-		}
-		var options = VRK.Treadmill.option;
 		var newState = this.startState;
 		var disp = vector(this.getTouchCenter(), this.grabInfo);
 		if (isContained(this.options, options.Rotate)) {
