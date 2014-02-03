@@ -127,7 +127,7 @@ var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THRE
 var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
 
 var imagePrefix = "images/dawnmountain-";
-var directions  = ["xpos", "xneg", "zpos", "zneg", "ypos", "yneg"];
+var directions  = ["xpos", "xneg", "zpos", "zneg", "yneg", "ypos"];
 var imageSuffix = ".png";
 
 var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );        
