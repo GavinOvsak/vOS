@@ -211,8 +211,9 @@ var set_back_control = function(mesh, no_translate) {
     x_tilt.makeRotationX(-1 * back_position.phi);
 
     var o_tilt = new THREE.Matrix4();
-//    debugger;
-    o_tilt.makeRotationX(mesh.rotation.x);
+    o_tilt.multiplyMatrices(o_tilt, new THREE.Matrix4().makeRotationX(mesh.rotation.x));
+    o_tilt.multiplyMatrices(o_tilt, new THREE.Matrix4().makeRotationY(mesh.rotation.y));
+    o_tilt.multiplyMatrices(o_tilt, new THREE.Matrix4().makeRotationZ(mesh.rotation.z));
 
     var rotation = new THREE.Matrix4();
     rotation.makeRotationZ(-1 * back_position.theta);
@@ -244,7 +245,7 @@ app.drawFrontAndBack = function(scene) {
     scene.add(light);
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.z = -25.5;
+    floor.position.z = -30;
     set_back_control(floor);
     scene.add(floor);
 
