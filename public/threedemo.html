@@ -370,6 +370,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		};*/
 		this.points[point.i] = point;
 		point.onRelease(this.release.bind(this));
+		point.onMove(this.move.bind(this));
 		if (this.points.length >= this.max_fingers)
 			this.available = false;
 	};
