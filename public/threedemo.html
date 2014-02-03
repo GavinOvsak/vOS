@@ -796,17 +796,19 @@ VRK.Joystick = function(x, y, radius, returnsToCenter) {
 		
 		var x_shift = 0;
 		var y_shift = 0;
-		var scaling_factor = 1;
+		var scaling_factor_x = 1;
+		var scaling_factor_y = 1;
 		if(this.point != undefined) {
 			x_shift = this.point.x - this.initGrab.x;
 			y_shift = this.point.y - this.initGrab.y;
 			var dist = distance({x:this.point.x, y:this.point.y * eccentricity}, this);
 			if (dist > this.max_drag) {
-				scaling_factor = this.max_drag / dist;
+				scaling_factor_x = this.max_drag / dist;
+				scaling_factor_y = this.max_drag / (dist * eccentricity);
 			}
 		}
 
-		setKeyboardPosition(board, grab, this.x + x_shift * scaling_factor, this.y + y_shift * scaling_factor, 0.12);
+		setKeyboardPosition(board, grab, this.x + x_shift * scaling_factor_x, this.y + y_shift * scaling_factor_y, 0.12);
 
 		scene.add(grab);
 	};
