@@ -145,7 +145,10 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	this.progress = 0.3;
 
 	this.returnsToCenter = returnsToCenter;
-	this.direction = direction | VRK.LinearSlider.direction.VERTICAL;
+	this.direction = direction;
+	if (this.direction == undefined) {
+		this.direction = VRK.LinearSlider.direction.VERTICAL;
+	};
 
 	this.initGrab = {
 		x: 0,
@@ -165,8 +168,6 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 		return this.progress;
 	}
 	this.contains = function(x, y) {
-		var grip_x = this.x + (this.width - this.grip_width)/2;
-		var grip_y = this.y + this.length * this.progress;
 		return x > this.x && x < this.x + this.grip_width && 
 			y > this.y + this.length * this.progress && y < this.y + this.length * this.progress + this.grip_height;
 	};
