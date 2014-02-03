@@ -776,7 +776,16 @@ VRK.Joystick = function(x, y, radius, returnsToCenter) {
 	}
 	this.onMove_callback = function(x, y) {};
 	this.move = function(x, y){
-		this.onMove_callback(x - this.x, y - this.y);
+		var scaling_factor_x = 1;
+		var scaling_factor_y = 1;
+		x_shift = this.point.x - this.initGrab.x;
+		y_shift = this.point.y - this.initGrab.y;
+		var dist = length({x:(this.point.x - this.x), y:(this.point.y - this.y) / eccentricity});
+		if (dist > this.max_drag) {
+			scaling_factor_x = this.max_drag / dist;
+			scaling_factor_y = this.max_drag / dist;
+		}
+		this.onMove_callback(x_shift * scaling_factor_x, y_shift * scaling_factor_y);
 	};
 	this.onMove = function(callback) {
 		this.onMove_callback = callback;
