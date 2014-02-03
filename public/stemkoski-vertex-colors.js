@@ -245,8 +245,8 @@ app.drawFrontAndBack = function(scene) {
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
     skyBox.rotation.x = Math.PI/2;
-    //set_back_control(skyBox, true);
-    skyBox.rotation.y = -back_position.theta;
+    set_back_control(skyBox, true);
+    //skyBox.rotation.y = -back_position.theta;
     scene.add( skyBox );
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
