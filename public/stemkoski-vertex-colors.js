@@ -144,6 +144,12 @@ var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 
 var state = '';
 
+var set_back_control = function(mesh) {
+    var back_mat = new THREE.Matrix4();
+    back_mat.setTranslation(back_position.x, back_position.y, back_position.z);
+    mesh.applyMatrix(back_mat);
+};
+
 app.drawFrontAndBack = function(scene) {
 	if (state != 'FB') {
 		//set keyboard to immersive controls
@@ -157,9 +163,7 @@ app.drawFrontAndBack = function(scene) {
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.z = -25.5;
-    floor.position.x = 0 - back_position.x;
-    floor.position.y = 0 - back_position.y;
-    floor.rotation.z = back_position.angle;
+    set_back_control(cube);
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
@@ -169,18 +173,18 @@ app.drawFrontAndBack = function(scene) {
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
-    cube.position.set(-100 - back_position.x, 0 - back_position.y, 50);
-    cube.rotation.z = back_position.angle;
+    cube.x = -100;
+    set_back_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
-    cube.position.set(0 - back_position.x, 0 - back_position.y, 50);
-    cube.rotation.z = back_position.angle;
+    cube.x = 0;
+    set_back_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
-    cube.position.set( 100 - back_position.x, 0 - back_position.y, 50);
-    cube.rotation.z = back_position.angle;
+    cube.x = 100;
+    set_back_control(cube);
     scene.add(cube);
 };
 
