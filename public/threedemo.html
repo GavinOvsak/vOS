@@ -142,7 +142,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	this.grip_width = width * unitWidth;
 	this.grip_height = 0.5 * unitHeight;
 
-	this.progress = 0.3;
+	this.progress = 0.5;
 
 	this.returnsToCenter = returnsToCenter;
 	this.direction = direction;
@@ -170,7 +170,8 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	}
 	this.contains = function(x, y) {
 		return x > this.x && x < this.x + this.grip_width && 
-			y > this.y + this.length * this.progress && y < this.y + this.length * this.progress + this.grip_height;
+			y > this.y + (this.length - this.grip_height) * this.progress && 
+			y < this.y + (this.length - this.grip_height) * this.progress + this.grip_height;
 	};
 	this.onRelease_callback = function(progress) {};
 	this.onRelease = function(callback) {
@@ -178,6 +179,9 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	};
 	this.release = function(x, y) {
 		this.onRelease_callback(this.getProgress());
+		if (this.returnsToCenter) {
+			this.progress = 0.5;
+		}
 		this.available = true;
 		this.point = undefined;
 	}
@@ -200,17 +204,16 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	this.draw = function(scene, board) {
 		//Draw line and then draw grip on top.
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
-		var gripMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.grip_width, this.grip_height), material);
-		setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + this.length * this.progress, 0.1);
-		scene.add(gripMesh);
-
-		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 		var line = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.line_width, this.length), material);
 		setKeyboardPosition(board, line, this.x + (this.width - this.line_width)/2, this.y, 0.1);
 		scene.add(line);
 
+		var material = new THREE.MeshLambertMaterial({color: 0x224222});
+		var gripMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.grip_width, this.grip_height), material);
+		setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + (this.length - this.grip_height) * this.progress, 0.11);
+		scene.add(gripMesh);
 	};
 };
 
