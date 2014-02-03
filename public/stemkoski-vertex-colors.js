@@ -59,15 +59,15 @@ var setFrontAndBackKeyboard = function(keyboard) {
             back_position.delta.y = 0;
         });
 
-
-		viewpoint = new VRK.Joystick(6, 5, 1.5);
+		viewpoint = new VRK.Joystick(8, 5, 1.5);
         viewpoint.onMove(function(x, y) {
             back_position.delta.theta = x * -0.1;
         });
         viewpoint.onRelease(function(x, y) {
             back_position.delta.theta = 0;
         });
-		zSlider = new VRK.LinearSlider(9,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
+
+		zSlider = new VRK.LinearSlider(11,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
         zSlider.onMove(function(progress) {
             back_position.delta.z = (progress - 0.5) * 2;
         });
