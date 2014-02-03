@@ -244,7 +244,11 @@ app.drawFrontAndBack = function(scene) {
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-    skyBox.rotation.x = Math.PI/2;
+
+    var rotation = new THREE.Matrix4();
+    rotation.makeRotationY(Math.PI/2);
+    skyBox.applyMatrix(rotation);
+//    skyBox.rotation.x = Math.PI/2;
     set_back_control(skyBox, true);
     //skyBox.rotation.y = -back_position.theta;
     scene.add( skyBox );
