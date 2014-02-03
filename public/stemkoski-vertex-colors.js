@@ -59,7 +59,7 @@ var setFrontAndBackKeyboard = function(keyboard) {
             back_position.delta.y = 0;
         });
 
-		viewpoint = new VRK.Joystick(8, 5, 1.5);
+		viewpoint = new VRK.Joystick(9, 5, 1.5);
         viewpoint.onMove(function(x, y) {
             back_position.delta.theta = x * -0.1;
         });
