@@ -353,7 +353,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		}
 	};
 	this.setStartState = function() {
-		var center = this.getTouchCenter();
+		var center = this.getTouchCenter.call(this);
 		this.startState = {
 			x: center.x,
 			y: center.y,
