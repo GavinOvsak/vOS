@@ -1,7 +1,7 @@
 var app = {};
 var kb;
 
-var mode = 1;//1 or 2. 1 = sliders, 2 = treadmills
+var mode = 2;//1 or 2. 1 = sliders, 2 = treadmills
 
 var back_position = {
 	x: 0,
@@ -34,12 +34,23 @@ var setFrontKeyboard = function(keyboard) {
 			zoomSlider = new VRK.LinearSlider();
 		if (tiltSlider == undefined)
 			tiltSlider = new VRK.LinearSlider();
-		keyboard.set([rotationSlider, zoomSlider, tiltSlider]);
+        var modeSwitch = new VRK.Button(0,6,1,1,'Mode 2',15);
+        modeSwitch.onClick(function() {
+            mode = 2;
+            setFrontAndBackKeyboard(kb);
+        });
+        keyboard.set([rotationSlider, zoomSlider, tiltSlider, modeSwitch]);
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (rotateAndZoom == undefined)
 			rotateAndZoom = new VRK.Treadmill(4,2,5,5,[VRK.Treadmill.option.X, VRK.Treadmill.option.Y, VRK.Treadmill.option.Zoom]);
-		keyboard.set([rotateAndZoom]);
+
+        var modeSwitch = new VRK.Button(0,6,1,1,'Mode 1',15);
+        modeSwitch.onClick(function() {
+            mode = 1;
+            setFrontAndBackKeyboard(kb);
+        });
+		keyboard.set([rotateAndZoom, modeSwitch]);
 	}
 };
 
@@ -237,7 +248,7 @@ app.drawFrontAndBack = function(scene) {
     back_position.theta += back_position.delta.theta;
 
 	var light = new THREE.PointLight(0xffffff);
-    light.position.set(0,250,0);
+    light.position.set(0,0,250);
     scene.add(light);
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
@@ -275,6 +286,52 @@ app.drawBack = function(scene) {
 	app.drawFrontAndBack(scene);
 };
     
+var size = 20;
+
+var smCubeGeometries = [];
+smCubeGeometries[0] = new THREE.CubeGeometry( size, size, size, 3, 3, 3 );
+for ( var i = 0; i < smCubeGeometries[0].faces.length; i++ ) 
+{
+    face  = smCubeGeometries[0].faces[ i ];
+    face.color.setRGB( Math.random(), Math.random(), Math.random() );                
+}
+
+var color, face, numberOfSides, vertexIndex;
+
+
+smCubeGeometries[1] = new THREE.CubeGeometry( size, size, size, 3, 3, 3 );
+for ( var i = 0; i < smCubeGeometries[1].faces.length; i++ ) 
+{
+    face  = smCubeGeometries[1].faces[ i ];        
+
+    numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
+
+    for( var j = 0; j < numberOfSides; j++ ) 
+    {
+        vertexIndex = face[ faceIndices[ j ] ];
+
+        color = new THREE.Color( 0xffffff );
+        color.setHex( Math.random() * 0xffffff );
+        face.vertexColors[ j ] = color;
+    }
+}
+
+var point;
+smCubeGeometries[2] = new THREE.CubeGeometry( size, size, size, 1, 1, 1 );
+for ( var i = 0; i < smCubeGeometries[2].faces.length; i++ ) 
+{
+    face = smCubeGeometries[2].faces[ i ];
+    numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
+    for( var j = 0; j < numberOfSides; j++ ) 
+    {
+            vertexIndex = face[ faceIndices[ j ] ];
+            point = smCubeGeometries[2].vertices[ vertexIndex ];
+            color = new THREE.Color( 0xffffff );
+            color.setRGB( 0.5 + point.x / size, 0.5 + point.y / size, 0.5 + point.z / size );
+            face.vertexColors[ j ] = color;
+    }
+}
+
 app.drawFront = function(scene) {
 	if (state != 'F') {
 		//set keyboard to contained controls
@@ -283,25 +340,25 @@ app.drawFront = function(scene) {
 	}
 
     var light = new THREE.PointLight(0xffffff);
-    light.position.set(0,250,0);
+    light.position.set(0,0,250);
     scene.add(light);
 
     //Shrink
+    var floorGeometry = new THREE.PlaneGeometry(100, 100, 10, 10);
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.z = -25.5;
     scene.add(floor);
 
     //Shrink
-    var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
-    cube.position.set(-100, 0, 50);
+    var cube = new THREE.Mesh( smCubeGeometries[0], cubeMaterials[0] );
+    cube.position.set(-30, 0, 5);
     scene.add(cube);
 
-    cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
-    cube.position.set(0, 0, 50);
+    cube = new THREE.Mesh( smCubeGeometries[1], cubeMaterials[1] );
+    cube.position.set(0, 0, 5);
     scene.add(cube);
 
-    cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
-    cube.position.set( 100, 0, 50 );
+    cube = new THREE.Mesh( smCubeGeometries[2], cubeMaterials[1] );
+    cube.position.set( 30, 0, 5 );
     scene.add(cube);
 };
 
