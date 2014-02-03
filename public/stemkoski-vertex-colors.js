@@ -37,7 +37,7 @@ var setFrontKeyboard = function(keyboard) {
 	}
 };
 
-var xy_scaling = 500;
+var xy_scaling = 300;
 var z_scaling = 50;
 
 var setFrontAndBackKeyboard = function(keyboard) {
