@@ -37,7 +37,7 @@ var setFrontKeyboard = function(keyboard) {
 	}
 };
 
-var xy_scaling = 1000;
+var xy_scaling = 500;
 
 var setFrontAndBackKeyboard = function(keyboard) {
 	if (mode == 1) {
@@ -159,6 +159,7 @@ app.drawFrontAndBack = function(scene) {
     floor.position.z = -25.5;
     floor.position.x = 0 - back_position.x;
     floor.position.y = 0 - back_position.y;
+    floor.rotation.z = back_position.angle;
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
@@ -169,14 +170,17 @@ app.drawFrontAndBack = function(scene) {
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
     cube.position.set(-100 - back_position.x, 0 - back_position.y, 50);
+    cube.rotation.z = back_position.angle;
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
     cube.position.set(0 - back_position.x, 0 - back_position.y, 50);
+    cube.rotation.z = back_position.angle;
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
     cube.position.set( 100 - back_position.x, 0 - back_position.y, 50);
+    cube.rotation.z = back_position.angle;
     scene.add(cube);
 };
 
