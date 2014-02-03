@@ -129,7 +129,7 @@ VRK.Button = function(x, y, width, height, text, opt_image) {
 	}
 };
 
-VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
+VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 
@@ -145,7 +145,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	this.progress = 0.3;
 
 	this.returnsToCenter = returnsToCenter;
-	this.angle = angle | 0; //Defaults to sideways
+	this.direction = direction | VRK.LinearSlider.direction.VERTICAL;
 
 	this.initGrab = {
 		x: 0,
@@ -156,8 +156,11 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	this.point = undefined;
 	this.getProgress = function() {
 		if (this.point != null) {
-			this.progress = this.initGrab.progress + (Math.sin(this.angle) * (this.point.x - this.initGrab.x) + 
-				Math.cos(this.angle) * (this.point.y - this.initGrab.y))/this.length;
+			if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
+				this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/this.length;
+			} else if(this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
+				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/this.length;
+			}
 		}
 		return this.progress;
 	}
@@ -206,6 +209,11 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 		scene.add(line);
 
 	};
+};
+
+VRK.LinearSlider.direction = {
+	VERTICAL: 'vertical',
+	HORIZONTAL: 'horizontal'
 };
 
 VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {

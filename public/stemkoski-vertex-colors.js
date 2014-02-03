@@ -45,7 +45,7 @@ var setFrontAndBackKeyboard = function(keyboard) {
 		//set up slider front
 		translation = new VRK.Joystick(3,4,3,3);
 		viewpoint = new VRK.Joystick(6,4,3,3);
-		zSlider = new VRK.LinearSlider(9,2,1,5, true, Math.PI/2);
+		zSlider = new VRK.LinearSlider(9,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
         keyboard.set([translation, viewpoint, zSlider]);
 	} else if(mode == 2) {
 		//set up treadmill front
