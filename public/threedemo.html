@@ -374,20 +374,24 @@ VRK.Treadmill = function(x, y, width, height, options){
 			this.available = false;
 	};
 	this.getNewState = function() {
+		var isContained = function(array, item) {
+			return array.indexOf(item) >= 0;
+		}
+		var options = VRK.Treadmill.option;
 		var newState = this.startState;
 		var disp = vector(this.getTouchCenter(), this.grabInfo);
-		if (this.options.indexOf(VRK.Treadmill.option.Rotate) > 0) {
+		if (isContained(this.options, options.Rotate)) {
 			newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
 		}
-		if (this.options.indexOf(VRK.Treadmill.option.X) > 0) {
+		if (isContained(this.options, options.X)) {
 			newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
 		}
-		if (this.options.indexOf(VRK.Treadmill.option.Y) > 0) {
+		if (isContained(this.options, options.Y)) {
 			newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
 		}
-		if (this.options.indexOf(VRK.Treadmill.option.Zoom) > 0 || 
-			(this.options.indexOf(VRK.Treadmill.option.ZoomIn) > 0 && this.grabInfo.zoom > this.getTouchSeparation()) ||
-			(this.options.indexOf(VRK.Treadmill.option.ZoomOut) > 0 && this.grabInfo.zoom < this.getTouchSeparation())) {
+		if (isContained(this.options, options.Zoom) >= 0 || 
+			(isContained(this.options, options.ZoomIn) >= 0 && this.grabInfo.zoom > this.getTouchSeparation()) ||
+			(isContained(this.options, options.ZoomOut) >= 0 && this.grabInfo.zoom < this.getTouchSeparation())) {
 			newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
 		}
 		return newState;
