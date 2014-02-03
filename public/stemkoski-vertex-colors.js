@@ -192,15 +192,26 @@ var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 
 var state = '';
 
-var set_back_control = function(mesh) {
+var set_back_control = function(mesh, rotate) {
+    if (rotate == undefined)
+        rotate = true;
+
     var translation = new THREE.Matrix4();
     translation.makeTranslation(mesh.position.x - back_position.x, 
         mesh.position.y - back_position.y, 
         mesh.position.z - back_position.z);
-    var rotation = new THREE.Matrix4();
-    rotation.makeRotationZ(-1 * back_position.theta);
     mesh.applyMatrix(translation);
-    mesh.applyMatrix(rotation);
+
+    if (rotate) {
+        var rotation = new THREE.Matrix4();
+        rotation.makeRotationZ(-1 * back_position.theta);
+        mesh.applyMatrix(rotation);
+    }
+
+    var tilt = new THREE.Matrix4();
+    tilt.makeRotationX(-1 * 0.5);
+    mesh.applyMatrix(tilt);
+
     mesh.geometry.verticesNeedUpdate = true;
 };
 
