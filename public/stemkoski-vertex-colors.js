@@ -149,8 +149,8 @@ var set_back_control = function(mesh) {
     translation.makeTranslation(back_position.x, back_position.y, back_position.z);
     var rotation = new THREE.Matrix4();
     rotation.makeRotationZ(back_position.angle);
-    mesh.applyMatrix(translation);
-//    mesh.applyMatrix(rotation);
+//    mesh.applyMatrix(translation);
+    mesh.applyMatrix(rotation);
 };
 
 app.drawFrontAndBack = function(scene) {
