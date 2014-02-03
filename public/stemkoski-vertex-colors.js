@@ -198,12 +198,12 @@ var set_back_control = function(mesh, no_translate) {
     if (no_translate == undefined)
         no_translate = false;
 
+    var translation = new THREE.Matrix4();
     if (!no_translate) {
-        var translation = new THREE.Matrix4();
         translation.makeTranslation(mesh.position.x - back_position.x, 
             mesh.position.y - back_position.y, 
             mesh.position.z - back_position.z);
-        mesh.applyMatrix(translation);
+        //mesh.applyMatrix(translation);
     }
 
     //mesh.applyMatrix(tilt);
@@ -214,7 +214,8 @@ var set_back_control = function(mesh, no_translate) {
     rotation.makeRotationZ(-1 * back_position.theta);
 
     var product = new THREE.Matrix4();
-    product.multiplyMatrices(tilt, rotation);
+    product.multiplyMatrices(tilt, translation);
+    product.multiplyMatrices(product, rotation);
 
     mesh.applyMatrix(product);
 
