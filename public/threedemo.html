@@ -908,6 +908,7 @@ var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //    var renderer = new THREE.CanvasRenderer(); 
 
 camera.position.y = -200;
+camera.position.z = 20;
 camera.rotation.x = Math.PI/2;
 
 $container.mousemove(function(event) {
@@ -1154,9 +1155,9 @@ kM.drawKeyboard = function(scene) {
 		new THREE.PlaneGeometry(80, 30),
 		redLambert);
 
-	board.position.x = 0;
-	board.position.z = -20;
-	board.position.y = camera.position.y + 120;
+	board.position.x = camera.position.x + 0;
+	board.position.y = camera.position.y + 100;
+	board.position.z = camera.position.z - 20;
 
 	board.rotation.x = -1.1 + Math.PI/2;
 
