@@ -8,7 +8,7 @@ var back_position = {
 	y: 0,
 	z: 0,
 	theta: 0,
-	phi: 0
+	phi: 0,
     delta: {
         x: 0,
         y: 0,
