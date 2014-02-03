@@ -152,7 +152,6 @@ var set_back_control = function(mesh) {
 
     var rotation = new THREE.Matrix4();
     rotation.makeRotationZ(back_position.angle);
-    debugger;
     mesh.applyMatrix(translation);
     mesh.geometry.verticesNeedUpdate = true;
 //    mesh.applyMatrix(rotation);
@@ -182,6 +181,7 @@ app.drawFrontAndBack = function(scene) {
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
     cube.x = -100;
+    debugger;
     set_back_control(cube);
     scene.add(cube);
 
