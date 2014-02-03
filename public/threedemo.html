@@ -140,7 +140,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 
 	this.line_width = 0.1 * unitWidth;
 	this.grip_width = width * unitWidth;
-	this.grip_height = this.grip_width / 2;
+	this.grip_height = 0.5 * unitHeight;
 
 	this.progress = 0.3;
 
@@ -160,7 +160,9 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 		return this.progress;
 	}
 	this.contains = function(x, y) {
-		return false;
+		var grip_x = this.x + (this.width - this.grip_width)/2;
+		var grip_y = this.y + this.length * this.progress;
+		return x > grip_x && x < grip_x + this.grip_width && y > grip_y && y < grip_y + this.grip_height;
 	};
 	this.onRelease_callback = function(progress) {};
 	this.onRelease = function(callback) {
