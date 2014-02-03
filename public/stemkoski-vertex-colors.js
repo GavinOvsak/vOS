@@ -37,6 +37,8 @@ var setFrontKeyboard = function(keyboard) {
 	}
 };
 
+var xy_scaling = 1000;
+
 var setFrontAndBackKeyboard = function(keyboard) {
 	if (mode == 1) {
 		//set up slider front
@@ -50,8 +52,8 @@ var setFrontAndBackKeyboard = function(keyboard) {
 		if (zTreadmill == undefined)
 			zTreadmill = new VRK.Treadmill(9,2,1,5);
         fineMotion.onMove(function(x, y, angle, zoom) {
-            back_position.x = x;
-            back_position.y = y;
+            back_position.x = x * xy_scaling;
+            back_position.y = y * xy_scaling;
             back_position.angle = angle;
         });
 
