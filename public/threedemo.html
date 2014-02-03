@@ -142,7 +142,7 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	this.grip_width = width * unitWidth;
 	this.grip_height = this.grip_width / 3;
 
-	this.progress = 0;
+	this.progress = 0.3;
 
 	this.returnsToCenter = returnsToCenter;
 	this.angle = angle | 0; //Defaults to sideways
@@ -190,13 +190,13 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 		var gripMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.grip_width, this.grip_height), material);
-		setKeyboardPosition(board, gripMesh, this.x, this.y + this.length * this.progress, 0.1);
+		setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + this.length * this.progress, 0.1);
 		scene.add(gripMesh);
 
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
 		var line = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.line_width, this.length), material);
-		setKeyboardPosition(board, line, this.x, this.y, 0.1);
+		setKeyboardPosition(board, line, this.x + (this.width - this.line_width)/2, this.y, 0.1);
 		scene.add(line);
 
 	};
