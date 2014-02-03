@@ -378,10 +378,10 @@ VRK.Treadmill = function(x, y, width, height, options){
 		var newState = {};
 		//can calculate new angle and position.
 		//new x and y are difference in position vector, then rotated by old angle + angle change.
-		newState.angle = this.startState.angle + this.getTouchAngle();
+		newState.angle = this.state.angle + this.getTouchAngle() - this.startState.angle;
 		var disp = vector(this.startState, this.getTouchCenter());
-		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
-		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
+		newState.x = this.state.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
+		newState.y = this.state.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
 		return newState;
 	};
 	this.onMove_callback = function(x, y, angle, zoom) {};
