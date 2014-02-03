@@ -331,6 +331,20 @@ VRK.Treadmill = function(x, y, width, height, options){
 			y: y/Math.max(1, this.points.length)		
 		};
 	};
+	this.getInitTouchCenter = function() {
+		var x = 0;
+		var y = 0;
+
+		this.initPointPositions.map(function(point) {
+			x += point.x;
+			y += point.y;
+		});
+
+		return {
+			x: x/Math.max(1, this.initPointPositions.length),
+			y: y/Math.max(1, this.initPointPositions.length)		
+		};
+	};
 	this.getTouchSeparation = function() {
 		if (this.points.length < 2) {
 			return 0;
@@ -348,8 +362,10 @@ VRK.Treadmill = function(x, y, width, height, options){
 	};
 	this.registerPoint = function(point) {
 		this.setStartState();
-		this.initGrab.x = point.x;
-		this.initGrab.y = point.y;
+		this.initPointPositions[point.i] = {
+			x: point.x,
+			y: point.y
+		};
 		this.points[point.i] = point;
 		point.onRelease(this.release.bind(this));
 		if (this.points.length >= this.max_fingers)
@@ -360,7 +376,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		//can calculate new angle and position.
 		//new x and y are difference in position vector, then rotated by old angle + angle change.
 		newState.angle = this.startState.angle + this.getTouchAngle();
-		var disp = vector(this.startState, this.getTouchCenter());
+		var disp = vector(this.getInitTouchCenter(), this.getTouchCenter());
 		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
 		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
 		return newState;
