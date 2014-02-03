@@ -404,7 +404,6 @@ VRK.Treadmill = function(x, y, width, height, options){
 	};
 	this.move = function(x, y, angle, zoom) {
 		this.state = this.getNewState();
-		console.log(this.state);
 		this.onMove_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
 	};
 	this.draw = function(scene, board) {

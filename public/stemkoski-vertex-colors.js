@@ -1,7 +1,7 @@
 var app = {};
 var kb;
 
-var mode = 2;//1 or 2. 1 = sliders, 2 = treadmills
+var mode = 1;//1 or 2. 1 = sliders, 2 = treadmills
 
 var back_position = {
 	x: 0,
@@ -32,7 +32,7 @@ var setFrontKeyboard = function(keyboard) {
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (rotateAndZoom == undefined)
-			rotateAndZoom = new VRK.Treadmill();
+			rotateAndZoom = new VRK.Treadmill(4,2,5,5, [VRK.Treadmill.option.X, VRK.Treadmill.option.Y, VRK.Treadmill.option.Zoom]);
 		keyboard.set([rotateAndZoom]);
 	}
 };
