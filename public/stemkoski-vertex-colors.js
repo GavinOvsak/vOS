@@ -146,9 +146,9 @@ var state = '';
 
 var set_back_control = function(mesh) {
     var translation = new THREE.Matrix4();
-    translation.makeTranslation(back_position.x + mesh.position.x, 
-        back_position.y + mesh.position.y, 
-        back_position.z + mesh.position.z);
+    translation.makeTranslation(mesh.position.x - back_position.x, 
+        mesh.position.y - back_position.y, 
+        mesh.position.z - back_position.z);
     var rotation = new THREE.Matrix4();
     rotation.makeRotationZ(back_position.theta);
     mesh.applyMatrix(translation);
