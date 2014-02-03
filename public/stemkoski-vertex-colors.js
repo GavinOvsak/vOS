@@ -161,7 +161,7 @@ app.drawFrontAndBack = function(scene) {
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-    skyBox.rotation.x = -Math.PI/2;
+    skyBox.rotation.x = Math.PI/2;
     scene.add( skyBox );
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
