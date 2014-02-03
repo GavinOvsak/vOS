@@ -150,7 +150,7 @@ var set_back_control = function(mesh) {
         mesh.position.y - back_position.y, 
         mesh.position.z - back_position.z);
     var rotation = new THREE.Matrix4();
-    rotation.makeRotationZ(back_position.theta);
+    rotation.makeRotationZ(-1 * back_position.theta);
     mesh.applyMatrix(translation);
     mesh.applyMatrix(rotation);
     mesh.geometry.verticesNeedUpdate = true;
