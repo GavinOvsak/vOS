@@ -62,9 +62,11 @@ var setFrontAndBackKeyboard = function(keyboard) {
 		viewpoint = new VRK.Joystick(9, 5, 1.5);
         viewpoint.onMove(function(x, y) {
             back_position.delta.theta = x * -0.1;
+            back_position.phi = y * 0.4;
         });
         viewpoint.onRelease(function(x, y) {
             back_position.delta.theta = 0;
+            back_position.phi = 0;
         });
 
 		zSlider = new VRK.LinearSlider(11,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
@@ -209,7 +211,7 @@ var set_back_control = function(mesh, no_translate) {
     mesh.applyMatrix(rotation);
 
     var tilt = new THREE.Matrix4();
-    tilt.makeRotationX(-1 * 0.5);
+    tilt.makeRotationX(-1 * back_position.phi);
     mesh.applyMatrix(tilt);
 
     mesh.geometry.verticesNeedUpdate = true;
