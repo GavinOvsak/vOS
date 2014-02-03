@@ -300,7 +300,14 @@ VRK.Treadmill = function(x, y, width, height, options){
 		zoom: 1
 	};
 	this.points = {};
-
+	this.cloneState = function(state) {
+		return {
+			x: state.x,
+			y: state.y,
+			angle: state.angle,
+			zoom: state.zoom,
+		};
+	};
 	this.contains = function(x, y) {
 		return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
 	};
@@ -360,12 +367,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		};
 	};
 	this.registerPoint = function(point) {
-		this.startState = {
-			x: this.state.x,
-			y: this.state.y,
-			angle: this.state.angle,
-			zoom: this.state.zoom
-		};
+		this.startState = this.cloneState(this.state);
 		this.points[point.i] = point;
 		this.setGrabInfo();
 		point.onRelease(this.release.bind(this));
@@ -374,14 +376,13 @@ VRK.Treadmill = function(x, y, width, height, options){
 			this.available = false;
 	};
 	this.getNewState = function() {
-		var newState = {};
+		var newState = this.cloneState(this.startState);
 		newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
 		var disp = vector(this.getTouchCenter(), this.grabInfo);
 		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
 		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
 		newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
 		return newState;
-		/*
 
 		var isContained = function(array, item) {
 			return array.indexOf(item) >= 0;
@@ -403,7 +404,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 			(isContained(this.options, options.ZoomOut) >= 0 && this.grabInfo.zoom < this.getTouchSeparation())) {
 			newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
 		}
-		return newState;*/
+		return newState;
 	};
 	this.onMove_callback = function(x, y, angle, zoom) {};
 	this.onMove = function(callback) {
