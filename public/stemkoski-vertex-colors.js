@@ -374,17 +374,19 @@ app.drawFront = function(scene) {
 
     //Shrink
     var cube = new THREE.Mesh( smCubeGeometries[0], cubeMaterials[0] );
-    cube.position.set(-30, 0, 15);
+    cube.position.x = -30;
+    cube.position.z = 15;
     set_front_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( smCubeGeometries[1], cubeMaterials[1] );
-    cube.position.set(0, 0, 15);
+    cube.position.z = 15;
     set_front_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( smCubeGeometries[2], cubeMaterials[1] );
-    cube.position.set( 30, 0, 15 );
+    cube.position.x = 30;
+    cube.position.z = 15;
     set_front_control(cube);
     scene.add(cube);
 };
