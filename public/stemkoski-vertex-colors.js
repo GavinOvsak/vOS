@@ -127,7 +127,7 @@ var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THRE
 var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
 
 var imagePrefix = "images/dawnmountain-";
-var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+var directions  = ["xpos", "xneg", "zpos", "zneg", "ypos", "yneg"];
 var imageSuffix = ".png";
 
 var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );        
@@ -154,8 +154,8 @@ app.drawFrontAndBack = function(scene) {
     scene.add(light);
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.y = -25.5;
-    floor.rotation.x = Math.PI / 2;
+    floor.position.z = -25.5;
+    //floor.rotation.x = Math.PI / 2;
     floor.position.x = 0 - back_position.x;
     floor.position.z = 0 - back_position.y;
     scene.add(floor);
@@ -166,15 +166,15 @@ app.drawFrontAndBack = function(scene) {
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
-    cube.position.set(-100 - back_position.x, 50, 0 - back_position.y);
+    cube.position.set(-100 - back_position.x, 0 - back_position.y, 50);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
-    cube.position.set(0 - back_position.x, 50, 0 - back_position.y);
+    cube.position.set(0 - back_position.x, 0 - back_position.y, 50);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
-    cube.position.set( 100 - back_position.x, 50, 0  - back_position.y);
+    cube.position.set( 100 - back_position.x, 0 - back_position.y, 50);
     scene.add(cube);
 };
 
