@@ -758,6 +758,7 @@ VRK.Joystick = function(x, y, radius, returnsToCenter) {
 		this.max_drag = 1/4;
 	}
 	this.contains = function(x, y) {
+		//handle not alway going back to center
 		return Math.sqrt(Math.pow(x - this.x,2) + Math.pow((y - this.y) / eccentricity,2)) < this.radius;
 	};
 	this.release = function(x, y) {
@@ -805,7 +806,7 @@ VRK.Joystick = function(x, y, radius, returnsToCenter) {
 			}
 		}
 
-		setKeyboardPosition(board, grab, this.x + x_shift * scaling_factor, this.y + y_shift * scaling_factor, 0.12);
+		setKeyboardPosition(board, grab, this.x + x_shift * scaling_factor, this.y + y_shift * scaling_factor * eccentricity, 0.12);
 
 		scene.add(grab);
 	};
