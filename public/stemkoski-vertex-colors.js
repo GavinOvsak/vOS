@@ -211,6 +211,7 @@ var set_back_control = function(mesh, no_translate) {
     x_tilt.makeRotationX(-1 * back_position.phi);
 
     var y_tilt = new THREE.Matrix4();
+    debugger;
     y_tilt.makeRotationY(mesh.rotation.y);
 
     var rotation = new THREE.Matrix4();
