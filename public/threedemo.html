@@ -142,7 +142,11 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction, ini
 	this.grip_width = width * unitWidth;
 	this.grip_height = 0.5 * unitHeight;
 
-	this.progress = initProgress | 0.5;
+	if (initProgress != undefined) {
+		this.progress = initProgress;
+	} else {
+		this.progress = 0.5;
+	}
 
 	this.returnsToCenter = returnsToCenter;
 	this.direction = direction;
