@@ -196,21 +196,21 @@ app.drawFront = function(scene) {
 
     //Shrink
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.y = -25.5;
     floor.rotation.x = Math.PI / 2;
+    floor.position.z = -25.5;
     scene.add(floor);
 
     //Shrink
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
-    cube.position.set(-100, 50, 0);
+    cube.position.set(-100, 0, 50);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
-    cube.position.set(0, 50, 0);
+    cube.position.set(0, 0, 50);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
-    cube.position.set( 100, 50, 0 );
+    cube.position.set( 100, 0, 50 );
     scene.add(cube);
 };
 
