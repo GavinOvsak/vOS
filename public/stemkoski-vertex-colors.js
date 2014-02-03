@@ -154,7 +154,6 @@ var set_back_control = function(mesh) {
     rotation.makeRotationZ(back_position.angle);
     mesh.applyMatrix(translation);
     mesh.geometry.verticesNeedUpdate = true;
-//    mesh.applyMatrix(rotation);
 };
 
 app.drawFrontAndBack = function(scene) {
@@ -170,7 +169,9 @@ app.drawFrontAndBack = function(scene) {
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.z = -25.5;
-    set_back_control(floor);
+    floor.position.x = 0 - back_position.x;
+    floor.position.y = 0 - back_position.y;
+    floor.rotation.z = back_position.angle;
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
@@ -181,16 +182,19 @@ app.drawFrontAndBack = function(scene) {
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
     cube.position.x = -100;
+    cube.position.z = 50;
     set_back_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
     cube.position.x = 0;
+    cube.position.z = 50;
     set_back_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
     cube.position.x = 100;
+    cube.position.z = 50;
     set_back_control(cube);
     scene.add(cube);
 };
