@@ -51,7 +51,7 @@ var setFrontAndBackKeyboard = function(keyboard) {
 			fineMotion = new VRK.Treadmill(2,2,5,5);
 		if (zTreadmill == undefined)
 			zTreadmill = new VRK.Treadmill(9,2,1,5);
-        fineMotion.onMove(function(x, y, angle, zoom) {
+        fineMotion.onMove(function(x, y, theta, zoom) {
             back_position.x = x * xy_scaling;
             back_position.y = y * xy_scaling;
             back_position.theta = theta;
