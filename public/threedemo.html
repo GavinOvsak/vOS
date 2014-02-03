@@ -346,7 +346,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 	this.getTouchSeparation = function() {
 		if (Object.keys(this.points).length < 2) {
 			return 1;
-		} else {
+		} else if (this.points[0] != undefined && this.points[1] != undefined) {
 			return distance(this.points[0], this.points[1]);
 		}
 	};

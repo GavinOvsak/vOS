@@ -38,6 +38,7 @@ var setFrontKeyboard = function(keyboard) {
 };
 
 var xy_scaling = 500;
+var z_scaling = 50;
 
 var setFrontAndBackKeyboard = function(keyboard) {
 	if (mode == 1) {
@@ -55,6 +56,10 @@ var setFrontAndBackKeyboard = function(keyboard) {
             back_position.x = x * xy_scaling;
             back_position.y = y * xy_scaling;
             back_position.theta = theta;
+        });
+
+        zTreadmill.onMove(function(x, y, theta, zoom) {
+            back_position.z = y * z_scaling;
         });
 
 		keyboard.set([fineMotion, zTreadmill]);
