@@ -293,7 +293,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		angle: 0,
 		zoom: 1
 	};
-	this.initPointPositions = [];
+//	this.initPointPositions = [];
 	this.points = [];
 
 	this.contains = function(x, y) {
@@ -331,7 +331,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 			y: y/Math.max(1, this.points.length)		
 		};
 	};
-	this.getInitTouchCenter = function() {
+	/*this.getInitTouchCenter = function() {
 		var x = 0;
 		var y = 0;
 
@@ -344,7 +344,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 			x: x/Math.max(1, this.initPointPositions.length),
 			y: y/Math.max(1, this.initPointPositions.length)		
 		};
-	};
+	};*/
 	this.getTouchSeparation = function() {
 		if (this.points.length < 2) {
 			return 0;
@@ -353,19 +353,19 @@ VRK.Treadmill = function(x, y, width, height, options){
 		}
 	};
 	this.setStartState = function() {
-		var center = this.getTouchCenter.call(this);
+		var center = this.getTouchCenter();
 		this.startState = {
 			x: center.x,
 			y: center.y,
-			angle: this.Anna
+			angle: this.getTouchAngle()
 		};
 	};
 	this.registerPoint = function(point) {
 		this.setStartState();
-		this.initPointPositions[point.i] = {
+		/*this.initPointPositions[point.i] = {
 			x: point.x,
 			y: point.y
-		};
+		};*/
 		this.points[point.i] = point;
 		point.onRelease(this.release.bind(this));
 		if (this.points.length >= this.max_fingers)
@@ -376,7 +376,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		//can calculate new angle and position.
 		//new x and y are difference in position vector, then rotated by old angle + angle change.
 		newState.angle = this.startState.angle + this.getTouchAngle();
-		var disp = vector(this.getInitTouchCenter(), this.getTouchCenter());
+		var disp = vector(this.startState, this.getTouchCenter());
 		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
 		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
 		return newState;

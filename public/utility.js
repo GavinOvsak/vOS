@@ -61,27 +61,41 @@ var rectContains = function(point, x, y, width, height) {
 
 var vector = function(a, b) {
 	return {x: b.x-a.x, y: b.y-a.y};
-}
+};
 
 var dot = function(a, b) {
 	return a.x*b.x+a.y*b.y;
-}
+};
 
 var length = function(a) {
 	return Math.sqrt(a.x*a.x+a.y*a.y);
-}
+};
 
 var distance = function(a, b) {
 	return length(vector(a,b));
-}
+};
 
 var angle = function(a, b) {
 	return Math.acos(dot(a,b)/(length(a)*length(b)));
-}
+};
+
+var rotate = function(a, theta) {
+	return {
+		x: a.x * Math.cos(theta) - a.y * Math.sin(theta),
+		y: a.x * Math.sin(theta) + a.y * Math.cos(theta)
+	};
+};
+
+var add = function(a, b) {
+	return {
+		x: a.x+b.x, 
+		y: a.y+b.y
+	};
+};
 
 var scale = function(a, x_scale, y_scale) {
 	return {
 		x: a.x*x_scale,
 		y: a.y*y_scale
-	}
-}
+	};
+};
