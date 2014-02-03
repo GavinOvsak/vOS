@@ -44,8 +44,19 @@ var setFrontAndBackKeyboard = function(keyboard) {
 	if (mode == 1) {
 		//set up slider front
 		translation = new VRK.Joystick(3, 5, 1.5);
+        translation.onMove(function(x,y){
+            back_position.x += x * 2;
+            back_position.y += y * 2;
+        });
+
 		viewpoint = new VRK.Joystick(6, 5, 1.5);
+        viewpoint.onMove(function(x, y) {
+            back_position.theta += x * 0.01;
+        });
 		zSlider = new VRK.LinearSlider(9,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
+        zSlider.onMove(function(progress) {
+            back_position.z += (progress - 0.5) * 2;
+        });
         keyboard.set([translation, viewpoint, zSlider]);
 	} else if(mode == 2) {
 		//set up treadmill front
