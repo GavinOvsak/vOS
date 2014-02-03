@@ -54,14 +54,25 @@ var setFrontAndBackKeyboard = function(keyboard) {
             back_position.delta.x = x * 2;
             back_position.delta.y = y * 2;
         });
+        translation.onRelease(function(x,y){
+            back_position.delta.x = 0;
+            back_position.delta.y = 0;
+        });
+
 
 		viewpoint = new VRK.Joystick(6, 5, 1.5);
         viewpoint.onMove(function(x, y) {
             back_position.delta.theta = x * 0.01;
         });
+        viewpoint.onRelease(function(x, y) {
+            back_position.delta.theta = 0;
+        });
 		zSlider = new VRK.LinearSlider(9,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
         zSlider.onMove(function(progress) {
             back_position.delta.z = (progress - 0.5) * 2;
+        });
+        zSlider.onRelease(function(progress) {
+            back_position.delta.z = 0;
         });
         keyboard.set([translation, viewpoint, zSlider]);
 	} else if(mode == 2) {
