@@ -196,7 +196,7 @@ app.drawFront = function(scene) {
 
     //Shrink
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = Math.PI / 2;
+    //floor.rotation.x = Math.PI / 2;
     floor.position.z = -25.5;
     scene.add(floor);
 
