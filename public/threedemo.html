@@ -369,7 +369,12 @@ VRK.Treadmill = function(x, y, width, height, options){
 		};
 	};
 	this.registerPoint = function(point) {
-		this.startState = this.state.clone();
+		this.startState = {
+			x: this.state.x,
+			y: this.state.y,
+			angle: this.state.angle,
+			zoom: this.state.zoom
+		};
 		this.setGrabInfo();
 		/*this.initPointPositions[point.i] = {
 			x: point.x,
