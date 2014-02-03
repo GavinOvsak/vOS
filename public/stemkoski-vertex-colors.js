@@ -145,10 +145,12 @@ var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 var state = '';
 
 var set_back_control = function(mesh) {
-    var back_mat = new THREE.Matrix4();
-    back_mat.translate(back_position.x, back_position.y, back_position.z);
-    //back_mat.rotate(back_position.angle);
-    mesh.applyMatrix(back_mat);
+    var translation = new THREE.Matrix4();
+    translation.makeTranslation(back_position.x, back_position.y, back_position.z);
+    var rotation = new THREE.Matrix4();
+    rotation.makeRotationZ(back_position.angle);
+    mesh.applyMatrix(translation);
+//    mesh.applyMatrix(rotation);
 };
 
 app.drawFrontAndBack = function(scene) {
