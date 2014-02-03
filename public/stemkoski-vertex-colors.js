@@ -48,7 +48,7 @@ var setFrontKeyboard = function(keyboard) {
         //want angle separate from position
         //want max y
         rotateAndZoom.onMove(function(x, y, theta, zoom) {
-            front_position.theta = (x % 100) * 2 * Math.PI;
+            front_position.theta = -1 * (x % 100) * 2 * Math.PI;
             front_position.zoom = zoom;
         });
         var modeSwitch = new VRK.Button(0,6,1,1,'Mode 1',15);
