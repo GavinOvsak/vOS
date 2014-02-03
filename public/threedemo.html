@@ -300,7 +300,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		zoom: 1
 	};
 //	this.initPointPositions = [];
-	this.points = [];
+	this.points = {};
 
 	this.contains = function(x, y) {
 		return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
@@ -313,11 +313,10 @@ VRK.Treadmill = function(x, y, width, height, options){
 		this.onRelease_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
 		this.available = true;
 		this.startState = this.state;
-		this.points[i] = undefined;
-		//find the point and remove it
+		delete this.points[i];
 	};
 	this.getTouchAngle = function() {
-		if (this.points.length < 2) {
+		if (Object.keys(this.points).length < 2) {
 			return 0;
 		} else if (this.points[0] != undefined && this.points[1] != undefined){
 			return Math.atan2(this.points[0].x - this.points[1].x, this.points[0].y - this.points[1].y);
@@ -336,8 +335,8 @@ VRK.Treadmill = function(x, y, width, height, options){
 		});
 
 		return {
-			x: x/Math.max(1, this.points.length),
-			y: y/Math.max(1, this.points.length)		
+			x: x/Math.max(1, Object.keys(this.points).length),
+			y: y/Math.max(1, Object.keys(this.points).length)		
 		};
 	};
 	/*this.getInitTouchCenter = function() {
@@ -355,7 +354,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		};
 	};*/
 	this.getTouchSeparation = function() {
-		if (this.points.length < 2) {
+		if (Object.keys(this.points).length < 2) {
 			return 0;
 		} else {
 			return distance(this.points[0], this.points[1]);
@@ -384,7 +383,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		this.setGrabInfo();
 		point.onRelease(this.release.bind(this));
 		point.onMove(this.move.bind(this));
-		if (this.points.length >= this.max_fingers)
+		if (Object.keys(this.points).length >= this.max_fingers)
 			this.available = false;
 	};
 	this.getNewState = function() {
