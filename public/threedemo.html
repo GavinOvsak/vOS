@@ -167,7 +167,8 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction) {
 	this.contains = function(x, y) {
 		var grip_x = this.x + (this.width - this.grip_width)/2;
 		var grip_y = this.y + this.length * this.progress;
-		return x > grip_x && x < grip_x + this.grip_width && y > grip_y && y < grip_y + this.grip_height;
+		return x > this.x && x < this.x + this.grip_width && 
+			y > this.y + this.length * this.progress && y < this.y + this.length * this.progress + this.grip_height;
 	};
 	this.onRelease_callback = function(progress) {};
 	this.onRelease = function(callback) {
