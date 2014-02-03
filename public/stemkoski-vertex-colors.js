@@ -43,8 +43,8 @@ var z_scaling = 50;
 var setFrontAndBackKeyboard = function(keyboard) {
 	if (mode == 1) {
 		//set up slider front
-		translation = new VRK.Joystick(3,5,1.5);
-		viewpoint = new VRK.Joystick(6,5,1.5);
+		translation = new VRK.Joystick(3, 5, 1.5);
+		viewpoint = new VRK.Joystick(6, 5, 1.5);
 		zSlider = new VRK.LinearSlider(9,2,1,5, true, VRK.LinearSlider.direction.VERTICAL);
         keyboard.set([translation, viewpoint, zSlider]);
 	} else if(mode == 2) {
