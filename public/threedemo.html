@@ -327,12 +327,12 @@ VRK.Treadmill = function(x, y, width, height, options){
 		var x = 0;
 		var y = 0;
 
-		this.points.map(function(point) {
-			if (point != undefined) {
-				x += point.x;
-				y += point.y;
+		for (i in this.points) {
+			if (this.points[i] != undefined) {
+				x += this.points[i].x;
+				y += this.points[i].y;
 			}
-		});
+		}
 
 		return {
 			x: x/Math.max(1, Object.keys(this.points).length),
