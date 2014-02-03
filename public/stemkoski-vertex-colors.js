@@ -152,6 +152,7 @@ var set_back_control = function(mesh) {
     rotation.makeRotationZ(back_position.angle);
     debugger;
     mesh.applyMatrix(translation);
+    mesh.geometry.verticesNeedUpdate = true;
 //    mesh.applyMatrix(rotation);
 };
 
