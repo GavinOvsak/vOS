@@ -214,7 +214,7 @@ var set_back_control = function(mesh, no_translate) {
     rotation.makeRotationZ(-1 * back_position.theta);
 
     var product = new THREE.Matrix4();
-    product.muliplyMatrices(tilt, rotation);
+    product.multiplyMatrices(tilt, rotation);
 
     mesh.applyMatrix(product);
 
