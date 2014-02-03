@@ -155,15 +155,15 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction, ini
 		y: 0,
 		progress: 0
 	};
-	
+
 	this.available = true;
 	this.point = undefined;
 	this.getProgress = function() {
 		if (this.point != null) {
 			if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
-				this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/this.length;
+				this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/(this.length - this.grip_height);
 			} else if(this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
-				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/this.length;
+				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.length - this.grip_height);
 			}
 		}
 		this.progress = Math.max(Math.min(this.progress, 1), 0);
