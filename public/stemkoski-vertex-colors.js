@@ -169,9 +169,7 @@ app.drawFrontAndBack = function(scene) {
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.z = -25.5;
-    floor.position.x = 0 - back_position.x;
-    floor.position.y = 0 - back_position.y;
-    floor.rotation.z = back_position.angle;
+    set_back_control(floor);
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
