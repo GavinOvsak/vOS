@@ -737,7 +737,7 @@ VRK.SystemBar = function(x, y, width, height){
 };
 
 //make max draw radius
-VRK.Joystick = function(x, y, returnsToCenter) {
+VRK.Joystick = function(x, y, radius, returnsToCenter) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 	
@@ -752,7 +752,7 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.radius = 0.04;
 	this.available = true;
 	this.point = undefined;
-	this.max_drag = 1/4;
+	this.max_drag = radius | 1/4;
 	this.contains = function(x, y) {
 		return Math.sqrt(Math.pow(x - this.x,2) + Math.pow((y - this.y) / eccentricity,2)) < this.radius;
 	};
@@ -789,19 +789,19 @@ VRK.Joystick = function(x, y, returnsToCenter) {
 	this.draw = function(scene, board) {
 		var grab = makeFullCircle(this.radius);
 		
-		var shifted_x = this.x;
-		var shifted_y = this.y;
+		var x_shift = 0;
+		var y_shift = 0;
 		var scaling_factor = 1;
 		if(this.point != undefined) {
-			shifted_x = this.point.x - this.initGrab.x + this.x;
-			shifted_y = this.point.y - this.initGrab.y + this.y;
+			x_shift = this.point.x - this.initGrab.x;
+			y_shift = this.point.y - this.initGrab.y;
 			var dist = distance(this.point, this);
 			if (dist > this.max_drag) {
 				scaling_factor = this.max_drag / dist;
 			}
 		}
 
-		setKeyboardPosition(board, grab, shifted_x * scaling_factor, shifted_y * scaling_factor, 0.12);
+		setKeyboardPosition(board, grab, this.x + x_shift * scaling_factor, this.y + y_shift * scaling_factor, 0.12);
 
 		scene.add(grab);
 	};
