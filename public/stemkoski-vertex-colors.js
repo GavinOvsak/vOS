@@ -146,7 +146,7 @@ var state = '';
 
 var set_back_control = function(mesh) {
     var translation = new THREE.Matrix4();
-    translation.makeTranslation(back_position);
+    translation.setPosition(back_position);
 
     var rotation = new THREE.Matrix4();
     rotation.makeRotationZ(back_position.angle);
