@@ -197,8 +197,8 @@ app.drawFrontAndBack = function(scene) {
 		state = 'FB';
 	}
 
-    back_position.x += back_position.delta.x;
-    back_position.y += back_position.delta.y;
+    back_position.x += back_position.delta.x * Math.cos(back_position.theta) - back_position.delta.y * Math.sin(back_position.theta);
+    back_position.y += back_position.delta.x * Math.sin(back_position.theta) + back_position.delta.y * Math.cos(back_position.theta);
     back_position.z += back_position.delta.z;
     back_position.theta += back_position.delta.theta;
 
