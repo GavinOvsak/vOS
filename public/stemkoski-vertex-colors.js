@@ -127,7 +127,7 @@ var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THRE
 var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
 
 var imagePrefix = "images/dawnmountain-";
-var directions  = ["xpos", "xneg", "zpos", "zneg", "yneg", "ypos"];
+var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 var imageSuffix = ".png";
 
 var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );        
@@ -161,6 +161,7 @@ app.drawFrontAndBack = function(scene) {
     scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+    skyBox.rotation.x = -Math.PI/2;
     scene.add( skyBox );
 
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
