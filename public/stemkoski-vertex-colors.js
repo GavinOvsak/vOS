@@ -76,7 +76,12 @@ var setFrontAndBackKeyboard = function(keyboard) {
         zSlider.onRelease(function(progress) {
             back_position.delta.z = 0;
         });
-        keyboard.set([translation, viewpoint, zSlider]);
+        var modeSwitch = new VRK.Button(0,6,1,1,'Mode 2',15);
+        modeSwitch.onClick(function() {
+            mode = 2;
+            setFrontAndBackKeyboard(kb);
+        });
+        keyboard.set([translation, viewpoint, zSlider, modeSwitch]);
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (fineMotion == undefined)
@@ -93,22 +98,13 @@ var setFrontAndBackKeyboard = function(keyboard) {
             back_position.z = y * z_scaling;
         });
 
-		keyboard.set([fineMotion, zTreadmill]);
+        var modeSwitch = new VRK.Button(0,6,1,1,'Mode 1',15);
+        modeSwitch.onClick(function() {
+            mode = 1;
+            setFrontAndBackKeyboard(kb);
+        });
+        keyboard.set([fineMotion, zTreadmill, modeSwitch]);
 	}
-    var mode1 = new VRK.Button(0,6,1,1,'Mode 1',15);
-    var mode2 = new VRK.Button(0,4,1,1,'Mode 2',15);
-
-    mode1.onClick(function() {
-        mode = 1;
-        setFrontAndBackKeyboard(kb);
-    });
-    mode2.onClick(function() {
-        mode = 2;
-        setFrontAndBackKeyboard(kb);
-    });
-
-    keyboard.add(mode1);
-    keyboard.add(mode2);
 };
 
 app.setUpKeyboard = function(keyboard) {
