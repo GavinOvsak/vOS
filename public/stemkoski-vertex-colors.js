@@ -5,7 +5,7 @@ var mode = 2;//1 or 2. 1 = sliders, 2 = treadmills
 
 var back_position = {
 	x: 0,
-	y: 0,
+	y: -50,
 	z: 0,
 	theta: 0,
 	phi: 0,
@@ -44,7 +44,13 @@ var setFrontKeyboard = function(keyboard) {
 		//set up treadmill front
 		if (rotateAndZoom == undefined)
 			rotateAndZoom = new VRK.Treadmill(4,2,5,5,[VRK.Treadmill.option.X, VRK.Treadmill.option.Y, VRK.Treadmill.option.Zoom]);
-
+        //Not average Treadmill, more like gesture pad
+        //want angle separate from position
+        //want max y
+        rotateAndZoom.onMove(function(x, y, theta, zoom) {
+            front_position.theta = (x % 100) * 2 * Math.PI;
+            front_position.zoom = zoom;
+        });
         var modeSwitch = new VRK.Button(0,6,1,1,'Mode 1',15);
         modeSwitch.onClick(function() {
             mode = 1;
@@ -210,10 +216,8 @@ var set_back_control = function(mesh, no_translate) {
         translation.makeTranslation(mesh.position.x - back_position.x, 
             mesh.position.y - back_position.y, 
             mesh.position.z - back_position.z);
-        //mesh.applyMatrix(translation);
     }
 
-    //mesh.applyMatrix(tilt);
     var x_tilt = new THREE.Matrix4();
     x_tilt.makeRotationX(-1 * back_position.phi);
 
@@ -231,7 +235,26 @@ var set_back_control = function(mesh, no_translate) {
     product.multiplyMatrices(product, o_tilt);
 
     mesh.applyMatrix(product);
+    mesh.geometry.verticesNeedUpdate = true;
+};
 
+var set_front_control = function(mesh) {
+    var x_tilt = new THREE.Matrix4();
+    x_tilt.makeRotationX(front_position.phi);
+
+    var o_tilt = new THREE.Matrix4();
+    o_tilt.multiplyMatrices(o_tilt, new THREE.Matrix4().makeRotationX(mesh.rotation.x));
+    o_tilt.multiplyMatrices(o_tilt, new THREE.Matrix4().makeRotationY(mesh.rotation.y));
+    o_tilt.multiplyMatrices(o_tilt, new THREE.Matrix4().makeRotationZ(mesh.rotation.z));
+
+    var rotation = new THREE.Matrix4();
+    rotation.makeRotationZ(front_position.theta);
+
+    var product = new THREE.Matrix4();
+    product.multiplyMatrices(x_tilt, rotation);
+    product.multiplyMatrices(product, o_tilt);
+
+    mesh.applyMatrix(product);
     mesh.geometry.verticesNeedUpdate = true;
 };
 
@@ -346,19 +369,23 @@ app.drawFront = function(scene) {
     //Shrink
     var floorGeometry = new THREE.PlaneGeometry(100, 100, 10, 10);
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    set_front_control(floor);
     scene.add(floor);
 
     //Shrink
     var cube = new THREE.Mesh( smCubeGeometries[0], cubeMaterials[0] );
     cube.position.set(-30, 0, 15);
+    set_front_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( smCubeGeometries[1], cubeMaterials[1] );
     cube.position.set(0, 0, 15);
+    set_front_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( smCubeGeometries[2], cubeMaterials[1] );
     cube.position.set( 30, 0, 15 );
+    set_front_control(cube);
     scene.add(cube);
 };
 
