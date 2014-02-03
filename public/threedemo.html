@@ -374,6 +374,15 @@ VRK.Treadmill = function(x, y, width, height, options){
 			this.available = false;
 	};
 	this.getNewState = function() {
+		var newState = {};
+		newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
+		var disp = vector(this.getTouchCenter(), this.grabInfo);
+		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
+		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
+		newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
+		return newState;
+		/*
+
 		var isContained = function(array, item) {
 			return array.indexOf(item) >= 0;
 		}
@@ -394,7 +403,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 			(isContained(this.options, options.ZoomOut) >= 0 && this.grabInfo.zoom < this.getTouchSeparation())) {
 			newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
 		}
-		return newState;
+		return newState;*/
 	};
 	this.onMove_callback = function(x, y, angle, zoom) {};
 	this.onMove = function(callback) {
