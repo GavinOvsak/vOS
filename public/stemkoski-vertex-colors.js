@@ -54,7 +54,7 @@ var setFrontAndBackKeyboard = function(keyboard) {
         fineMotion.onMove(function(x, y, angle, zoom) {
             back_position.x = x * xy_scaling;
             back_position.y = y * xy_scaling;
-            back_position.angle = angle;
+            back_position.theta = theta;
         });
 
 		keyboard.set([fineMotion, zTreadmill]);
@@ -150,7 +150,7 @@ var set_back_control = function(mesh) {
         back_position.y + mesh.position.y, 
         back_position.z + mesh.position.z);
     var rotation = new THREE.Matrix4();
-    rotation.makeRotationZ(back_position.angle);
+    rotation.makeRotationZ(back_position.theta);
     mesh.applyMatrix(translation);
     mesh.applyMatrix(rotation);
     mesh.geometry.verticesNeedUpdate = true;
