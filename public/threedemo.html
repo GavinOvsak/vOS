@@ -374,12 +374,29 @@ VRK.Treadmill = function(x, y, width, height, options){
 			this.available = false;
 	};
 	this.getNewState = function() {
-		var newState = {};
-		newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
+		var newState = this.startState;
 		var disp = vector(this.getTouchCenter(), this.grabInfo);
-		newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
-		newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
-		newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
+		if (VRK.Treadmill.options.Rotate in this.options) {
+			newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
+			if (VRK.Treadmill.options.X in this.options) {
+				newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
+			}
+			if (VRK.Treadmill.options.Y in this.options) {
+				newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
+			}
+		} else {
+			if (VRK.Treadmill.options.X in this.options) {
+				newState.x = this.startState.x + disp.x;
+			}
+			if (VRK.Treadmill.options.Y in this.options) {
+				newState.y = this.startState.y + disp.y;
+			}
+		}
+		if (VRK.Treadmill.options.Zoom in this.options || 
+			(VRK.Treadmill.options.ZoomIn in this.options && this.grabInfo.zoom > this.getTouchSeparation()) ||
+			(VRK.Treadmill.options.ZoomOut in this.options && this.grabInfo.zoom < this.getTouchSeparation())) {
+			newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
+		}
 		return newState;
 	};
 	this.onMove_callback = function(x, y, angle, zoom) {};
@@ -413,6 +430,7 @@ VRK.Treadmill.option = {
 	X: 'x',
 	Y: 'y',
 	Rotate: 'rotate',
+	Zoom: 'Zoom',
 	ZoomIn: 'Zoom In',
 	ZoomOut: 'Zoom Out'
 };

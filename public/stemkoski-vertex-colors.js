@@ -49,9 +49,9 @@ var setFrontAndBackKeyboard = function(keyboard) {
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (fineMotion == undefined)
-			fineMotion = new VRK.Treadmill(2,2,5,5);
+			fineMotion = new VRK.Treadmill(2,2,5,5, [VRK.Treadmill.option.X, VRK.Treadmill.option.Y, VRK.Treadmill.option.Rotate]);
 		if (zTreadmill == undefined)
-			zTreadmill = new VRK.Treadmill(9,2,1,5);
+			zTreadmill = new VRK.Treadmill(9,2,1,5, [VRK.Treadmill.option.Y]);
         fineMotion.onMove(function(x, y, theta, zoom) {
             back_position.x = x * xy_scaling;
             back_position.y = y * xy_scaling;
