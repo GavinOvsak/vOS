@@ -391,14 +391,6 @@ VRK.Treadmill = function(x, y, width, height, options){
 		if (isContained(this.options, options.Y)) {
 			newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
 		}
-		newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
-		return newState;
-
-		var newState = this.startState;
-		var disp = vector(this.getTouchCenter(), this.grabInfo);
-		if (isContained(this.options, options.Rotate)) {
-			newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
-		}
 		if (isContained(this.options, options.Zoom) >= 0 || 
 			(isContained(this.options, options.ZoomIn) >= 0 && this.grabInfo.zoom > this.getTouchSeparation()) ||
 			(isContained(this.options, options.ZoomOut) >= 0 && this.grabInfo.zoom < this.getTouchSeparation())) {
