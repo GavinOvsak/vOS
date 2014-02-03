@@ -149,7 +149,7 @@ var set_back_control = function(mesh) {
     translation.makeTranslation(back_position.x + mesh.position.x, 
         back_position.y + mesh.position.y, 
         back_position.z + mesh.position.z);
-
+    debugger;
     var rotation = new THREE.Matrix4();
     rotation.makeRotationZ(back_position.angle);
     mesh.applyMatrix(translation);
@@ -180,18 +180,17 @@ app.drawFrontAndBack = function(scene) {
     scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
     
     var cube = new THREE.Mesh( cubeGeometries[0], cubeMaterials[0] );
-    cube.x = -100;
-    debugger;
+    cube.position.x = -100;
     set_back_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[1], cubeMaterials[1] );
-    cube.x = 0;
+    cube.position.x = 0;
     set_back_control(cube);
     scene.add(cube);
 
     cube = new THREE.Mesh( cubeGeometries[2], cubeMaterials[1] );
-    cube.x = 100;
+    cube.position.x = 100;
     set_back_control(cube);
     scene.add(cube);
 };
