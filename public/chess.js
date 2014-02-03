@@ -35,7 +35,7 @@ chess.setUpKeyboard = function(keyboard) {
 		console.log('left click');
 	});
 
-	var joystick = new VRK.Joystick(6, 4, true);
+	var joystick = new VRK.Joystick(6, 4, 3, true);
 	joystick.onMove(function(x, y){
 
 	});
@@ -44,7 +44,7 @@ chess.setUpKeyboard = function(keyboard) {
 	var label = new VRK.Label(2, 6, 1, 1, 'Earth', 30);
 	keyboard.add(label);
 
-	var joystick2 = new VRK.Joystick(10, 4, true);
+	var joystick2 = new VRK.Joystick(10, 4, 3, true);
 	keyboard.add(joystick2);
 }
 
