@@ -138,7 +138,8 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	this.width = width * unitWidth;
 	this.length = length * unitHeight; //Could get weird when tilted..
 
-	this.grip_width = width;
+	this.line_width = 0.1 * unitWidth;
+	this.grip_width = width * unitWidth;
 	this.grip_height = this.grip_width / 3;
 
 	this.progress = 0;
@@ -186,16 +187,18 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	}
 	this.draw = function(scene, board) {
 		//Draw line and then draw grip on top.
+		var material = new THREE.MeshLambertMaterial({color: 0x222222});
+		var gripMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.grip_width, this.grip_height), material);
+		setKeyboardPosition(board, gripMesh, this.x, this.y + this.length * this.progress, 0.1);
+		scene.add(gripMesh);
 
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
+		var line = new THREE.Mesh(
+			new THREE.PlaneGeometry(this.line_width, this.length), material);
+		setKeyboardPosition(board, line, this.x, this.y, 0.1);
+		scene.add(line);
 
-		buttonMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.width, this.height), material);
-
-		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
-
-		scene.add(buttonMesh);
-		//draw this.text;
 	};
 };
 
