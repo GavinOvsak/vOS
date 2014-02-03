@@ -840,7 +840,7 @@ var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //    var renderer = new THREE.CanvasRenderer(); 
 
 camera.position.y = -300;
-camera.rotation.x = Math.PI/2;
+camera.rotation.x = -Math.PI/2;
 
 $container.mousemove(function(event) {
 	camera.position.x = -1 * (event.pageX - 300) / 30;
@@ -1087,8 +1087,8 @@ kM.drawKeyboard = function(scene) {
 		redLambert);
 
 	board.position.x = 0;
-	board.position.y = -20;
-	board.position.z = 210;
+	board.position.z = -20;
+	board.position.y = -210;
 	board.rotation.x = -1.1;
 
 	var unitWidth = 1/12;
