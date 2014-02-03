@@ -192,21 +192,21 @@ var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 
 var state = '';
 
-var set_back_control = function(mesh, rotate) {
-    if (rotate == undefined)
-        rotate = true;
+var set_back_control = function(mesh, no_translate) {
+    if (no_translate == undefined)
+        no_translate = false;
 
-    var translation = new THREE.Matrix4();
-    translation.makeTranslation(mesh.position.x - back_position.x, 
-        mesh.position.y - back_position.y, 
-        mesh.position.z - back_position.z);
-    mesh.applyMatrix(translation);
-
-    if (rotate) {
-        var rotation = new THREE.Matrix4();
-        rotation.makeRotationZ(-1 * back_position.theta);
-        mesh.applyMatrix(rotation);
+    if (!no_translate) {
+        var translation = new THREE.Matrix4();
+        translation.makeTranslation(mesh.position.x - back_position.x, 
+            mesh.position.y - back_position.y, 
+            mesh.position.z - back_position.z);
+        mesh.applyMatrix(translation);
     }
+
+    var rotation = new THREE.Matrix4();
+    rotation.makeRotationZ(-1 * back_position.theta);
+    mesh.applyMatrix(rotation);
 
     var tilt = new THREE.Matrix4();
     tilt.makeRotationX(-1 * 0.5);
@@ -238,6 +238,7 @@ app.drawFrontAndBack = function(scene) {
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
     skyBox.rotation.x = Math.PI/2;
+    //set_back_control(skyBox, true);
     skyBox.rotation.y = -back_position.theta;
     scene.add( skyBox );
 
