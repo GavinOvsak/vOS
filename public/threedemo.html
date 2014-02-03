@@ -173,13 +173,6 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 		this.available = true;
 		this.point = undefined;
 	}
-	this.registerPoint = function(point) {
-		this.initGrab.x = point.x;
-		this.initGrab.y = point.y;
-		this.point = point;
-		point.onRelease(this.release.bind(this));
-		this.available = false;
-	};
 	this.onMove_callback = function(progress) {};
 	this.onMove = function(callback) {
 		this.onMove_callback = callback;
@@ -187,6 +180,14 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, angle) {
 	this.move = function(x, y) {
 		this.onMove_callback(this.getProgress());
 	}
+	this.registerPoint = function(point) {
+		this.initGrab.x = point.x;
+		this.initGrab.y = point.y;
+		this.point = point;
+		point.onRelease(this.release.bind(this));
+		point.onMove(this.move.bind(this));
+		this.available = false;
+	};
 	this.draw = function(scene, board) {
 		//Draw line and then draw grip on top.
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
