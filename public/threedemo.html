@@ -375,12 +375,12 @@ VRK.Treadmill = function(x, y, width, height, options){
 			angle: this.state.angle,
 			zoom: this.state.zoom
 		};
-		this.setGrabInfo();
 		/*this.initPointPositions[point.i] = {
 			x: point.x,
 			y: point.y
 		};*/
 		this.points[point.i] = point;
+		this.setGrabInfo();
 		point.onRelease(this.release.bind(this));
 		point.onMove(this.move.bind(this));
 		if (this.points.length >= this.max_fingers)
