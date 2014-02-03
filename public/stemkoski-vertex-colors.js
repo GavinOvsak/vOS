@@ -155,10 +155,9 @@ app.drawFrontAndBack = function(scene) {
 
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.z = -25.5;
-    //floor.rotation.x = Math.PI / 2;
     floor.position.x = 0 - back_position.x;
     floor.position.y = 0 - back_position.y;
-//    scene.add(floor);
+    scene.add(floor);
 
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
     skyBox.rotation.x = Math.PI/2;
@@ -196,7 +195,6 @@ app.drawFront = function(scene) {
 
     //Shrink
     var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    //floor.rotation.x = Math.PI / 2;
     floor.position.z = -25.5;
     scene.add(floor);
 
