@@ -312,8 +312,14 @@ VRK.Treadmill = function(x, y, width, height, options){
 	this.release = function(x, y, i) {
 		this.onRelease_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
 		this.available = true;
-		this.startState = this.state;
+		this.startState = {
+			x: this.state.x,
+			y: this.state.y,
+			angle: this.state.angle,
+			zoom: this.state.zoom
+		};
 		delete this.points[i];
+		this.setGrabInfo();
 	};
 	this.getTouchAngle = function() {
 		if (Object.keys(this.points).length < 2) {
