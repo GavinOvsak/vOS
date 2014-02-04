@@ -52,7 +52,7 @@ var setFrontKeyboard = function(keyboard) {
         //want max y
         rotateAndZoom.onMove(function(x, y, theta, zoom) {
             front_position.theta = -1 * (x % 100) * 2 * Math.PI;
-            front_position.phi = Math.max(Math.min(saved_front_phi + (y - saved_front_y)/100*Math.PI, Math.PI/2), -Math.PI/2);
+            front_position.phi = Math.max(Math.min(saved_front_phi + (y - saved_front_y)*Math.PI, Math.PI/2), -Math.PI/2);
             front_position.zoom = zoom;
         });
         rotateAndZoom.onRelease(function(x, y, theta, zoom) {
