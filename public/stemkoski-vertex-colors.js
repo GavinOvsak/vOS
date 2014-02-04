@@ -26,6 +26,9 @@ var front_position = {
 var rotationSlider, zoomSlider, tiltSlider, rotateAndZoom, translation, 
 	viewpoint, zSlider, fineMotion, zTreadmill;
 
+var saved_front_y = 0;
+var saved_front_phi = 0;
+
 var setFrontKeyboard = function(keyboard) {
 	if (mode == 1) {
 		if (rotationSlider == undefined)
@@ -49,7 +52,12 @@ var setFrontKeyboard = function(keyboard) {
         //want max y
         rotateAndZoom.onMove(function(x, y, theta, zoom) {
             front_position.theta = -1 * (x % 100) * 2 * Math.PI;
+            front_position.phi = Math.max(Math.min(saved_front_phi + (y - saved_front_y)/100*Math.PI, Math.PI/2), -Math.PI/2);
             front_position.zoom = zoom;
+        });
+        rotateAndZoom.onRelease(function(x, y, theta, zoom) {
+            saved_front_y = y;
+            saved_front_phi = front_position.phi;
         });
         var modeSwitch = new VRK.Button(0,6,1,1,'Mode 1',15);
         modeSwitch.onClick(function() {
