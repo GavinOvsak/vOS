@@ -290,14 +290,10 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 	}
 	this.draw = function(scene, board) {
 		//Draw line and then draw grip on top.
-
 		var material = new THREE.MeshLambertMaterial({color: 0x222222});
-
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height), material);
-
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
-
 		scene.add(buttonMesh);
 		//draw this.text;
 	};
