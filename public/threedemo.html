@@ -988,7 +988,7 @@ var setUpAppSwitcher = function() {
 
 	for (var i = 0; i < kM.apps.length; i++) {
 		app = kM.apps[i];
-		var icon = new VRK.Button(2 + row * 2, 6 - 2 * column, 1, 1, ' '+i, app.icon);
+		var icon = new VRK.Button(2 + row * 2, 6 - 2 * column, 1, 1, ' '+i, 15, app.icon);
 		icon.onClick((function(index){
 			return function(){
 				kM.open(kM.apps[index]);
