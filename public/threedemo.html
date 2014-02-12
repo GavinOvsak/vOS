@@ -9,6 +9,7 @@
 <script src="http://162.222.183.103/three.min.js"></script>
 <script src="http://162.222.183.103/jquery-1.10.1.min.js"></script>
 <script src="http://162.222.183.103/utility.js"></script>
+<script src="http://162.222.183.103/applist.js"></script>
 <div id="code"></div>
 <div id="container"></div>
 <script>
@@ -877,14 +878,15 @@ VRK.Keyboard = function() {
 	};
 };
 
-var apps = [
+var apps = appList;
+/*[
 	'/stemkoski-vertex-colors.js'
 //	,'/stemkoski-Textures.js'
 //	,'/stemkoski-Skybox.js'
 //	,'/stemkoski-Reflection.js'
 //	,'/galaxy.js',
 	,'/chess.js'
-];
+];*/
 
 var WIDTH = 1200,
   HEIGHT = 800;
@@ -1072,7 +1074,7 @@ kM.add = function(extern) {
 	app.icon = extern.icon;
 	kM.apps.push(app);
 	app.external.setUpKeyboard(app.keyboard);
-	kM.open(app);
+	//kM.open(app);
 };
 
 kM.canMaximize = function() {
