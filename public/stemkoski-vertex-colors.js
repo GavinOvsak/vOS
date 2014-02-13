@@ -40,7 +40,7 @@ var setFrontKeyboard = function(keyboard) {
         var modeSwitch = new VRK.Button(0,6,1,1,'Mode 2',15);
         modeSwitch.onClick(function() {
             mode = 2;
-            setFrontAndBackKeyboard(kb);
+            setFrontKeyboard(kb);
         });
         keyboard.set([rotationSlider, zoomSlider, tiltSlider, modeSwitch]);
 	} else if(mode == 2) {
@@ -62,7 +62,7 @@ var setFrontKeyboard = function(keyboard) {
         var modeSwitch = new VRK.Button(0,6,1,1,'Mode 1',15);
         modeSwitch.onClick(function() {
             mode = 1;
-            setFrontAndBackKeyboard(kb);
+            setFrontKeyboard(kb);
         });
 		keyboard.set([rotateAndZoom, modeSwitch]);
 	}
