@@ -34,6 +34,8 @@ var camera_start = {
 	z: 10
 };
 
+var connect_code = '';
+
 var Point = function(x, y, i) {
 	this.start = {
 		x: x,
@@ -148,8 +150,11 @@ var setUpAppSwitcher = function() {
 	var index = 0;
 	var app;
 
+	var codeLabel = new VRK.Label(3, 7, 2, 1, 'Code:  ' + connect_code, 15);
+	kM.appSwitcherKeyboard.add(codeLabel);
 	for (var i = 0; i < kM.apps.length; i++) {
 		app = kM.apps[i];
+		
 		var icon = new VRK.Button(2 + row * 2, 6 - 2 * column, 1, 1, ' '+i, 15, app.icon);
 		icon.onClick((function(index){
 			return function(){
@@ -181,6 +186,7 @@ socket.on('size', function (data) {
 });
 
 socket.on('code', function (code) {
+	connect_code = code;
 	screen_code = document.getElementById( 'code' );
 	screen_code.innerText = 'Use this code to connect: ' + code;
 });
