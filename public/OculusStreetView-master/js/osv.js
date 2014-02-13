@@ -657,7 +657,7 @@ function loop() {
   }
 
   // Compute move vector
-  moveVector.addVectors(keyboardMoveVector);//, gamepadMoveVector);
+  moveVector.add(keyboardMoveVector);//, gamepadMoveVector);
 
   // Disable X movement HMD tracking is enabled
   if (USE_TRACKER || VRState !== null) {
