@@ -42,7 +42,7 @@ var navList = [];
 var headingVector = new THREE.Vector3();
 var moveVector = new THREE.Vector3();
 var keyboardMoveVector = new THREE.Vector3();
-var gamepadMoveVector = new THREE.Vector3();
+//var gamepadMoveVector = new THREE.Vector3();
 var HMDRotation = new THREE.Quaternion();
 var BaseRotation = new THREE.Quaternion();
 var BaseRotationEuler = new THREE.Vector3();
@@ -216,6 +216,7 @@ function initControls() {
     }
   });
 
+/*
   // Gamepad
   // ---------------------------------------
   gamepad = new Gamepad();
@@ -257,7 +258,7 @@ function initControls() {
 
   if (!gamepad.init()) {
     //console.log("Gamepad not supported");
-  }
+  }*/
 }
 
 function initGui()
@@ -656,7 +657,7 @@ function loop() {
   }
 
   // Compute move vector
-  moveVector.addVectors(keyboardMoveVector, gamepadMoveVector);
+  moveVector.addVectors(keyboardMoveVector);//, gamepadMoveVector);
 
   // Disable X movement HMD tracking is enabled
   if (USE_TRACKER || VRState !== null) {
