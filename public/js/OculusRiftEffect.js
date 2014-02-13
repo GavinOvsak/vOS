@@ -172,7 +172,7 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 		renderer.setViewport(left.viewport[0], left.viewport[1], left.viewport[2], left.viewport[3]);
 
 		RTMaterial.uniforms['lensCenter'].value = left.lensCenter;
-//		renderer.render( scene, pCamera, renderTarget, true ); Not sure why this causes bug
+		renderer.render( scene, pCamera, renderTarget, true ); //Not sure why this causes bug
 
 		renderer.render( finalScene, oCamera );
 
@@ -188,7 +188,7 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 
 		RTMaterial.uniforms['lensCenter'].value = right.lensCenter;
 
-		renderer.render( scene, pCamera, renderTarget, true );
+//		renderer.render( scene, pCamera, renderTarget, true );
 		renderer.render( finalScene, oCamera );
 
 	};
