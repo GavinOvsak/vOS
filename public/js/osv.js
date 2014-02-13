@@ -1,4 +1,5 @@
 /**
+ * Adapted from:
  * @author troffmo5 / http://github.com/troffmo5
  *
  * Google Street View viewer for the Oculus Rift
@@ -67,13 +68,6 @@ function deltaAngleDeg(a,b) {
   return Math.min(360-(Math.abs(a-b)%360),Math.abs(a-b)%360);
 }
 
-function deltaAngleRas(a,b) {
-  // todo
-}
-
-
-// ----------------------------------------------
-
 function initWebGL() {
   // create scene
   scene = new THREE.Scene();
@@ -90,15 +84,6 @@ function initWebGL() {
   projSphere.useQuaternion = true;
   scene.add( projSphere );
 
-  // Add Progress Bar
-  progBarContainer = new THREE.Mesh( new THREE.CubeGeometry(1.2,0.2,0.1), new THREE.MeshBasicMaterial({color: 0xaaaaaa}));
-  progBarContainer.translateZ(-3);
-  camera.add( progBarContainer );
-
-  progBar = new THREE.Mesh( new THREE.CubeGeometry(1.0,0.1,0.1), new THREE.MeshBasicMaterial({color: 0x0000ff}));
-  progBar.translateZ(0.2);
-  progBarContainer.add(progBar);
-
   // Create render
   try {
     renderer = new THREE.WebGLRenderer();
@@ -111,8 +96,6 @@ function initWebGL() {
   renderer.autoClearColor = false;
   renderer.setSize( WIDTH, HEIGHT );
 
-  // Add stereo effect
-
   // Set the window resolution of the rift in case of not native
   OculusRift.hResolution = WIDTH, OculusRift.vResolution = HEIGHT,
 
@@ -124,73 +107,12 @@ function initWebGL() {
 }
 
 function initControls() {
-
-  // Keyboard
-  // ---------------------------------------
-  var lastSpaceKeyTime = new Date(),
-      lastCtrlKeyTime = lastSpaceKeyTime;
-
-  $(document).keydown(function(e) {
-    //console.log(e.keyCode);
-    switch(e.keyCode) {
-      case 32: // Space
-/*        var spaceKeyTime = new Date();
-        if (spaceKeyTime-lastSpaceKeyTime < 300) {
-          $('.ui').toggle(200);
-        }
-        lastSpaceKeyTime = spaceKeyTime;*/
-        break;
-      case 37:
-        keyboardMoveVector.y = KEYBOARD_SPEED;
-        break;
-      case 38:
-        keyboardMoveVector.x = KEYBOARD_SPEED;
-        break;
-      case 39:
-        keyboardMoveVector.y = -KEYBOARD_SPEED;
-        break;
-      case 40:
-        keyboardMoveVector.x = -KEYBOARD_SPEED;
-        break;
-      case 17: // Ctrl
-        var ctrlKeyTime = new Date();
-        if (ctrlKeyTime-lastCtrlKeyTime < 300) {
-          moveToNextPlace();
-        }
-        lastCtrlKeyTime = ctrlKeyTime;
-        break;
-      case 18: // Alt
-        USE_DEPTH = !USE_DEPTH;
-//        $('#depth-left').prop('checked', USE_DEPTH);
-//        $('#depth-right').prop('checked', USE_DEPTH);
-        setSphereGeometry();
-        break;
-    }
-  });
-
-  $(document).keyup(function(e) {
-    switch(e.keyCode) {
-      case 37:
-      case 39:
-        keyboardMoveVector.y = 0.0;
-        break;
-      case 38:
-      case 40:
-        keyboardMoveVector.x = 0.0;
-        break;
-    }
-  });
-
   // Mouse
   // ---------------------------------------
   var viewer = $('#viewer'),
       mouseButtonDown = false,
       lastClientX = 0,
       lastClientY = 0;
-
-  viewer.dblclick(function() {
-    moveToNextPlace();
-  });
 
   viewer.mousedown(function(event) {
     mouseButtonDown = true;
@@ -215,58 +137,11 @@ function initControls() {
       BaseRotation.setFromEuler(BaseRotationEuler, 'YZX');
     }
   });
-
-/*
-  // Gamepad
-  // ---------------------------------------
-  gamepad = new Gamepad();
-  gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
-    console.log("Gamepad CONNECTED")
-  });
-
-  gamepad.bind(Gamepad.Event.BUTTON_DOWN, function(e) {
-    if (e.control == "FACE_2") {
-//      $('.ui').toggle(200);
-    }
-  });
-
-  // Look for tick event so that we can hold down the FACE_1 button and
-  // continually move in the current direction
-  gamepad.bind(Gamepad.Event.TICK, function(gamepads) {
-    // Multiple calls before next place has finished loading do not matter
-    // GSVPano library will ignore these
-    if (gamepads[0].state["FACE_1"] === 1) {
-      moveToNextPlace();
-    }
-  });
-
-  gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {
-
-    // ignore deadzone
-    var value = e.value;
-    if (value < -DEADZONE) value = value + DEADZONE;
-    else if(value > DEADZONE) value = value - DEADZONE;
-    else value = 0;
-
-    if (e.axis == "LEFT_STICK_X") {
-      gamepadMoveVector.y = -value*GAMEPAD_SPEED;
-    }
-    else if (e.axis == "LEFT_STICK_Y") {
-      gamepadMoveVector.x = -value*GAMEPAD_SPEED;
-    }
-  });
-
-  if (!gamepad.init()) {
-    //console.log("Gamepad not supported");
-  }*/
 }
+
 
 function initGui()
 {
-  if (!SHOW_SETTINGS) {
-//    $('.ui').hide();
-  }
-
   $('#extt-left').prop('checked', USE_TRACKER);
   $('#extt-right').prop('checked', USE_TRACKER);
 
@@ -346,24 +221,6 @@ function initPano() {
   panoDepthLoader = new GSVPANO.PanoDepthLoader();
   panoLoader.setZoom(QUALITY);
 
-  panoLoader.onProgress = function( progress ) {
-    if (progress > 0) {
-      progBar.visible = true;
-      progBar.scale = new THREE.Vector3(progress/100.0,1,1);
-    }
-//    $(".mapprogress").progressbar("option", "value", progress);
-
-  };
-  panoLoader.onPanoramaData = function( result ) {
-    progBarContainer.visible = true;
-    progBar.visible = false;
-//    $('.mapprogress').show();
-  };
-
-  panoLoader.onNoPanoramaData = function( status ) {
-    //alert('no data!');
-  };
-
   panoLoader.onPanoramaLoad = function() {
     var a = THREE.Math.degToRad(90-panoLoader.heading);
     projSphere.quaternion.setFromEuler(new THREE.Vector3(0,a,0), 'YZX');
@@ -373,29 +230,6 @@ function initPano() {
     projSphere.material.map = new THREE.Texture( this.canvas );
     projSphere.material.map.needsUpdate = true;
     centerHeading = panoLoader.heading;
-
-    progBarContainer.visible = false;
-    progBar.visible = false;
-
-/*    markerLeft.setMap( null );
-    markerLeft = new google.maps.Marker({ position: this.location.latLng, map: gmapLeft });
-    markerLeft.setMap( gmapLeft );
-
-    markerRight.setMap( null );
-    markerRight = new google.maps.Marker({ position: this.location.latLng, map: gmapRight });
-    markerRight.setMap( gmapRight );
-*/
-//    $('.mapprogress').hide();
-
-/*    if (window.history) {
-      var newUrl = '/?lat='+this.location.latLng.lat()+'&lng='+this.location.latLng.lng();
-      newUrl += USE_TRACKER ? '&sock='+escape(WEBSOCKET_ADDR.slice(5)) : '';
-      newUrl += '&q='+QUALITY;
-      newUrl += '&s='+$('#settings').is(':visible');
-      newUrl += '&heading='+currHeading;
-      window.history.pushState('','',newUrl);
-    }*/
-
     panoDepthLoader.load(this.location.pano);
   };
 
@@ -452,138 +286,9 @@ function initWebSocket() {
 }
 
 function initGoogleMap() {
-//  $('.mapprogress').progressbar({ value: false });
-
   currentLocation = new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng );
-
-/*  gmapLeft = new google.maps.Map($('#map-left')[0], {
-    zoom: 14,
-    center: currentLocation,
-    mapTypeId: google.maps.MapTypeId.HYBRID,
-    streetViewControl: false
-  });
-  google.maps.event.addListener(gmapLeft, 'click', function(event) {
-    panoLoader.load(event.latLng);
-  });
-
-  google.maps.event.addListener(gmapLeft, 'center_changed', function(event) {
-    if(!this.blockEvents) {
-      gmapRight.blockEvents = true;
-      gmapRight.setCenter(gmapLeft.getCenter());
-      gmapRight.blockEvents = false;
-    }
-  });
-  google.maps.event.addListener(gmapLeft, 'zoom_changed', function(event) {
-    if(!this.blockEvents) {
-      gmapRight.blockEvents = true;
-      gmapRight.setZoom(gmapLeft.getZoom());
-      gmapRight.blockEvents = false;
-    }
-  });
-  google.maps.event.addListener(gmapLeft, 'maptypeid_changed', function(event) {
-    if(!this.blockEvents) {
-      gmapRight.blockEvents = true;
-      gmapRight.setMapTypeId(gmapLeft.getMapTypeId());
-      gmapRight.blockEvents = false;
-    }
-  });
-  gmapLeft.blockEvents = false;
-
-  gmapRight = new google.maps.Map($('#map-right')[0], {
-    zoom: 14,
-    center: currentLocation,
-    mapTypeId: google.maps.MapTypeId.HYBRID,
-    streetViewControl: false
-  });
-
-  google.maps.event.addListener(gmapRight, 'click', function(event) {
-    panoLoader.load(event.latLng);
-  });
-
-  google.maps.event.addListener(gmapRight, 'center_changed', function(event) {
-    if (!this.blockEvents) {
-      gmapLeft.blockEvents = true;
-      gmapLeft.setCenter(gmapRight.getCenter());
-      gmapLeft.blockEvents = false;
-
-    }
-  });
-  google.maps.event.addListener(gmapRight, 'zoom_changed', function(event) {
-    if (!this.blockEvents) {
-      gmapLeft.blockEvents = true;
-      gmapLeft.setZoom(gmapRight.getZoom());
-      gmapLeft.blockEvents = false;
-    }
-  });
-  google.maps.event.addListener(gmapRight, 'maptypeid_changed', function(event) {
-    if (!this.blockEvents) {
-      gmapLeft.blockEvents = true;
-      gmapLeft.setMapTypeId(gmapRight.getMapTypeId());
-      gmapLeft.blockEvents = false;
-    }
-  });
-  gmapRight.blockEvents = false;
-
-  svCoverageLeft = new google.maps.StreetViewCoverageLayer();
-  svCoverageLeft.setMap(gmapLeft);
-
-  svCoverageRight = new google.maps.StreetViewCoverageLayer();
-  svCoverageRight.setMap(gmapRight);
-
-  geocoder = new google.maps.Geocoder();
-
-  $('#mapsearch-left').change(function() {
-      geocoder.geocode( { 'address': $('#mapsearch-left').val()}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        gmapLeft.setCenter(results[0].geometry.location);
-        panoLoader.load( results[0].geometry.location );
-      }
-    });
-  });
-
-  $('#mapsearch-right').change(function() {
-      geocoder.geocode( { 'address': $('#mapsearch-right').val()}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        gmapLeft.setCenter(results[0].geometry.location);
-        panoLoader.load( results[0].geometry.location );
-      }
-      $('#mapsearch-left').prop('value', $('#mapsearch-right').val() );
-    });
-  });
-
-  $('#mapsearch-left').keyup(function() {
-      $('#mapsearch-right').prop('value', $('#mapsearch-left').val() );
-  });
-
-  $('#mapsearch-right').keyup(function() {
-      $('#mapsearch-left').prop('value', $('#mapsearch-right').val() );
-  });
-
-  markerLeft = new google.maps.Marker({ position: currentLocation, map: gmapLeft });
-  markerLeft.setMap( gmapLeft );
-
-  markerRight = new google.maps.Marker({ position: currentLocation, map: gmapRight });
-  markerRight.setMap( gmapRight );
-*/
 }
 
-
-function moveToNextPlace() {
-  var nextPoint = null;
-  var minDelta = 360;
-  var navList = panoLoader.links;
-  for (var i = 0; i < navList.length; i++) {
-    var delta = deltaAngleDeg(currHeading, navList[i].heading);
-    if (delta < minDelta && delta < NAV_DELTA) {
-      minDelta = delta;
-      nextPoint = navList[i].pano;
-    }
-  }
-
-  if (nextPoint) {
-    panoLoader.load(nextPoint);
-  }
-}
 
 function initVR() {
   vr.load(function(error) {
@@ -613,24 +318,10 @@ function render() {
   //renderer.render(scene, camera);
 }
 
+
 function setUiSize() {
   var width = window.innerWidth, hwidth = width/2,
       height = window.innerHeight;
-
-/*  var ui = $('#ui-left');
-  var hsize=0.60, vsize = 0.40, outOffset=0.2;
-  ui.css('width', hwidth*hsize);
-  ui.css('left', hwidth*(1-hsize+outOffset)/2) ;
-  ui.css('height', height*vsize);
-  ui.css('margin-top', height*(1-vsize)/2);
-
-  ui = $('#ui-right');
-  hsize=0.60; vsize = 0.40; outOffset=0.1;
-  ui.css('width', hwidth*hsize);
-  ui.css('right', hwidth*(1-hsize+outOffset)/2) ;
-  ui.css('height', height*vsize);
-  ui.css('margin-top', height*(1-vsize)/2);*/
-
 }
 
 function resize( event ) {
@@ -707,17 +398,7 @@ $(document).ready(function() {
 
 
   WIDTH = window.innerWidth; HEIGHT = window.innerHeight;
-  /*$('.ui').tabs({
-    activate: function( event, ui ) {
-      var caller = event.target.id;
-      if (caller == 'ui-left') {
-        $("#ui-right").tabs("option","active", $("#ui-left").tabs("option","active"));
-      }
-      if (caller == 'ui-right') {
-        $("#ui-left").tabs("option","active", $("#ui-right").tabs("option","active"));
-      }
-    }
-  });*/
+
   setUiSize();
 
   initWebGL();

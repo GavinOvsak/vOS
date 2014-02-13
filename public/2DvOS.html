@@ -1247,7 +1247,7 @@ kM.drawKeyboard = function(scene) {
 
 
 apps.map(function(appURL) {
-	var url = 'http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+appURL) + '&callback=?';
+	var url = 'http://whateverorigin.org/get?url=' + encodeURIComponent(appURL) + '&callback=?';
 /*	var url = 'http://162.222.183.103'+appURL;
 	$.getScript(url, function() {
 		kM.add(exports);
