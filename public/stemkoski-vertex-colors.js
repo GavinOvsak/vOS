@@ -32,11 +32,11 @@ var saved_front_phi = 0;
 var setFrontKeyboard = function(keyboard) {
 	if (mode == 1) {
 		if (rotationSlider == undefined)
-			rotationSlider = new VRK.ArcSlider();
+			rotationSlider = new VRK.ArcSlider(2,1,1,10, false, VRK.LinearSlider.direction.HORIZONTAL);
 		if (zoomSlider == undefined)
-			zoomSlider = new VRK.LinearSlider();
+			zoomSlider = new VRK.LinearSlider(4,3,1,4, false, VRK.LinearSlider.direction.VERTICAL);
 		if (tiltSlider == undefined)
-			tiltSlider = new VRK.LinearSlider();
+			tiltSlider = new VRK.LinearSlider(8,3,1,4, false, VRK.LinearSlider.direction.VERTICAL);
         var modeSwitch = new VRK.Button(0,6,1,1,'Mode 2',15);
         modeSwitch.onClick(function() {
             mode = 2;
@@ -249,7 +249,9 @@ var set_back_control = function(mesh, no_translate) {
 
 var set_front_control = function(mesh) {
     var translation = new THREE.Matrix4().makeTranslation(
-        mesh.position.x, mesh.position.y, mesh.position.z);
+        mesh.position.x * front_position.zoom, 
+        mesh.position.y * front_position.zoom, 
+        mesh.position.z * front_position.zoom);
 
     var x_tilt = new THREE.Matrix4();
     x_tilt.makeRotationX(front_position.phi);
@@ -269,6 +271,9 @@ var set_front_control = function(mesh) {
 
     mesh.applyMatrix(product);
     mesh.geometry.verticesNeedUpdate = true;
+    mesh.scale.x = front_position.zoom;
+    mesh.scale.y = front_position.zoom;
+    mesh.scale.z = front_position.zoom;
 };
 
 app.drawFrontAndBack = function(scene) {
