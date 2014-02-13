@@ -1,20 +1,5 @@
 var VRK = {};
 
-var makeText = function(text, px, width, height) {
-	var canvas1 = document.createElement('canvas');
-	canvas1.height = px+10;
-	canvas1.width = width * 700;
-    var context1 = canvas1.getContext('2d');
-    context1.font = "Bold " + px + "px Arial";
-    context1.fillStyle = "rgba(255,255,255,0.95)";
-    context1.fillText(" " + text, 0, px);
-    var texture1 = new THREE.Texture(canvas1) 
-    texture1.needsUpdate = true;
-    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
-    material1.transparent = true;
-    return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
-};
-
 VRK.Button = function(x, y, width, height, text, text_size, opt_image) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
@@ -119,18 +104,27 @@ VRK.Button = function(x, y, width, height, text, text_size, opt_image) {
 	}
 };
 
-VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction, initProgress) {
+VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, initProgress) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
 
 	this.x = x * unitWidth;
 	this.y = y * unitHeight;
 	this.width = width * unitWidth;
-	this.length = length * unitHeight; //Could get weird when tilted..
-
-	this.line_width = 0.1 * unitWidth;
-	this.grip_width = width * unitWidth;
-	this.grip_height = 0.5 * unitHeight;
+	this.height = height * unitHeight;
+	this.direction = direction;
+	if (this.direction == undefined) {
+		this.direction = VRK.LinearSlider.direction.VERTICAL;
+	}
+	if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
+		this.line_width = 0.1 * unitWidth;
+		this.grip_width = width * unitWidth;
+		this.grip_height = 0.5 * unitHeight;
+	} else if (this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
+		this.line_width = 0.1 * unitHeight;
+		this.grip_width = height * unitHeight;
+		this.grip_height = 0.5 * unitWidth;
+	}
 
 	if (initProgress != undefined) {
 		this.progress = initProgress;
@@ -139,10 +133,6 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction, ini
 	}
 
 	this.returnsToCenter = returnsToCenter;
-	this.direction = direction;
-	if (this.direction == undefined) {
-		this.direction = VRK.LinearSlider.direction.VERTICAL;
-	};
 
 	this.initGrab = {
 		x: 0,
@@ -155,18 +145,24 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction, ini
 	this.getProgress = function() {
 		if (this.point != null) {
 			if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
-				this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/(this.length - this.grip_height);
+				this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/(this.height - this.grip_height);
 			} else if(this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
-				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.length - this.grip_height);
+				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.width - this.grip_height);
 			}
 		}
 		this.progress = Math.max(Math.min(this.progress, 1), 0);
 		return this.progress;
 	}
 	this.contains = function(x, y) {
-		return x > this.x && x < this.x + this.grip_width && 
-			y > this.y + (this.length - this.grip_height) * this.progress && 
-			y < this.y + (this.length - this.grip_height) * this.progress + this.grip_height;
+		if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
+			return x > this.x && x < this.x + this.grip_width && 
+				y > this.y + (this.height - this.grip_height) * this.progress && 
+				y < this.y + (this.height - this.grip_height) * this.progress + this.grip_height;
+		} else if (this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
+			return y > this.y && y < this.y + this.grip_width && 
+				x > this.x + (this.width - this.grip_height) * this.progress && 
+				x < this.x + (this.width - this.grip_height) * this.progress + this.grip_height;
+		}
 	};
 	this.onRelease_callback = function(progress) {};
 	this.onRelease = function(callback) {
@@ -201,16 +197,25 @@ VRK.LinearSlider = function(x, y, width, length, returnsToCenter, direction, ini
 	};
 	this.draw = function(scene, board) {
 		//Draw line and then draw grip on top.
-		var material = new THREE.MeshLambertMaterial({color: 0x222222});
-		var line = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.line_width, this.length), material);
-		setKeyboardPosition(board, line, this.x + (this.width - this.line_width)/2, this.y, 0.1);
-		scene.add(line);
+		var line_material = new THREE.MeshLambertMaterial({color: 0x222222});
+		var grip_material = new THREE.MeshLambertMaterial({color: 0x224222});
 
-		var material = new THREE.MeshLambertMaterial({color: 0x224222});
-		var gripMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(this.grip_width, this.grip_height), material);
-		setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + (this.length - this.grip_height) * this.progress, 0.11);
+		if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
+			var line = new THREE.Mesh(
+				new THREE.PlaneGeometry(this.line_width, this.height), line_material);
+			setKeyboardPosition(board, line, this.x + (this.width - this.line_width)/2, this.y, 0.1);
+			var gripMesh = new THREE.Mesh(
+				new THREE.PlaneGeometry(this.grip_width, this.grip_height), grip_material);
+			setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + (this.height - this.grip_height) * this.progress, 0.11);
+		} else if (this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
+			var line = new THREE.Mesh(
+				new THREE.PlaneGeometry(this.width, this.line_width), line_material);
+			setKeyboardPosition(board, line, this.x, this.y + (this.height - this.line_width)/2, 0.1);
+			var gripMesh = new THREE.Mesh(
+				new THREE.PlaneGeometry(this.grip_height, this.grip_width), grip_material);
+			setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_height) * this.progress, this.y + (this.height - this.grip_width)/2, 0.11);
+		}
+		scene.add(line);
 		scene.add(gripMesh);
 	};
 };
@@ -220,6 +225,7 @@ VRK.LinearSlider.direction = {
 	HORIZONTAL: 'horizontal'
 };
 
+/*
 VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
@@ -283,7 +289,7 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 		//draw this.text;
 	};
 };
-
+*/
 
 VRK.Treadmill = function(x, y, width, height, options){
 	var unitWidth = 1/12;
