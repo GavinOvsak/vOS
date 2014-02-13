@@ -860,6 +860,7 @@ var kM = {
 	apps: [],
 	front: null,
 	back: null,
+	hidden: false,
 	front_and_back: null,
 	points: []
 };
@@ -1007,7 +1008,7 @@ var setUpAppSwitcher = function() {
 };
 setUpAppSwitcher();
 
-kM.state = kM.State.Normal;
+kM.state = kM.State.AppSwitch;
 
 var socket = io.connect('http://162.222.183.103/');
 socket.emit('declare-type', 'output');
