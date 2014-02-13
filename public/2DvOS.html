@@ -190,6 +190,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 				y > this.y + (this.height - this.grip_height) * this.progress && 
 				y < this.y + (this.height - this.grip_height) * this.progress + this.grip_height;
 		} else if (this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
+			debugger;
 			return y > this.y && y < this.y + this.grip_width && 
 				x > this.x + (this.width - this.grip_height) * this.progress && 
 				x < this.x + (this.width - this.grip_height) * this.progress + this.grip_height;
@@ -244,7 +245,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 			setKeyboardPosition(board, line, this.x, this.y + (this.height - this.line_width)/2, 0.1);
 			var gripMesh = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.grip_height, this.grip_width), grip_material);
-			setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_height)/2, this.y + (this.height - this.grip_width) * this.progress, 0.11);
+			setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_height) * this.progress, this.y + (this.height - this.grip_width)/2, 0.11);
 		}
 
 		scene.add(line);
