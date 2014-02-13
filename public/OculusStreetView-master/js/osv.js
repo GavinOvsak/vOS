@@ -376,24 +376,24 @@ function initPano() {
     progBarContainer.visible = false;
     progBar.visible = false;
 
-    markerLeft.setMap( null );
+/*    markerLeft.setMap( null );
     markerLeft = new google.maps.Marker({ position: this.location.latLng, map: gmapLeft });
     markerLeft.setMap( gmapLeft );
 
     markerRight.setMap( null );
     markerRight = new google.maps.Marker({ position: this.location.latLng, map: gmapRight });
     markerRight.setMap( gmapRight );
-
+*/
 //    $('.mapprogress').hide();
 
-    if (window.history) {
-/*      var newUrl = '/?lat='+this.location.latLng.lat()+'&lng='+this.location.latLng.lng();
+/*    if (window.history) {
+      var newUrl = '/?lat='+this.location.latLng.lat()+'&lng='+this.location.latLng.lng();
       newUrl += USE_TRACKER ? '&sock='+escape(WEBSOCKET_ADDR.slice(5)) : '';
       newUrl += '&q='+QUALITY;
       newUrl += '&s='+$('#settings').is(':visible');
       newUrl += '&heading='+currHeading;
-      window.history.pushState('','',newUrl);*/
-    }
+      window.history.pushState('','',newUrl);
+    }*/
 
     panoDepthLoader.load(this.location.pano);
   };
