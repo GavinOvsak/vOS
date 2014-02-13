@@ -178,7 +178,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 			if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
 				this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/(this.height - this.grip_height);
 			} else if(this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
-				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.height - this.grip_height);
+				this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.width - this.grip_height);
 			}
 		}
 		this.progress = Math.max(Math.min(this.progress, 1), 0);
