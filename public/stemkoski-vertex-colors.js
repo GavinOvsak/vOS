@@ -47,7 +47,7 @@ var setFrontKeyboard = function(keyboard) {
             front_position.zoom = Math.pow(2,progress*2-1);
         });
         tiltSlider.onMove(function(progress){
-            front_position.phi = Math.PI*(progress - 0.5)
+            front_position.phi = Math.PI*(0.5 - progress)
         });
         rotationSlider.onMove(function(progress){
             front_position.theta = 2*Math.PI*(progress - 0.5)
