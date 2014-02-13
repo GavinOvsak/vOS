@@ -247,7 +247,6 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 				new THREE.PlaneGeometry(this.grip_height, this.grip_width), grip_material);
 			setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_height) * this.progress, this.y + (this.height - this.grip_width)/2, 0.11);
 		}
-
 		scene.add(line);
 		scene.add(gripMesh);
 	};
@@ -1072,20 +1071,26 @@ socket.on('end', function (data) {
 });
 
 kM.open = function(app) {
-	if (app.external.drawFront != null) {
-		//if front and back app has back, push to back
-		if (kM.front_and_back != null && kM.front_and_back.external.drawBack != null) {
-			kM.back = kM.front_and_back;
-		}
-		kM.front_and_back = null;
-		kM.front = app;
-	} else if(app.external.drawFrontAndBack) {
-		kM.front = null;
+	//if is already in front+back or back, go to front+back. If is already in front go to front
+	if (kM.back != null && kM.back.index == app.index) {
 		kM.back = null;
 		kM.front_and_back = app;
-	} else if(app.external.drawBack) {
-		kM.front_and_back = null;
-		kM.back = app;
+	} else if (kM.front_and_back == null || kM.front_and_back.index != app.index) {
+		if (app.external.drawFront != null) {
+			//if front and back app has back, push to back
+			if (kM.front_and_back != null && kM.front_and_back.external.drawBack != null) {
+				kM.back = kM.front_and_back;
+			}
+			kM.front_and_back = null;
+			kM.front = app;
+		} else if(app.external.drawFrontAndBack) {
+			kM.front = null;
+			kM.back = null;
+			kM.front_and_back = app;
+		} else if(app.external.drawBack) {
+			kM.front_and_back = null;
+			kM.back = app;
+		}
 	}
 	kM.state = kM.State.Normal;
 };
@@ -1096,6 +1101,7 @@ kM.add = function(extern) {
 	app.keyboard = new VRK.Keyboard(app);
 	app.name = extern.name;
 	app.icon = extern.icon;
+	app.index = kM.apps.length;
 	kM.apps.push(app);
 	app.external.setUpKeyboard(app.keyboard);
 	setUpAppSwitcher();
