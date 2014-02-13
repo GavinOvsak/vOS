@@ -1,5 +1,20 @@
 var VRK = {};
 
+var makeText = function(text, px, width, height) {
+	var canvas1 = document.createElement('canvas');
+	canvas1.height = px+10;
+	canvas1.width = width * 700;
+    var context1 = canvas1.getContext('2d');
+    context1.font = "Bold " + px + "px Arial";
+    context1.fillStyle = "rgba(255,255,255,0.95)";
+    context1.fillText(" " + text, 0, px);
+    var texture1 = new THREE.Texture(canvas1) 
+    texture1.needsUpdate = true;
+    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+    material1.transparent = true;
+    return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
+};
+
 VRK.Button = function(x, y, width, height, text, text_size, opt_image) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
