@@ -128,8 +128,6 @@ var checkGrab = function(point) {
 	}
 }
 
-var scene = new THREE.Scene();
-
 kM.State = {
 	Normal: 'normal',
 	AppSwitch: 'app-switch',
@@ -315,7 +313,7 @@ Only way to get background app if to be in f_b and open a new f.
 var oldState = kM.State.Normal;
 
 kM.drawKeyboard = function(scene) {
-	var redLambert = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
+	var redLambert = new THREE.MeshBasicMaterial({ color: 0xCC0000 });
 
 	var board = new THREE.Mesh(
 		new THREE.PlaneGeometry(80, 30),
@@ -377,18 +375,18 @@ kM.drawKeyboard = function(scene) {
 	}
 };
 
-
+/*
 apps.map(function(appURL) {
 	var url = 'http://whateverorigin.org/get?url=' + encodeURIComponent(appURL) + '&callback=?';
 /*	var url = 'http://162.222.183.103'+appURL;
 	$.getScript(url, function() {
 		kM.add(exports);
-	});*/
+	});*
 	$.getJSON(url, function(data){
 		eval(data.contents); //Find way to sanitize this.
 		kM.add(exports);
 	});
-});
+});*/
 /*
 $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+apps[1]) + '&callback=?', function(data){
 	eval(data.contents);
@@ -477,53 +475,58 @@ function deltaAngleDeg(a,b) {
 }
 
 
+var initWebGL = function() {
 
-var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-camera.target = new THREE.Vector3( 1, 0, 0 );
-camera.useQuaternion = true;
+	camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+	camera.rotation.x = camera_start.x;
+	camera.position.y = camera_start.y;
+	camera.position.z = camera_start.z;
 
-// Add projection sphere
-projSphere = new THREE.Mesh( new THREE.SphereGeometry( 500, 512, 256 ), new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide}) );
-projSphere.geometry.dynamic = true;
-projSphere.useQuaternion = true;
+//	camera.target = new THREE.Vector3( 1, 0, 0 );
+	camera.useQuaternion = true;
+
+	// Add projection sphere
+/*	projSphere = new THREE.Mesh( new THREE.SphereGeometry( 500, 512, 256 ), new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide}) );
+	projSphere.geometry.dynamic = true;
+	projSphere.useQuaternion = true;*/
 
 
-//THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
-//if ( Detector.webgl )
-//else
-//    var renderer = new THREE.CanvasRenderer(); 
+	//THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+	//if ( Detector.webgl )
+	//else
+	//    var renderer = new THREE.CanvasRenderer(); 
 
-// Create render
-try {
-	var renderer = new THREE.WebGLRenderer( {antialias:true} );
+	// Create render
+	try {
+		renderer = new THREE.WebGLRenderer( {antialias:true} );
+	}
+	catch(e){
+		alert('This application needs WebGL enabled!');
+		return false;
+	}
+
+	renderer.autoClearColor = true;
+	renderer.setSize(WIDTH, HEIGHT);
+
+	// Set the window resolution of the rift in case of not native
+	OculusRift.hResolution = WIDTH, OculusRift.vResolution = HEIGHT,
+
+	effect = new THREE.OculusRiftEffect( renderer, {HMD:OculusRift, worldFactor:WORLD_FACTOR} );
+	effect.setSize(WIDTH, HEIGHT );
+
+
+	/*camera.rotation.x = camera_start.x;
+	camera.position.y = camera_start.y;
+	camera.position.z = camera_start.z;*/
+
+	/*$viewer.mousemove(function(event) {
+		camera.position.x = -1 * (event.pageX - 300) / 30;
+		camera.position.z = (event.pageY - 200) / 30;
+	});*/
+
+	var $viewer = $('#viewer');
+	$viewer.append(renderer.domElement);
 }
-catch(e){
-	alert('This application needs WebGL enabled!');
-	return false;
-}
-
-renderer.autoClearColor = false;
-renderer.setSize(WIDTH, HEIGHT);
-
-// Set the window resolution of the rift in case of not native
-OculusRift.hResolution = WIDTH, OculusRift.vResolution = HEIGHT,
-
-effect = new THREE.OculusRiftEffect( renderer, {HMD:OculusRift, worldFactor:WORLD_FACTOR} );
-effect.setSize(WIDTH, HEIGHT );
-
-
-/*camera.rotation.x = camera_start.x;
-camera.position.y = camera_start.y;
-camera.position.z = camera_start.z;*/
-
-/*$viewer.mousemove(function(event) {
-	camera.position.x = -1 * (event.pageX - 300) / 30;
-	camera.position.z = (event.pageY - 200) / 30;
-});*/
-
-var $viewer = $('#viewer');
-$viewer.append(renderer.domElement);
-
 
 
 function initControls() {
@@ -637,14 +640,16 @@ function initGui()
 
 }
 
+
 function initPano() {
   panoLoader = new GSVPANO.PanoLoader();
   panoDepthLoader = new GSVPANO.PanoDepthLoader();
   panoLoader.setZoom(QUALITY);
 
   panoLoader.onPanoramaLoad = function() {
-    var a = THREE.Math.degToRad(90-panoLoader.heading);
-    projSphere.quaternion.setFromEuler(new THREE.Vector3(0,a,0), 'YZX');
+    //var a = THREE.Math.degToRad(90-panoLoader.heading);
+    //projSphere.rotation.z = a;
+    //projSphere.quaternion.setFromEuler(new THREE.Vector3(0,a,0), 'YZX');
 
     projSphere.material.wireframe = false;
     projSphere.material.map.needsUpdate = true;
@@ -668,18 +673,18 @@ function setSphereGeometry() {
       u = x / geom.widthSegments;
       v = y / geom.heightSegments;
 
-      radius = USE_DEPTH ? Math.min(depthMap[y*512 + x], FAR) : 500;
+      radius = (USE_DEPTH ? Math.min(depthMap[y*512 + x], FAR) : 500)*10;
 
       var vertex = geom.vertices[i];
       vertex.x = - radius * Math.cos( geom.phiStart + u * geom.phiLength ) * Math.sin( geom.thetaStart + v * geom.thetaLength );
-      vertex.y = radius * Math.cos( geom.thetaStart + v * geom.thetaLength );
-      vertex.z = radius * Math.sin( geom.phiStart + u * geom.phiLength ) * Math.sin( geom.thetaStart + v * geom.thetaLength );
+      vertex.z = radius * Math.cos( geom.thetaStart + v * geom.thetaLength );
+      vertex.y = -radius * Math.sin( geom.phiStart + u * geom.phiLength ) * Math.sin( geom.thetaStart + v * geom.thetaLength );
       i++;
     }
   }
   geom.verticesNeedUpdate = true;
+//  projSphere.rotation.x = Math.PI/2;
 }
-
 
 function initGoogleMap() {
   currentLocation = new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng );
@@ -737,7 +742,6 @@ function getParams() {
   return params;
 }
 
-
 var pointLight = new THREE.PointLight(0xFFFFFF);
 
 pointLight.position.x = 50;
@@ -750,8 +754,54 @@ directLight.position.x = 0;
 directLight.position.y = 0;
 directLight.position.z = 1;
 
+var projGeo = new THREE.SphereGeometry( 5000, 512, 256 );
+var projMaterial = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide});
+
+//scene = new THREE.Scene();
+
 var render = function() {
-	window.requestAnimationFrame(render);
+
+	// Create camera
+//	  camera = new THREE.PerspectiveCamera( 60, WIDTH/HEIGHT, 0.1, FAR );
+	//  camera.target = new THREE.Vector3( 0, 1, 0 );
+//	  camera.useQuaternion = true;
+	//  camera.rotation.x = camera_start.x;
+
+	requestAnimationFrame( render );
+//	window.requestAnimationFrame(render);
+
+	if (!USE_TRACKER && VRState !== null) {
+		if (vr.pollState(VRState)) {
+			HMDRotation.set(VRState.hmd.rotation[0], VRState.hmd.rotation[1], VRState.hmd.rotation[2], VRState.hmd.rotation[3]);
+		}
+	}
+
+	// Compute move vector
+	moveVector.add(keyboardMoveVector);//, gamepadMoveVector);
+
+	// Disable X movement HMD tracking is enabled
+	if (USE_TRACKER || VRState !== null) {
+		moveVector.x = 0;
+	}
+
+	// Apply movement
+	BaseRotationEuler.set( angleRangeRad(BaseRotationEuler.x + moveVector.x), angleRangeRad(BaseRotationEuler.y + moveVector.y), 0.0 );
+	BaseRotation.setFromEuler(BaseRotationEuler, 'YZX');
+
+	var matr = new THREE.Matrix4();
+	matr.makeRotationFromQuaternion(BaseRotation);
+
+	var tilt = new THREE.Matrix4();
+	tilt.makeRotationX(Math.PI/2);
+	matr.multiplyMatrices(tilt, matr);
+	BaseRotation.setFromRotationMatrix(matr);
+
+	// Update camera rotation
+	camera.quaternion.multiplyQuaternions(BaseRotation, HMDRotation);
+
+	// Compute heading
+	headingVector.setEulerFromQuaternion(camera.quaternion, 'YZX');
+	currHeading = angleRangeDeg(THREE.Math.radToDeg(-headingVector.y));
 
 	scene = new THREE.Scene();
 
@@ -767,83 +817,53 @@ var render = function() {
 	}
 	kM.drawKeyboard(scene);
 
+/*	camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+	camera.target = new THREE.Vector3( 1, 0, 0 );
+	camera.useQuaternion = true;*/
+
+	// Add projection sphere
+/*	projSphere = new THREE.Mesh( new THREE.SphereGeometry( 500, 512, 256 ), new THREE.MeshBasicMaterial(projOptions) );
+	projSphere.geometry.dynamic = true;
+	projSphere.useQuaternion = true;
+*/
+
 	scene.add(camera);
 	scene.add(directLight);
-	scene.add(projSphere);
+//	scene.add(projSphere);
+
+	
+	  // Add projection sphere
+//	  projSphere = new THREE.Mesh( projGeo, projMaterial );
+	  //projSphere.rotation.x = Math.PI/2;
+//	  projSphere.geometry.dynamic = true;
+//	  projSphere.useQuaternion = true;
+//      setSphereGeometry();
+//	  scene.add( projSphere );
+
+	/*  progBarContainer = new THREE.Mesh( new THREE.CubeGeometry(1.2,0.2,0.1), new THREE.MeshBasicMaterial({color: 0xaaaaaa}));
+	  progBarContainer.translateZ(-3);
+	  progBarContainer.useQuaternion = true;
+	  scene.add( progBarContainer );
+	*//*
+
+	  var redLambert = new THREE.MeshBasicMaterial({ color: 0xCC0000, side: THREE.DoubleSide});
+
+	  var board = new THREE.Mesh(
+	    new THREE.PlaneGeometry(4, 3),
+	    redLambert);
+
+	  board.position.x = 0;
+	  board.position.y = 4;
+	  board.position.z = -5;
+
+	  board.rotation.x = -1.1 + Math.PI/2;
+
+	  scene.add(board);*/
+
+	renderer.clear();
 	effect.render(scene, camera);
 //	renderer.render(scene, camera);
 };
-
-function initWebGL() {
-  // create scene
-  scene = new THREE.Scene();
-
-  // Create camera
-  camera = new THREE.PerspectiveCamera( 60, WIDTH/HEIGHT, 0.1, FAR );
-  camera.target = new THREE.Vector3( 1, 0, 0 );
-  camera.useQuaternion = true;
-  scene.add( camera );
-
-  // Add projection sphere
-  projSphere = new THREE.Mesh( new THREE.SphereGeometry( 500, 512, 256 ), new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide}) );
-  projSphere.geometry.dynamic = true;
-  projSphere.useQuaternion = true;
-  scene.add( projSphere );
-
-  // Create render
-  try {
-    renderer = new THREE.WebGLRenderer();
-  }
-  catch(e){
-    alert('This application needs WebGL enabled!');
-    return false;
-  }
-
-  renderer.autoClearColor = false;
-  renderer.setSize( WIDTH, HEIGHT );
-
-  // Set the window resolution of the rift in case of not native
-  OculusRift.hResolution = WIDTH, OculusRift.vResolution = HEIGHT,
-
-  effect = new THREE.OculusRiftEffect( renderer, {HMD:OculusRift, worldFactor:WORLD_FACTOR} );
-  effect.setSize(WIDTH, HEIGHT );
-
-  var viewer = $('#viewer');
-  viewer.append(renderer.domElement);
-}
-
-function loop() {
-  requestAnimationFrame( loop );
-
-  // User vr plugin
-  if (!USE_TRACKER && VRState !== null) {
-    if (vr.pollState(VRState)) {
-      HMDRotation.set(VRState.hmd.rotation[0], VRState.hmd.rotation[1], VRState.hmd.rotation[2], VRState.hmd.rotation[3]);
-    }
-  }
-
-  // Compute move vector
-  moveVector.add(keyboardMoveVector);//, gamepadMoveVector);
-
-  // Disable X movement HMD tracking is enabled
-  if (USE_TRACKER || VRState !== null) {
-    moveVector.x = 0;
-  }
-
-  // Apply movement
-  BaseRotationEuler.set( angleRangeRad(BaseRotationEuler.x + moveVector.x), angleRangeRad(BaseRotationEuler.y + moveVector.y), 0.0 );
-  BaseRotation.setFromEuler(BaseRotationEuler, 'YZX');
-
-  // Update camera rotation
-  camera.quaternion.multiplyQuaternions(BaseRotation, HMDRotation);
-
-  // Compute heading
-  headingVector.setEulerFromQuaternion(camera.quaternion, 'YZX');
-  currHeading = angleRangeDeg(THREE.Math.radToDeg(-headingVector.y));
-
-  // render
-  render();
-}
 
 $(document).ready(function() {
 
@@ -861,6 +881,7 @@ $(document).ready(function() {
   if (params.depth !== undefined) USE_DEPTH = params.depth !== "false";
   if (params.wf !== undefined) WORLD_FACTOR = parseFloat(params.wf);
 
+
   WIDTH = window.innerWidth; HEIGHT = window.innerHeight;
 
   setUiSize();
@@ -876,7 +897,7 @@ $(document).ready(function() {
   // Load default location
   panoLoader.load( new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng ) );
 
-//  render();
+  render();
 });
 
 </script>

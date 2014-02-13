@@ -79,7 +79,7 @@ VRK.Button = function(x, y, width, height, text, text_size, opt_image) {
 			materialOptions.color = (0 << 16) + (200 << 8) + 0;
 		}
 
-		var material = new THREE.MeshLambertMaterial(materialOptions);
+		var material = new THREE.MeshBasicMaterial(materialOptions);
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
@@ -212,8 +212,8 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 	};
 	this.draw = function(scene, board) {
 		//Draw line and then draw grip on top.
-		var line_material = new THREE.MeshLambertMaterial({color: 0x222222});
-		var grip_material = new THREE.MeshLambertMaterial({color: 0x224222});
+		var line_material = new THREE.MeshBasicMaterial({color: 0x222222});
+		var grip_material = new THREE.MeshBasicMaterial({color: 0x224222});
 
 		if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
 			var line = new THREE.Mesh(
@@ -296,7 +296,7 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 	}
 	this.draw = function(scene, board) {
 		//Draw line and then draw grip on top.
-		var material = new THREE.MeshLambertMaterial({color: 0x222222});
+		var material = new THREE.MeshBasicMaterial({color: 0x222222});
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height), material);
 		setKeyboardPosition(board, buttonMesh, this.x, this.y, 0.1);
@@ -445,7 +445,7 @@ VRK.Treadmill = function(x, y, width, height, options){
 		this.onMove_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
 	};
 	this.draw = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial({color: 0x222222});
+		var material = new THREE.MeshBasicMaterial({color: 0x222222});
 		treadMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
 			material);
@@ -486,7 +486,7 @@ VRK.Label = function(x, y, width, height, text, px){
 		return false;
 	};
 	this.draw = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial({color: 0x222222});
+		var material = new THREE.MeshBasicMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height), material);
@@ -525,7 +525,7 @@ VRK.KeyboardObject = function(x, y, width, height){
 		return false;
 	};
 	this.draw = function(scene, board) {
-		var material = new THREE.MeshLambertMaterial({color: 0x222222});
+		var material = new THREE.MeshBasicMaterial({color: 0x222222});
 
 		buttonMesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(this.width, this.height),
@@ -663,7 +663,7 @@ VRK.SystemBar = function(x, y, width, height){
 		var percentClicked = Math.min(distance/this.threshold_distance, 1);
 
 		if (!kM.hidden || this.buttonSelected == 'hideBar') {
-			var barMaterial = new THREE.MeshLambertMaterial({color: 0x00CC00});
+			var barMaterial = new THREE.MeshBasicMaterial({color: 0x00CC00});
 
 			var barMesh = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.width, this.height), barMaterial);
@@ -691,7 +691,7 @@ VRK.SystemBar = function(x, y, width, height){
 					materialOptions.color = (0 << 16) + (200 * (1 - percentClicked) << 8) + percentClicked * 255;
 				}
 
-				var buttonMaterial = new THREE.MeshLambertMaterial(materialOptions);
+				var buttonMaterial = new THREE.MeshBasicMaterial(materialOptions);
 				var buttonMesh = new THREE.Mesh(
 					new THREE.PlaneGeometry(unitWidth, unitHeight), buttonMaterial);
 
