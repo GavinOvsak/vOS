@@ -147,13 +147,11 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 	if (this.direction == undefined) {
 		this.direction = VRK.LinearSlider.direction.VERTICAL;
 	}
-	debugger;
 	if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
 		this.line_width = 0.1 * unitWidth;
 		this.grip_width = width * unitWidth;
 		this.grip_length = 0.5 * unitHeight;
 	} else {
-		debugger
 		this.line_width = 0.1 * unitHeight;
 		this.grip_width = height * unitHeight;
 		this.grip_height = 0.5 * unitWidth;
