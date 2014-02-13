@@ -142,7 +142,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 	this.x = x * unitWidth;
 	this.y = y * unitHeight;
 	this.width = width * unitWidth;
-	this.height = length * unitHeight;
+	this.height = height * unitHeight;
 	this.direction = direction;
 	if (this.direction == undefined) {
 		this.direction = VRK.LinearSlider.direction.VERTICAL;
@@ -254,6 +254,7 @@ VRK.LinearSlider.direction = {
 	HORIZONTAL: 'horizontal'
 };
 
+/*
 VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;
@@ -317,7 +318,7 @@ VRK.ArcSlider = function(x, y, returnsToCenter, radius, beginAngle, endAngle) {
 		//draw this.text;
 	};
 };
-
+*/
 
 VRK.Treadmill = function(x, y, width, height, options){
 	var unitWidth = 1/12;
