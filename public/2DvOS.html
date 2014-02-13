@@ -226,6 +226,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 		var line_material = new THREE.MeshLambertMaterial({color: 0x222222});
 		var grip_material = new THREE.MeshLambertMaterial({color: 0x224222});
 
+		debugger;
 		if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
 			var line = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.line_width, this.height), line_material);
