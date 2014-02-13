@@ -11,12 +11,8 @@
 	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery.base64.min.js"></script>
-<!--	<script type="text/javascript" src="js/zpipe.min.js"></script>
-	<script type="text/javascript" src="js/GSVPano_o.js"></script>
-	<script type="text/javascript" src="js/GSVPanoDepth.js"></script> -->
 	<script type="text/javascript" src="js/OculusRiftEffect.js"></script>
 	<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
-<!--	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>-->
 	<script type="text/javascript" src="js/vr.js"></script>
 	<script src="http://162.222.183.103/socket.io/socket.io.js"></script>
 	<script src="utility.js"></script>
@@ -395,19 +391,6 @@ apps.map(function(appURL) {
 		kM.add(exports);
 	});
 });
-/*
-$.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://162.222.183.103'+apps[1]) + '&callback=?', function(data){
-	eval(data.contents);
-	kM.add(exports);
-});
-*/
-/*
-kM.open(kM.apps[1]);
-kM.open(kM.apps[0]);*/
-//kM.maximize();
-//kM.minimize();
-
-
 
 
 //=========================
@@ -449,7 +432,6 @@ var OculusRift = {
 };
 
 
-
 //var WIDTH, HEIGHT;
 var currHeading = 0;
 var centerHeading = 0;
@@ -489,20 +471,7 @@ var initWebGL = function() {
 	camera.rotation.x = camera_start.x;
 	camera.position.y = camera_start.y;
 	camera.position.z = camera_start.z;
-
-//	camera.target = new THREE.Vector3( 1, 0, 0 );
 	camera.useQuaternion = true;
-
-	// Add projection sphere
-/*	projSphere = new THREE.Mesh( new THREE.SphereGeometry( 500, 512, 256 ), new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide}) );
-	projSphere.geometry.dynamic = true;
-	projSphere.useQuaternion = true;*/
-
-
-	//THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
-	//if ( Detector.webgl )
-	//else
-	//    var renderer = new THREE.CanvasRenderer(); 
 
 	// Create render
 	try {
@@ -521,16 +490,6 @@ var initWebGL = function() {
 
 	effect = new THREE.OculusRiftEffect( renderer, {HMD:OculusRift, worldFactor:WORLD_FACTOR} );
 	effect.setSize(WIDTH, HEIGHT );
-
-
-	/*camera.rotation.x = camera_start.x;
-	camera.position.y = camera_start.y;
-	camera.position.z = camera_start.z;*/
-
-	/*$viewer.mousemove(function(event) {
-		camera.position.x = -1 * (event.pageX - 300) / 30;
-		camera.position.z = (event.pageY - 200) / 30;
-	});*/
 
 	var $viewer = $('#viewer');
 	$viewer.append(renderer.domElement);
@@ -648,30 +607,6 @@ function initGui()
 
 }
 
-/*
-function initPano() {
-  panoLoader = new GSVPANO.PanoLoader();
-  panoDepthLoader = new GSVPANO.PanoDepthLoader();
-  panoLoader.setZoom(QUALITY);
-
-  panoLoader.onPanoramaLoad = function() {
-    //var a = THREE.Math.degToRad(90-panoLoader.heading);
-    //projSphere.rotation.z = a;
-    //projSphere.quaternion.setFromEuler(new THREE.Vector3(0,a,0), 'YZX');
-
-    projSphere.material.wireframe = false;
-    projSphere.material.map.needsUpdate = true;
-    projSphere.material.map = new THREE.Texture( this.canvas );
-    projSphere.material.map.needsUpdate = true;
-    centerHeading = panoLoader.heading;
-    panoDepthLoader.load(this.location.pano);
-  };
-
-  panoDepthLoader.onDepthLoad = function() {
-    setSphereGeometry();
-  };
-}*/
-
 function setSphereGeometry() {
   var geom = projSphere.geometry;
   var depthMap = panoDepthLoader.depthMap.depthMap;
@@ -691,7 +626,6 @@ function setSphereGeometry() {
     }
   }
   geom.verticesNeedUpdate = true;
-//  projSphere.rotation.x = Math.PI/2;
 }
 
 function initGoogleMap() {
@@ -765,18 +699,9 @@ directLight.position.z = 1;
 var projGeo = new THREE.SphereGeometry( 5000, 512, 256 );
 var projMaterial = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide});
 
-//scene = new THREE.Scene();
-
 var render = function() {
 
-	// Create camera
-//	  camera = new THREE.PerspectiveCamera( 60, WIDTH/HEIGHT, 0.1, FAR );
-	//  camera.target = new THREE.Vector3( 0, 1, 0 );
-//	  camera.useQuaternion = true;
-	//  camera.rotation.x = camera_start.x;
-
 	requestAnimationFrame( render );
-//	window.requestAnimationFrame(render);
 
 	if (!USE_TRACKER && VRState !== null) {
 		if (vr.pollState(VRState)) {
@@ -825,52 +750,11 @@ var render = function() {
 	}
 	kM.drawKeyboard(scene);
 
-/*	camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-	camera.target = new THREE.Vector3( 1, 0, 0 );
-	camera.useQuaternion = true;*/
-
-	// Add projection sphere
-/*	projSphere = new THREE.Mesh( new THREE.SphereGeometry( 500, 512, 256 ), new THREE.MeshBasicMaterial(projOptions) );
-	projSphere.geometry.dynamic = true;
-	projSphere.useQuaternion = true;
-*/
-
 	scene.add(camera);
 	scene.add(directLight);
-//	scene.add(projSphere);
 
-	
-	  // Add projection sphere
-//	  projSphere = new THREE.Mesh( projGeo, projMaterial );
-	  //projSphere.rotation.x = Math.PI/2;
-//	  projSphere.geometry.dynamic = true;
-//	  projSphere.useQuaternion = true;
-//      setSphereGeometry();
-//	  scene.add( projSphere );
-
-	/*  progBarContainer = new THREE.Mesh( new THREE.CubeGeometry(1.2,0.2,0.1), new THREE.MeshBasicMaterial({color: 0xaaaaaa}));
-	  progBarContainer.translateZ(-3);
-	  progBarContainer.useQuaternion = true;
-	  scene.add( progBarContainer );
-	*//*
-
-	  var redLambert = new THREE.MeshBasicMaterial({ color: 0xCC0000, side: THREE.DoubleSide});
-
-	  var board = new THREE.Mesh(
-	    new THREE.PlaneGeometry(4, 3),
-	    redLambert);
-
-	  board.position.x = 0;
-	  board.position.y = 4;
-	  board.position.z = -5;
-
-	  board.rotation.x = -1.1 + Math.PI/2;
-
-	  scene.add(board);*/
-
-	renderer.clear();
+	//renderer.clear();
 	effect.render(scene, camera);
-//	renderer.render(scene, camera);
 };
 
 $(document).ready(function() {
@@ -897,13 +781,8 @@ $(document).ready(function() {
   initWebGL();
   initControls();
   initGui();
-//  initPano();
   if (USE_TRACKER) initWebSocket();
   else initVR();
-//  initGoogleMap();
-
-  // Load default location
-//  panoLoader.load( new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng ) );
 
   render();
 });
