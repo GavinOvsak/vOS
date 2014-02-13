@@ -226,7 +226,6 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 		var line_material = new THREE.MeshLambertMaterial({color: 0x222222});
 		var grip_material = new THREE.MeshLambertMaterial({color: 0x224222});
 
-		debugger;
 		if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
 			var line = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.line_width, this.height), line_material);
@@ -235,6 +234,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 				new THREE.PlaneGeometry(this.grip_width, this.grip_height), grip_material);
 			setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + (this.height - this.grip_height) * this.progress, 0.11);
 		} else {
+			debugger;
 			var line = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.width, this.line_width), line_material);
 			setKeyboardPosition(board, line, this.x, this.y + (this.height - this.line_width)/2, 0.1);
