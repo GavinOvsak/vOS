@@ -134,11 +134,11 @@ function initControls() {
     //console.log(e.keyCode);
     switch(e.keyCode) {
       case 32: // Space
-        var spaceKeyTime = new Date();
+/*        var spaceKeyTime = new Date();
         if (spaceKeyTime-lastSpaceKeyTime < 300) {
           $('.ui').toggle(200);
         }
-        lastSpaceKeyTime = spaceKeyTime;
+        lastSpaceKeyTime = spaceKeyTime;*/
         break;
       case 37:
         keyboardMoveVector.y = KEYBOARD_SPEED;
@@ -161,8 +161,8 @@ function initControls() {
         break;
       case 18: // Alt
         USE_DEPTH = !USE_DEPTH;
-        $('#depth-left').prop('checked', USE_DEPTH);
-        $('#depth-right').prop('checked', USE_DEPTH);
+//        $('#depth-left').prop('checked', USE_DEPTH);
+//        $('#depth-right').prop('checked', USE_DEPTH);
         setSphereGeometry();
         break;
     }
@@ -225,7 +225,7 @@ function initControls() {
 
   gamepad.bind(Gamepad.Event.BUTTON_DOWN, function(e) {
     if (e.control == "FACE_2") {
-      $('.ui').toggle(200);
+//      $('.ui').toggle(200);
     }
   });
 
@@ -263,7 +263,7 @@ function initControls() {
 function initGui()
 {
   if (!SHOW_SETTINGS) {
-    $('.ui').hide();
+//    $('.ui').hide();
   }
 
   $('#extt-left').prop('checked', USE_TRACKER);
@@ -350,13 +350,13 @@ function initPano() {
       progBar.visible = true;
       progBar.scale = new THREE.Vector3(progress/100.0,1,1);
     }
-    $(".mapprogress").progressbar("option", "value", progress);
+//    $(".mapprogress").progressbar("option", "value", progress);
 
   };
   panoLoader.onPanoramaData = function( result ) {
     progBarContainer.visible = true;
     progBar.visible = false;
-    $('.mapprogress').show();
+//    $('.mapprogress').show();
   };
 
   panoLoader.onNoPanoramaData = function( status ) {
@@ -384,15 +384,15 @@ function initPano() {
     markerRight = new google.maps.Marker({ position: this.location.latLng, map: gmapRight });
     markerRight.setMap( gmapRight );
 
-    $('.mapprogress').hide();
+//    $('.mapprogress').hide();
 
     if (window.history) {
-      var newUrl = '/?lat='+this.location.latLng.lat()+'&lng='+this.location.latLng.lng();
+/*      var newUrl = '/?lat='+this.location.latLng.lat()+'&lng='+this.location.latLng.lng();
       newUrl += USE_TRACKER ? '&sock='+escape(WEBSOCKET_ADDR.slice(5)) : '';
       newUrl += '&q='+QUALITY;
       newUrl += '&s='+$('#settings').is(':visible');
       newUrl += '&heading='+currHeading;
-      window.history.pushState('','',newUrl);
+      window.history.pushState('','',newUrl);*/
     }
 
     panoDepthLoader.load(this.location.pano);
@@ -451,11 +451,11 @@ function initWebSocket() {
 }
 
 function initGoogleMap() {
-  $('.mapprogress').progressbar({ value: false });
+//  $('.mapprogress').progressbar({ value: false });
 
   currentLocation = new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng );
 
-  gmapLeft = new google.maps.Map($('#map-left')[0], {
+/*  gmapLeft = new google.maps.Map($('#map-left')[0], {
     zoom: 14,
     center: currentLocation,
     mapTypeId: google.maps.MapTypeId.HYBRID,
@@ -563,7 +563,7 @@ function initGoogleMap() {
 
   markerRight = new google.maps.Marker({ position: currentLocation, map: gmapRight });
   markerRight.setMap( gmapRight );
-
+*/
 }
 
 
@@ -616,7 +616,7 @@ function setUiSize() {
   var width = window.innerWidth, hwidth = width/2,
       height = window.innerHeight;
 
-  var ui = $('#ui-left');
+/*  var ui = $('#ui-left');
   var hsize=0.60, vsize = 0.40, outOffset=0.2;
   ui.css('width', hwidth*hsize);
   ui.css('left', hwidth*(1-hsize+outOffset)/2) ;
@@ -628,7 +628,7 @@ function setUiSize() {
   ui.css('width', hwidth*hsize);
   ui.css('right', hwidth*(1-hsize+outOffset)/2) ;
   ui.css('height', height*vsize);
-  ui.css('margin-top', height*(1-vsize)/2);
+  ui.css('margin-top', height*(1-vsize)/2);*/
 
 }
 
@@ -706,7 +706,7 @@ $(document).ready(function() {
 
 
   WIDTH = window.innerWidth; HEIGHT = window.innerHeight;
-  $('.ui').tabs({
+  /*$('.ui').tabs({
     activate: function( event, ui ) {
       var caller = event.target.id;
       if (caller == 'ui-left') {
@@ -716,7 +716,7 @@ $(document).ready(function() {
         $("#ui-left").tabs("option","active", $("#ui-right").tabs("option","active"));
       }
     }
-  });
+  });*/
   setUiSize();
 
   initWebGL();
