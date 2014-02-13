@@ -32,7 +32,7 @@ var saved_front_phi = 0;
 var setFrontKeyboard = function(keyboard) {
 	if (mode == 1) {
 		if (rotationSlider == undefined)
-			rotationSlider = new VRK.ArcSlider(2,1,1,10, false, VRK.LinearSlider.direction.HORIZONTAL);
+			rotationSlider = new VRK.ArcSlider(2,1,10,1, false, VRK.LinearSlider.direction.HORIZONTAL);
 		if (zoomSlider == undefined)
 			zoomSlider = new VRK.LinearSlider(4,3,1,4, false, VRK.LinearSlider.direction.VERTICAL);
 		if (tiltSlider == undefined)
