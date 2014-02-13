@@ -32,7 +32,7 @@ var saved_front_phi = 0;
 var setFrontKeyboard = function(keyboard) {
 	if (mode == 1) {
 		if (rotationSlider == undefined) {
-			rotationSlider = new VRK.LinearSlider(2,1,10,1, false, VRK.LinearSlider.direction.HORIZONTAL);
+			rotationSlider = new VRK.LinearSlider(2,1,8,1, false, VRK.LinearSlider.direction.HORIZONTAL);
         }
 		if (zoomSlider == undefined)
 			zoomSlider = new VRK.LinearSlider(4,3,1,4, false, VRK.LinearSlider.direction.VERTICAL);
@@ -43,14 +43,20 @@ var setFrontKeyboard = function(keyboard) {
             mode = 2;
             setFrontKeyboard(kb);
         });
+        zoomSlider.onMove(function(progress){
+            front_position.zoom = Math.pow(10,progress*2-1);
+        });
+        tiltSlider.onMove(function(progress){
+            front_position.phi = Math.PI*(progress - 0.5)
+        });
+        rotationSlider.onMove(function(progress){
+            front_position.phi = 2*Math.PI*(progress - 0.5)
+        });
         keyboard.set([rotationSlider, zoomSlider, tiltSlider, modeSwitch]);
 	} else if(mode == 2) {
 		//set up treadmill front
 		if (rotateAndZoom == undefined)
 			rotateAndZoom = new VRK.Treadmill(4,2,5,5,[VRK.Treadmill.option.X, VRK.Treadmill.option.Y, VRK.Treadmill.option.Zoom]);
-        //Not average Treadmill, more like gesture pad
-        //want angle separate from position
-        //want max y
         rotateAndZoom.onMove(function(x, y, theta, zoom) {
             front_position.theta = -1 * (x % 100) * 2 * Math.PI;
             front_position.phi = Math.max(Math.min(saved_front_phi + (y - saved_front_y)*Math.PI, Math.PI/2), -Math.PI/2);
