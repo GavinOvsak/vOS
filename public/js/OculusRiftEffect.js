@@ -141,7 +141,7 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 	}	
 	this.getHMD = function() {return HMD};
 
-	this.setHMD(HMD);	
+	this.setHMD(HMD);
 
 	this.setSize = function ( width, height ) {
 		left.viewport = [width/2 - HMD.hResolution/2, height/2 - HMD.vResolution/2, HMD.hResolution/2, HMD.vResolution];
@@ -172,7 +172,7 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 		renderer.setViewport(left.viewport[0], left.viewport[1], left.viewport[2], left.viewport[3]);
 
 		RTMaterial.uniforms['lensCenter'].value = left.lensCenter;
-		renderer.render( scene, pCamera, renderTarget, true );
+//		renderer.render( scene, pCamera, renderTarget, true ); Not sure why this causes bug
 
 		renderer.render( finalScene, oCamera );
 
