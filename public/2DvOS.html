@@ -151,7 +151,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 		this.line_width = 0.1 * unitWidth;
 		this.grip_width = width * unitWidth;
 		this.grip_height = 0.5 * unitHeight;
-	} else {
+	} else if (this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
 		this.line_width = 0.1 * unitHeight;
 		this.grip_width = height * unitHeight;
 		this.grip_height = 0.5 * unitWidth;
@@ -185,9 +185,15 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 		return this.progress;
 	}
 	this.contains = function(x, y) {
-		return x > this.x && x < this.x + this.grip_width && 
-			y > this.y + (this.height - this.grip_height) * this.progress && 
-			y < this.y + (this.height - this.grip_height) * this.progress + this.grip_height;
+		if (this.direction == VRK.LinearSlider.direction.VERTICAL) {
+			return x > this.x && x < this.x + this.grip_width && 
+				y > this.y + (this.height - this.grip_height) * this.progress && 
+				y < this.y + (this.height - this.grip_height) * this.progress + this.grip_height;
+		} else if (this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
+			return y > this.y && y < this.y + this.grip_width && 
+				x > this.x + (this.width - this.grip_height) * this.progress && 
+				x < this.x + (this.width - this.grip_height) * this.progress + this.grip_height;
+		}
 	};
 	this.onRelease_callback = function(progress) {};
 	this.onRelease = function(callback) {
@@ -232,7 +238,7 @@ VRK.LinearSlider = function(x, y, width, height, returnsToCenter, direction, ini
 			var gripMesh = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.grip_width, this.grip_height), grip_material);
 			setKeyboardPosition(board, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + (this.height - this.grip_height) * this.progress, 0.11);
-		} else {
+		} else if (this.direction == VRK.LinearSlider.direction.HORIZONTAL) {
 			var line = new THREE.Mesh(
 				new THREE.PlaneGeometry(this.width, this.line_width), line_material);
 			setKeyboardPosition(board, line, this.x, this.y + (this.height - this.line_width)/2, 0.1);
