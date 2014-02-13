@@ -11,14 +11,13 @@
 	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery.base64.min.js"></script>
-<!--	<script type="text/javascript" src="js/zpipe.min.js"></script>
+	<script type="text/javascript" src="js/zpipe.min.js"></script>
 	<script type="text/javascript" src="js/GSVPano_o.js"></script>
 	<script type="text/javascript" src="js/GSVPanoDepth.js"></script>
 	<script type="text/javascript" src="js/OculusRiftEffect.js"></script>
 	<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
 	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 	<script type="text/javascript" src="js/vr.js"></script>
--->
 	<script src="http://162.222.183.103/socket.io/socket.io.js"></script>
 	<script src="utility.js"></script>
 	<script src="applist.js"></script>
@@ -89,7 +88,11 @@ var apps = appList;
 var WIDTH = 1200,
   HEIGHT = 800;
 
-var VIEW_ANGLE = 45,
+WIDTH = window.innerWidth; 
+HEIGHT = window.innerHeight;
+
+
+var VIEW_ANGLE = 60,
   ASPECT = WIDTH / HEIGHT,
   NEAR = 0.1,
   FAR = 10000;
@@ -410,7 +413,7 @@ kM.open(kM.apps[0]);*/
  *
  * Google Street View viewer for the Oculus Rift
  */
-/*
+
 // Parameters
 // ----------------------------------------------
 var QUALITY = 3;
@@ -441,7 +444,7 @@ var OculusRift = {
 
 
 
-var WIDTH, HEIGHT;
+//var WIDTH, HEIGHT;
 var currHeading = 0;
 var centerHeading = 0;
 var navList = [];
@@ -449,7 +452,6 @@ var navList = [];
 var headingVector = new THREE.Vector3();
 var moveVector = new THREE.Vector3();
 var keyboardMoveVector = new THREE.Vector3();
-//var gamepadMoveVector = new THREE.Vector3();
 var HMDRotation = new THREE.Quaternion();
 var BaseRotation = new THREE.Quaternion();
 var BaseRotationEuler = new THREE.Vector3();
@@ -473,29 +475,268 @@ function angleRangeRad(angle) {
 function deltaAngleDeg(a,b) {
   return Math.min(360-(Math.abs(a-b)%360),Math.abs(a-b)%360);
 }
-*/
 
 
-var $viewer = $('#viewer');
 
 var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+camera.target = new THREE.Vector3( 1, 0, 0 );
+camera.useQuaternion = true;
+
+// Add projection sphere
+projSphere = new THREE.Mesh( new THREE.SphereGeometry( 500, 512, 256 ), new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide}) );
+projSphere.geometry.dynamic = true;
+projSphere.useQuaternion = true;
+
+
 //THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 //if ( Detector.webgl )
-var renderer = new THREE.WebGLRenderer( {antialias:true} );
 //else
 //    var renderer = new THREE.CanvasRenderer(); 
 
-camera.rotation.x = camera_start.x;
-camera.position.y = camera_start.y;
-camera.position.z = camera_start.z;
+// Create render
+try {
+	var renderer = new THREE.WebGLRenderer( {antialias:true} );
+}
+catch(e){
+	alert('This application needs WebGL enabled!');
+	return false;
+}
 
-$viewer.mousemove(function(event) {
+renderer.autoClearColor = false;
+renderer.setSize(WIDTH, HEIGHT);
+
+// Set the window resolution of the rift in case of not native
+OculusRift.hResolution = WIDTH, OculusRift.vResolution = HEIGHT,
+
+effect = new THREE.OculusRiftEffect( renderer, {HMD:OculusRift, worldFactor:WORLD_FACTOR} );
+effect.setSize(WIDTH, HEIGHT );
+
+
+/*camera.rotation.x = camera_start.x;
+camera.position.y = camera_start.y;
+camera.position.z = camera_start.z;*/
+
+/*$viewer.mousemove(function(event) {
 	camera.position.x = -1 * (event.pageX - 300) / 30;
 	camera.position.z = (event.pageY - 200) / 30;
-});
+});*/
 
-renderer.setSize(WIDTH, HEIGHT);
+var $viewer = $('#viewer');
 $viewer.append(renderer.domElement);
+
+
+
+function initControls() {
+  // Mouse
+  // ---------------------------------------
+  var viewer = $('#viewer'),
+      mouseButtonDown = false,
+      lastClientX = 0,
+      lastClientY = 0;
+
+  viewer.mousedown(function(event) {
+    mouseButtonDown = true;
+    lastClientX = event.clientX;
+    lastClientY = event.clientY;
+  });
+
+  viewer.mouseup(function() {
+    mouseButtonDown = false;
+  });
+
+  viewer.mousemove(function(event) {
+    if (mouseButtonDown) {
+      var enableX = (USE_TRACKER || VRState !== null) ? 0 : 1;
+      BaseRotationEuler.set(
+        angleRangeRad(BaseRotationEuler.x + (event.clientY - lastClientY) * MOUSE_SPEED * enableX),
+        angleRangeRad(BaseRotationEuler.y + (event.clientX - lastClientX) * MOUSE_SPEED),
+        0.0
+      );
+      lastClientX = event.clientX;
+      lastClientY = event.clientY;
+      BaseRotation.setFromEuler(BaseRotationEuler, 'YZX');
+    }
+  });
+}
+
+
+
+function initGui()
+{
+  $('#extt-left').prop('checked', USE_TRACKER);
+  $('#extt-right').prop('checked', USE_TRACKER);
+
+
+  $('#extt-left').change(function(event) {
+    USE_TRACKER = $('#extt-left').is(':checked');
+    if (USE_TRACKER) {
+      WEBSOCKET_ADDR = $('#wsock-left').val();
+      initWebSocket();
+      BaseRotationEuler.x = 0.0;
+      VRState = null;
+    }
+    else {
+      if (connection) connection.close();
+      initVR();
+    }
+    $('#extt-right').prop('checked', USE_TRACKER);
+  });
+
+  $('#extt-right').change(function(event) {
+    USE_TRACKER = $('#extt-right').is(':checked');
+    if (USE_TRACKER) {
+      WEBSOCKET_ADDR = $('#wsock-right').val();
+      initWebSocket();
+      BaseRotationEuler.x = 0.0;
+      VRState = null;
+    }
+    else {
+      if (connection) connection.close();
+      initVR();
+    }
+    $('#extt-left').prop('checked', USE_TRACKER);
+  });
+
+  $('#wsock-left').change(function(event) {
+    WEBSOCKET_ADDR = $('#wsock-left').val();
+    if (USE_TRACKER) {
+      if (connection) connection.close();
+      initWebSocket();
+    }
+  });
+
+  $('#wsock-right').change(function(event) {
+    WEBSOCKET_ADDR = $('#wsock-right').val();
+    if (USE_TRACKER) {
+      if (connection) connection.close();
+      initWebSocket();
+    }
+  });
+
+  $('#wsock-left').keyup(function() {
+      $('#wsock-right').prop('value', $('#wsock-left').val() );
+  });
+
+  $('#wsock-right').keyup(function() {
+      $('#wsock-left').prop('value', $('#wsock-right').val() );
+  });
+
+  $('#depth-left').change(function(event) {
+    USE_DEPTH = $('#depth-left').is(':checked');
+    $('#depth-right').prop('checked', USE_DEPTH);
+    setSphereGeometry();
+  });
+
+  $('#depth-right').change(function(event) {
+    USE_DEPTH = $('#depth-right').is(':checked');
+    $('#depth-left').prop('checked', USE_DEPTH);
+    setSphereGeometry();
+  });
+
+  window.addEventListener( 'resize', resize, false );
+
+}
+
+function initPano() {
+  panoLoader = new GSVPANO.PanoLoader();
+  panoDepthLoader = new GSVPANO.PanoDepthLoader();
+  panoLoader.setZoom(QUALITY);
+
+  panoLoader.onPanoramaLoad = function() {
+    var a = THREE.Math.degToRad(90-panoLoader.heading);
+    projSphere.quaternion.setFromEuler(new THREE.Vector3(0,a,0), 'YZX');
+
+    projSphere.material.wireframe = false;
+    projSphere.material.map.needsUpdate = true;
+    projSphere.material.map = new THREE.Texture( this.canvas );
+    projSphere.material.map.needsUpdate = true;
+    centerHeading = panoLoader.heading;
+    panoDepthLoader.load(this.location.pano);
+  };
+
+  panoDepthLoader.onDepthLoad = function() {
+    setSphereGeometry();
+  };
+}
+
+function setSphereGeometry() {
+  var geom = projSphere.geometry;
+  var depthMap = panoDepthLoader.depthMap.depthMap;
+  var y, x, u, v, radius, i=0;
+  for ( y = 0; y <= geom.heightSegments; y ++ ) {
+    for ( x = 0; x <= geom.widthSegments; x ++ ) {
+      u = x / geom.widthSegments;
+      v = y / geom.heightSegments;
+
+      radius = USE_DEPTH ? Math.min(depthMap[y*512 + x], FAR) : 500;
+
+      var vertex = geom.vertices[i];
+      vertex.x = - radius * Math.cos( geom.phiStart + u * geom.phiLength ) * Math.sin( geom.thetaStart + v * geom.thetaLength );
+      vertex.y = radius * Math.cos( geom.thetaStart + v * geom.thetaLength );
+      vertex.z = radius * Math.sin( geom.phiStart + u * geom.phiLength ) * Math.sin( geom.thetaStart + v * geom.thetaLength );
+      i++;
+    }
+  }
+  geom.verticesNeedUpdate = true;
+}
+
+
+function initGoogleMap() {
+  currentLocation = new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng );
+}
+
+
+function initVR() {
+  vr.load(function(error) {
+    if (error) {
+      //console.warn('VR error: ' + error.toString());
+      return;
+    }
+
+    VRState = new vr.State();
+    if (!vr.pollState(VRState)) {
+      //console.warn('NPVR plugin not found/error polling');
+      VRState = null;
+      return;
+    }
+
+    if (!VRState.hmd.present) {
+      //console.warn('oculus rift not detected');
+      VRState = null;
+      return;
+    }
+    BaseRotationEuler.x = 0.0;
+  });
+}
+
+function setUiSize() {
+  var width = window.innerWidth, hwidth = width/2,
+      height = window.innerHeight;
+}
+
+function resize( event ) {
+  WIDTH = window.innerWidth;
+  HEIGHT = window.innerHeight;
+  setUiSize();
+
+  OculusRift.hResolution = WIDTH,
+  OculusRift.vResolution = HEIGHT,
+  effect.setHMD(OculusRift);
+
+  renderer.setSize( WIDTH, HEIGHT );
+  camera.projectionMatrix.makePerspective( VIEW_ANGLE, ASPECT, NEAR, FAR );
+}
+
+function getParams() {
+  var params = {};
+  var items = window.location.search.substring(1).split("&");
+  for (var i=0;i<items.length;i++) {
+    var kvpair = items[i].split("=");
+    params[kvpair[0]] = unescape(kvpair[1]);
+  }
+  return params;
+}
+
 
 var pointLight = new THREE.PointLight(0xFFFFFF);
 
@@ -528,9 +769,43 @@ var render = function() {
 
 	scene.add(camera);
 	scene.add(directLight);
-	renderer.render(scene, camera);
+	scene.add(projSphere);
+	effect.render(scene, camera);
+//	renderer.render(scene, camera);
 };
-render();
+
+$(document).ready(function() {
+
+  // Read parameters
+  params = getParams();
+  if (params.lat !== undefined) DEFAULT_LOCATION.lat = params.lat;
+  if (params.lng !== undefined) DEFAULT_LOCATION.lng = params.lng;
+  if (params.sock !== undefined) {WEBSOCKET_ADDR = 'ws://'+params.sock; USE_TRACKER = true;}
+  if (params.q !== undefined) QUALITY = params.q;
+  if (params.s !== undefined) SHOW_SETTINGS = params.s !== "false";
+  if (params.heading !== undefined) {
+    BaseRotationEuler.set(0.0, angleRangeRad(THREE.Math.degToRad(-parseFloat(params.heading))) , 0.0 );
+    BaseRotation.setFromEuler(BaseRotationEuler, 'YZX');
+  }
+  if (params.depth !== undefined) USE_DEPTH = params.depth !== "false";
+  if (params.wf !== undefined) WORLD_FACTOR = parseFloat(params.wf);
+
+  WIDTH = window.innerWidth; HEIGHT = window.innerHeight;
+
+  setUiSize();
+
+  initControls();
+  initGui();
+  initPano();
+  if (USE_TRACKER) initWebSocket();
+  else initVR();
+  initGoogleMap();
+
+  // Load default location
+  panoLoader.load( new google.maps.LatLng( DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng ) );
+
+  render();
+});
 
 </script>
 </body>
