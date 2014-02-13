@@ -1,6 +1,4 @@
-var appList = {
-	"app-urls": [
-		"/stemkoski-vertex-colors.js",
-		"/chess.js"
-	]
-};
+var appList = [
+	"/stemkoski-vertex-colors.js",
+	"/chess.js"
+];
