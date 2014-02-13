@@ -187,6 +187,7 @@ socket.on('size', function (data) {
 
 socket.on('code', function (code) {
 	connect_code = code;
+	setUpAppSwitcher();
 	screen_code = document.getElementById( 'code' );
 	screen_code.innerText = 'Use this code to connect: ' + code;
 });
