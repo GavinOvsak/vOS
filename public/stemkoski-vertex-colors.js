@@ -44,13 +44,13 @@ var setFrontKeyboard = function(keyboard) {
             setFrontKeyboard(kb);
         });
         zoomSlider.onMove(function(progress){
-            front_position.zoom = Math.pow(10,progress*2-1);
+            front_position.zoom = Math.pow(2,progress*2-1);
         });
         tiltSlider.onMove(function(progress){
             front_position.phi = Math.PI*(progress - 0.5)
         });
         rotationSlider.onMove(function(progress){
-            front_position.phi = 2*Math.PI*(progress - 0.5)
+            front_position.theta = 2*Math.PI*(progress - 0.5)
         });
         keyboard.set([rotationSlider, zoomSlider, tiltSlider, modeSwitch]);
 	} else if(mode == 2) {
