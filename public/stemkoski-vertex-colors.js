@@ -1,7 +1,7 @@
 var app = {};
 var kb;
 
-var mode = 2;//1 or 2. 1 = sliders, 2 = treadmills
+var mode = 1;//1 or 2. 1 = sliders, 2 = treadmills
 
 var back_position = {
 	x: 0,
@@ -31,6 +31,7 @@ var saved_front_phi = 0;
 
 var setFrontKeyboard = function(keyboard) {
 	if (mode == 1) {
+        debugger;
 		if (rotationSlider == undefined) {
             debugger;
 			rotationSlider = new VRK.LinearSlider(2,1,10,1, false, VRK.LinearSlider.direction.HORIZONTAL);
