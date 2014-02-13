@@ -1075,6 +1075,7 @@ kM.add = function(extern) {
 	app.icon = extern.icon;
 	kM.apps.push(app);
 	app.external.setUpKeyboard(app.keyboard);
+	setUpAppSwitcher();
 	//kM.open(app);
 };
 
