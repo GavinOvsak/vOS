@@ -1,10 +1,8 @@
-//var app = require('http').createServer(handler)
 var socket = require('socket.io')
   , fs = require('fs')
   , express = require('express');
 
 var app = express();
-//app.get("/", handler);
 
 app.configure(function(){
   app.use('/', express.static(__dirname + '/public'));
@@ -63,6 +61,11 @@ var bind = function(input, output) {
     parsed = JSON.parse(data);
     output.emit('size', data);      
     console.log('emit: size, ' + data);
+  });
+  input.on('quarternion', function (data) {
+    parsed = JSON.parse(data);
+    output.emit('quarternion', data);      
+    console.log('emit: quarternion, ' + data);
   });
 }
 

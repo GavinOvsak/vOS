@@ -362,6 +362,8 @@ var render = function() {
 	matr.multiplyMatrices(tilt, matr);
 	BaseRotation.setFromRotationMatrix(matr);
 
+	//Use quarternion variable for HMDRotation
+
 	// Update camera rotation
 	camera.quaternion.multiplyQuaternions(BaseRotation, HMDRotation);
 

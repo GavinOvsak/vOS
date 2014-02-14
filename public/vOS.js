@@ -195,10 +195,20 @@ socket.emit('declare-type', 'output');
 
 var device_width = WIDTH;
 var device_height = HEIGHT;
+var quarternion = {
+	w: 1,
+	x: 0,
+	y: 0,
+	z: 0
+};
 
 socket.on('size', function (data) {
 	device_width = JSON.parse(data).width;
 	device_height = JSON.parse(data).height;
+});
+
+socket.on('quarternion', function (data) {
+	quarternion = JSON.parse(data);
 });
 
 socket.on('code', function (code) {
