@@ -188,7 +188,7 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 
 		RTMaterial.uniforms['lensCenter'].value = right.lensCenter;
 
-//		renderer.render( scene, pCamera, renderTarget, true );
+		renderer.render( scene, pCamera, renderTarget, true );
 		renderer.render( finalScene, oCamera );
 
 	};
