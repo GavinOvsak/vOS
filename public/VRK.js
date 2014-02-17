@@ -15,6 +15,21 @@ var makeText = function(text, px, width, height) {
     return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
 };
 
+
+VRK.Object = function(x, y, width, height, options) {
+	//has defaults
+	options.text
+	options.textSize
+	options.image
+	this.updateOptions = function(options) {
+
+	};
+	this.setX
+	this.setY
+	this.setWidth
+	this.setHeight
+};
+
 VRK.Button = function(x, y, width, height, text, text_size, opt_image) {
 	var unitWidth = 1/12;
 	var unitHeight = 1/9;

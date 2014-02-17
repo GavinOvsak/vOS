@@ -139,10 +139,16 @@ var setFrontAndBackKeyboard = function(keyboard) {
 	}
 };
 
+app.setUp = function(data) {
+    kb = data.keyboard;
+    userID = data.userID;
+};
+
 app.setUpKeyboard = function(keyboard) {
 	kb = keyboard;
 	setFrontKeyboard(keyboard);
-}
+};
+
 app.name = 'Vertex Colors Demo';
 app.icon = 'http://msfastro.net/Images/galaxy_icon.gif';
 
