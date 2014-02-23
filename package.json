@@ -1,0 +1,16 @@
+{
+  "name": "vOS",
+  "subdomain": "gavinovsak-vOS",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "version": "0.0.0-1",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "lodash": "2.4.1",
+    "express": "3.4.7",
+    "socket.io": "0.9.16"
+  }
+}
