@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8"> 
@@ -7,37 +6,46 @@
 	<link rel="stylesheet" href="css/buttons.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<link rel="stylesheet" href="css/osv.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
+	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="js/three.min.js"></script>
 	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery.base64.min.js"></script>
-  <script type="text/javascript" src="js/OculusRiftEffect.js"></script>
-  <script type="text/javascript" src="js/OculusBridge.min.js"></script>
+	<script type="text/javascript" src="js/OculusRiftEffect.js"></script>
+  	<script type="text/javascript" src="js/OculusBridge.min.js"></script>
 	<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
 	<script type="text/javascript" src="js/vr.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="utility.js"></script>
-	<script type="text/javascript" src="applist.js"></script>
-	<script type="text/javascript" src="VRK.js"></script>
-	<script type="text/javascript" src="vOS.js"></script>
+	<script type="text/javascript" src="js/utility.js"></script>
+	<script type="text/javascript" src="js/applist.js"></script>
+	<script type="text/javascript" src="js/VRK.js"></script>
+	<script type="text/javascript" src="js/vOS.js"></script>
 </head>
 <body>
+<div id="code"></div>
 <div id="viewer"></div>
 <script>
 
+function toggleFullScreen() {
+  if ((document.fullScreenElement && document.fullScreenElement !== null) ||    // alternative standard method
+      (!document.mozFullScreen && !document.webkitIsFullScreen)) {               // current working methods
+    if (document.documentElement.requestFullScreen) {
+      document.documentElement.requestFullScreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullScreen) {
+      document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+  } else {
+    if (document.cancelFullScreen) {
+      document.cancelFullScreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitCancelFullScreen) {
+      document.webkitCancelFullScreen();
+    }
+  }
+}
 
-//=========================
-
-
-/**
- * Adapted from:
- * @author troffmo5 / http://github.com/troffmo5
- *
- * Google Street View viewer for the Oculus Rift
- */
-
-// Parameters
-// ----------------------------------------------
 var QUALITY = 3;
 var DEFAULT_LOCATION = { lat:44.301945982379095,  lng:9.211585521697998 };
 var WEBSOCKET_ADDR = "ws://127.0.0.1:1981";
@@ -65,7 +73,6 @@ var OculusRift = {
 };
 
 
-//var WIDTH, HEIGHT;
 var currHeading = 0;
 var centerHeading = 0;
 var navList = [];
@@ -76,6 +83,55 @@ var keyboardMoveVector = new THREE.Vector3();
 var HMDRotation = new THREE.Quaternion();
 
 var lastUpdate = 0;
+
+var socket = io.connect('/');
+socket.emit('declare-type', {
+	type: 'output',
+	session_id: <%= session_id %>
+});
+
+socket.on('error', function(result) {
+	window.location = "/";
+});
+
+socket.on('size', function (data) {
+	device_width = JSON.parse(data).width;
+	device_height = JSON.parse(data).height;
+});
+
+socket.on('quarternion', function (data) {
+	quarternion = JSON.parse(data);
+});
+
+socket.on('code', function (code) {
+	connect_code = code;
+	setUpAppSwitcher();
+	screen_code = document.getElementById( 'code' );
+	screen_code.innerText = 'Use this code to connect: ' + code;
+});
+
+socket.on('start', function (data) {
+	var parsed = JSON.parse(data);
+	var point = new Point(parsed.x, parsed.y, parsed.i);
+	kM.points[parsed.i] = point;
+	checkGrab(point);
+});
+
+socket.on('move', function (data) {
+	var parsed = JSON.parse(data);
+	var point = kM.points[parsed.i];
+	point.move(parsed.x, parsed.y, parsed.i);
+	if (!point.taken) {
+		checkGrab(point);
+	}
+});
+
+socket.on('end', function (data) {
+	var parsed = JSON.parse(data);
+	kM.points[parsed.i].release(parsed.x, parsed.y, parsed.i);
+	kM.points[parsed.i] = {};
+});
+
 
 var bridge = new OculusBridge({
     "onConnect" : function() { 
@@ -94,6 +150,12 @@ var bridge = new OculusBridge({
 });
 
 bridge.connect();
+
+document.addEventListener("keydown", function(e) {
+  if (e.keyCode == 32) {
+    toggleFullScreen();
+  }
+}, false);
 
 var BaseRotation = new THREE.Quaternion();
 var BaseRotationEuler = new THREE.Vector3();
@@ -145,9 +207,6 @@ var initWebGL = function() {
 	effect.setSize(WIDTH, HEIGHT );
 
 	var $viewer = $('#viewer');
-  $viewer.onClick(function() {
-
-  });
 	$viewer.append(renderer.domElement);
 }
 
@@ -353,7 +412,7 @@ directLight.position.y = 0;
 directLight.position.z = 1;
 
 var projGeo = new THREE.SphereGeometry( 5000, 512, 256 );
-var projMaterial = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('placeholder.png'), side: THREE.DoubleSide});
+var projMaterial = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('static/placeholder.png'), side: THREE.DoubleSide});
 
 var wasUsingRift = false;
 
@@ -429,9 +488,6 @@ var render = function() {
 	//renderer.clear();
   if (Date.now() - lastUpdate < 100) {
     effect.render(scene, camera);
-    if (!wasUsingRift) {
-      goFullScreen();
-    }
     wasUsingRift = true;
   } else {
     HMDRotation.x = 0;
@@ -442,6 +498,7 @@ var render = function() {
       BaseRotationEuler.y = 0;
     }
     renderer.setViewport(0, 0, WIDTH, HEIGHT);
+    console.log(scene);
     renderer.render(scene, camera);
     wasUsingRift = false;
   }

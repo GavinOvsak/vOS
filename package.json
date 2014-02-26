@@ -4,13 +4,14 @@
   "scripts": {
     "start": "node app.js"
   },
-  "version": "0.0.0-1",
+  "version": "0.1.0-29",
   "engines": {
     "node": "0.10.x"
   },
   "dependencies": {
     "lodash": "2.4.1",
     "express": "3.4.7",
-    "socket.io": "0.9.16"
+    "socket.io": "0.9.16",
+    "ejs": "0.8.5"
   }
 }

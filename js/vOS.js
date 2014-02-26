@@ -166,8 +166,8 @@ var setUpAppSwitcher = function() {
 	var index = 0;
 	var app;
 
-//	var codeLabel = new VRK.Label(3, 7, 2, 1, 'Code:  ' + connect_code, 15);
-//	kM.appSwitcherKeyboard.add(codeLabel);
+	var codeLabel = new VRK.Label(3, 7, 2, 1, 'Code:  ' + connect_code, 15);
+	kM.appSwitcherKeyboard.add(codeLabel);
 	for (var i = 0; i < kM.apps.length; i++) {
 		app = kM.apps[i];
 		
@@ -191,9 +191,6 @@ setUpAppSwitcher();
 kM.state = kM.State.AppSwitch;
 
 
-//var socket = io.connect('/');
-//socket.emit('declare-type', 'output');
-
 var device_width = WIDTH;
 var device_height = HEIGHT;
 var quarternion = {
@@ -202,44 +199,6 @@ var quarternion = {
 	y: 0,
 	z: 0
 };
-/*
-socket.on('size', function (data) {
-	device_width = JSON.parse(data).width;
-	device_height = JSON.parse(data).height;
-});
-
-socket.on('quarternion', function (data) {
-	quarternion = JSON.parse(data);
-});
-
-socket.on('code', function (code) {
-	connect_code = code;
-	setUpAppSwitcher();
-	screen_code = document.getElementById( 'code' );
-	screen_code.innerText = 'Use this code to connect: ' + code;
-});
-
-socket.on('start', function (data) {
-	var parsed = JSON.parse(data);
-	var point = new Point(parsed.x, parsed.y, parsed.i);
-	kM.points[parsed.i] = point;
-	checkGrab(point);
-});
-
-socket.on('move', function (data) {
-	var parsed = JSON.parse(data);
-	var point = kM.points[parsed.i];
-	point.move(parsed.x, parsed.y, parsed.i);
-	if (!point.taken) {
-		checkGrab(point);
-	}
-});
-
-socket.on('end', function (data) {
-	var parsed = JSON.parse(data);
-	kM.points[parsed.i].release(parsed.x, parsed.y, parsed.i);
-	kM.points[parsed.i] = {};
-});*/
 
 kM.open = function(app) {
 	//if is already in front+back or back, go to front+back. If is already in front go to front
