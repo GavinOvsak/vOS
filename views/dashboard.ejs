@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<div class="container">
+  <div class="row">
+  	<h2>Your Apps</h2>
+
+    <!-- List of App URLs  -->
+
+  	<% for(i in apps) { %>
+  	<div data-id = "<%= apps[i]._id %>">
+	  	<legend>
+	  		<a class="name" href="/app?app_id=<%= apps[i]._id %>"><%= apps[i].name %></a>
+	  		<span style="float:right;padding-left: 15px;" class="delete"> delete </span>
+	  		<span style="float:right;padding-left: 15px;" class="edit"> edit </span> 
+	  	</legend>
+	  	<p>Description: <span class="description"><%= apps[i].description %></span></p>
+		<p>URL: <span class="url"><a href="<%= apps[i].url %>"><%= apps[i].url %></a></span></p>
+	</div>
+  	<% } %>
+  	<hr>
+    <!-- box to put in a new one -->
+	<div id="newForm" class="row" style="display:none;">
+		<div class="form-group">
+		    <label for="newAppName">App Name</label>
+		    <input type="text" class="form-control" id="newAppName">
+		</div>
+		<div class="form-group">
+		    <label for="newAppDescription">Description</label>
+		    <textarea class="form-control" id="newAppDescription" rows="3"></textarea>
+		</div>
+		<div class="form-group">
+		    <label for="newAppURL">URL to App Code</label>
+		    <input type="url" class="form-control" id="newAppURL" placeholder="http://yourdomain.com/myapp.js">
+		</div>
+		<button type="submit" id="newSave" class="btn btn-success">Save</button>
+		<button type="cancel" id="newCancel" class="btn btn-default">Cancel</button>
+	</div>
+    <div class="row">
+    	<button id="add" class="btn btn-primary center-block">Add An App</button>
+	</div>
+  </div>
+</div>
+<script>
+	$(document).ready(function(){
+		var id = undefined;
+		var hiddenDiv = null;
+		$('.edit').click(function(event){
+			if (hiddenDiv) {
+				hiddenDiv.show();
+			}
+			hiddenDiv = $(event.target).parent().parent();
+			hiddenDiv.hide();
+			id = hiddenDiv.attr('data-id');
+			$('#newAppName').val(hiddenDiv.find('.name').text());
+			$('#newAppDescription').val(hiddenDiv.find('.description').text());
+			$('#newAppURL').val(hiddenDiv.find('.url').text());
+			$('#newForm').show();
+		});
+		$('.delete').click(function(event){
+			hiddenDiv = $(event.target).parent().parent();
+			id = hiddenDiv.attr('data-id');
+			var yesDelete = confirm('Are you sure you want to delete this app?');
+			if (yesDelete) {
+				$.ajax({
+				    url: '/app?app_id=' + id,
+				    type: 'DELETE',
+				    success: function(result) {
+				        location.reload();
+				    }
+				});
+			}
+		});
+		$('#add').click(function(){
+			console.log('Make New App');
+			$('#newAppName').val('');
+			$('#newAppDescription').val('');
+			$('#newAppURL').val('');
+			$('#newForm').show();
+			id = undefined;
+		});
+		$('#newSave').click(function(){
+			var compiledData = {
+				id: id,
+				name: $('#newAppName').val(),
+				description: $('#newAppDescription').val(),
+				url: $('#newAppURL').val()
+			};
+			console.log(compiledData);
+			$.post('/dashboard/update', compiledData).done(function(data){
+				location.reload();
+			});
+		});
+		$('#newCancel').click(function(){
+			console.log('Cancel New App');
+			$('#newForm').hide();
+			if (hiddenDiv) {
+				hiddenDiv.show();
+			}
+		});
+	});
+</script>

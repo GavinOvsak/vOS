@@ -29,7 +29,7 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 	pCamera.target = new THREE.Vector3();
 
 	// Orthographic camera
-	var oCamera = new THREE.OrthographicCamera( -1, 1, 1, -1, 1, 1000 );
+	var oCamera = new THREE.OrthographicCamera( -1, 1, 1, -1, 1, 5000 );
 	oCamera.position.z = 1;
 
 	// pre-render hooks

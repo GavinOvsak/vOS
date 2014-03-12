@@ -56,7 +56,8 @@ VRK.Keyboard = function() {
 	};
 };
 
-var apps = appList;
+var apps = [];//appList;
+
 /*[
 	'/stemkoski-vertex-colors.js'
 //	,'/stemkoski-Textures.js'
@@ -235,6 +236,7 @@ kM.add = function(extern) {
 	kM.apps.push(app);
 	app.external.setUpKeyboard(app.keyboard);
 	setUpAppSwitcher();
+	return app;
 	//kM.open(app);
 };
 
@@ -375,16 +377,3 @@ kM.drawKeyboard = function(scene) {
 		}
 	}
 };
-
-apps.map(function(appURL) {
-	//var url = 'http://whateverorigin.org/get?url=' + encodeURIComponent(appURL) + '&callback=?';
-/*	$.getJSON(url, function(data){
-		eval(data.contents); //Find way to sanitize this.
-		kM.add(exports);
-	});*/
-
-	$.getScript(appURL, function() {
-		//eval(data.contents);
-		kM.add(exports);
-	});
-});

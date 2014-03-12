@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<div class="container" data-id = "<%= app._id %>">
+	<br>
+	<% if (app) { %>
+	  	<legend>
+	  		App Name: <a class="name" href="/app?app_id=<%= app._id %>"><%= app.name %></a>
+	  	</legend>
+	  	<p>Description:</p>
+	  	<p class="description"><%= app.description %></p>
+	  	<div class="row">
+	  		<div class="col-md-6">
+			  	<h3>Compact Mode Preview:</h3>
+				<div id="compactView" style="width:400;height:400;"></div>
+			</div>
+	  		<div class="col-md-6">
+			  	<h3>Immersive Mode Preview:</h3>
+				<div id="immersiveView" style="width:400;height:400;"></div>
+			</div>
+		</div>
+		<hr>
+		<div class="alert alert-info">
+			Type the code (<b><span id="directCode"></span></b>) into the vOS controller to try this app now! Don't have the vOS controller on your phone? Download it <a href="/try">here</a>.
+		</div>
+	<% } else { %>
+		Sorry, the app you are looking for was either removed or never existed in the first place!
+	<% } %>
+</div>
+<script type="text/javascript" src="/js/three.min.js"></script>
+<script type="text/javascript" src="/js/VRK.js"></script>
+<script>
+var socket2 = io.connect('/');//Need a different code
+socket2.on('code', function(code) {
+	$('#directCode').text(code);
+});
+socket2.on('session_id', function(id) {
+	console.log(id);
+	window.location = "/enter?session_id=" + id + "&app_id=<%= app._id %>";
+});      
+socket2.emit('declare-type', {type: 'page'});
+
+var $compactView = $('#compactView');
+var $immersiveView = $('#immersiveView');
+
+WIDTH = 400;
+HEIGHT = 400;
+console.log(WIDTH);
+console.log(HEIGHT);
+console.log($compactView);
+var VIEW_ANGLE = 45,
+  ASPECT = WIDTH / HEIGHT,
+  NEAR = 0.1,
+  FAR = 10000;
+var camera_start = {
+	x: Math.PI/2,
+	y: -200,
+	z: 10
+};
+
+var camera1 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+camera1.rotation.x = camera_start.x;
+camera1.position.y = camera_start.y;
+camera1.position.z = camera_start.z;
+camera1.position.z = 40;
+var renderer1 = new THREE.WebGLRenderer( {antialias:true} );
+renderer1.autoClearColor = true;
+renderer1.setSize(WIDTH, HEIGHT);
+$compactView.append(renderer1.domElement);
+var scene1 = new THREE.Scene();
+
+var camera2 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+camera2.rotation.x = camera_start.x;
+camera2.position.y = camera_start.y;
+camera2.position.z = camera_start.z;
+camera2.position.z = 40;
+var renderer2 = new THREE.WebGLRenderer( {antialias:true} );
+renderer2.autoClearColor = true;
+renderer2.setSize(WIDTH, HEIGHT);
+$immersiveView.append(renderer2.domElement);
+var scene2 = new THREE.Scene();
+
+var angle = 0;
+var render = function() {
+	requestAnimationFrame( render );
+
+	angle += 0.01;
+	camera1.rotation.y = angle;
+	camera1.position.y = Math.cos(camera1.rotation.y) * camera_start.y + Math.sin(camera1.rotation.y) * camera_start.x;
+	camera1.position.x = -Math.sin(camera1.rotation.y) * camera_start.y + Math.cos(camera1.rotation.y) * camera_start.x;
+	renderer1.render(scene1, camera1);
+
+	camera2.rotation.y = angle;
+	camera2.position.y = Math.cos(camera2.rotation.y) * camera_start.y + Math.sin(camera2.rotation.y) * camera_start.x;
+	camera2.position.x = -Math.sin(camera2.rotation.y) * camera_start.y + Math.cos(camera2.rotation.y) * camera_start.x;
+	renderer2.render(scene2, camera2);
+};
+
+render();
+
+(function(THREE, VRK, appURL, scene){
+  $.getScript(appURL, function() {
+    //eval(data.contents);
+    //console.log(appURL);
+    var app = exports;
+    app.setUpKeyboard({
+   	  add: function(){},
+      set: function(){}
+    });
+    if (app.drawFront) {
+	  app.drawFront(scene);
+    }
+  });
+})(THREE, VRK, '<%= app.url %>', scene1);
+
+(function(THREE, VRK, appURL, scene){
+  $.getScript(appURL, function() {
+    //eval(data.contents);
+    //console.log(appURL);
+    var app = exports;
+    app.setUpKeyboard({
+   	  add: function(){},
+      set: function(){}
+    });
+    if (app.drawFrontAndBack) {
+	  app.drawFrontAndBack(scene);
+    } else if (app.drawBack){
+	  app.drawBack(scene);
+    }
+  });
+})(THREE, VRK, '<%= app.url %>', scene2);
+
+</script>

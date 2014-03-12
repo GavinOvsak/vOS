@@ -1,4 +1,5 @@
+//http://gavinovsak-vos.nodejitsu.com
 var appList = [
-	"http://gavinovsak-vos.nodejitsu.com/static/apps/stemkoski-vertex-colors.js",
-	"http://gavinovsak-vos.nodejitsu.com/static/apps/chess.js"
+	"http://gavinovsak.com/app/stemkoski-vertex-colors.js",
+	"http://gavinovsak.com/app/chess.js"
 ];

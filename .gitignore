@@ -1,0 +1,4 @@
+# vOS gitignore
+
+### Secrets ###
+secrets.json

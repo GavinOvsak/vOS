@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--<link rel="shortcut icon" href="http://getbootstrap.com/assets/ico/favicon.ico">-->
+    <title>vOS</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/jumbotron.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://apis.google.com/js/client.js?onload=onLoadCallback"></script>
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+      var socket = io.connect('/');
+      socket.on('code', function(code) {
+        console.log(code);
+        $('#code').text('Quick Pair Code: '+ code);
+      });
+      socket.on('session_id', function(id) {
+        console.log(id);
+        window.location = "/enter?session_id=" + id;
+      });      
+      socket.emit('declare-type', {type: 'page'});
+
+      (function() {
+          var po = document.createElement('script');
+          po.type = 'text/javascript'; po.async = true;
+          po.src = 'https://plus.google.com/js/client:plusone.js';
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(po, s);
+        })();
+
+      function signInCallback(authResult) {
+        if (authResult['status']['signed_in']) {
+          $.post('/auth/google/callback', { 
+            result: authResult,  
+            id_token: authResult.id_token,
+            code: authResult.code,
+            access_token: authResult.access_token})
+          .done(function(data) {
+            console.log('Signing In');
+            $('#signinButton2').hide();
+            $('#loggedIn').show();
+          });
+        } else {
+          $('#signinButton2').show();
+          $('#loggedIn').hide();
+        }
+      }
+
+      function signout() {
+        <% if (!home) { %>
+        window.location = '/logout';
+        <% } %>
+        console.log('Signing Out');
+        $.post('/logout', {}).done(function(data) {
+          console.log('Logged Out');
+        });
+        gapi.auth.signOut();
+      }
+    </script>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a href="/" class="navbar-brand">vOS</a>
+        </div>
+        <div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="/about">About</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown">Develop<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/documentation">Documentation</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+              </ul>
+            </li>
+            <li><a class="active" href="/try">Try It!</a></li>
+          </ul>
+          <% if (user || home) { %>
+          <% if (home) { %>
+            <div id="signinButton2" class="btn pull-right" >
+              <span
+                class="g-signin"
+                data-callback="signInCallback"
+                data-clientid="16685699509-9es3r68f818dgcrgs10ta9dm91ggpfo0.apps.googleusercontent.com"
+                data-cookiepolicy="single_host_origin"
+                data-apppackagename="vOS.controller"
+                data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                data-scope="https://www.googleapis.com/auth/plus.login">
+              </span>
+            </div>
+          <% } %>
+          <ul class="nav navbar-nav navbar-right" id="loggedIn"  <% if (home) { %>style="display:none;" <% } %>>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="code" data-toggle="dropdown"></a>
+              <ul class="dropdown-menu">
+                <li><a href="/try">Download App</a></li>
+                <li><a onClick="signout()">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+          <% } %>
+          <form href="/appSearch" method="GET" id="" class="navbar-form navbar-nav navbar-right" role="form">
+            <div class="form-group">
+              <input type="text" class="form-control">
+            </div>
+            <button type="search" class="btn btn-success">Search Apps</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <%- body %>
+    <div class="container">
+      <hr>
+      <footer>
+        <a href="http://www.workbygavin.com">Work By Gavin</a>
+      </footer>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+  	<!-- Placed at the end of the document so the pages load faster -->
+  </body>
+</html>

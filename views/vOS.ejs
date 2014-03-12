@@ -7,24 +7,63 @@
 	<link rel="stylesheet" href="css/osv.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
 	<script src="/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="js/three.min.js"></script>
-	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="js/jquery.base64.min.js"></script>
-	<script type="text/javascript" src="js/OculusRiftEffect.js"></script>
-  	<script type="text/javascript" src="js/OculusBridge.min.js"></script>
-	<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
-	<script type="text/javascript" src="js/vr.js"></script>
-	<script type="text/javascript" src="js/utility.js"></script>
-	<script type="text/javascript" src="js/applist.js"></script>
-	<script type="text/javascript" src="js/VRK.js"></script>
-	<script type="text/javascript" src="js/vOS.js"></script>
+	<script type="text/javascript" src="/js/three.min.js"></script>
+	<script type="text/javascript" src="/js/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.base64.min.js"></script>
+	<script type="text/javascript" src="/js/OculusRiftEffect.js"></script>
+  	<script type="text/javascript" src="/js/OculusBridge.min.js"></script>
+	<script type="text/javascript" src="/js/RequestAnimationFrame.js"></script>
+	<script type="text/javascript" src="/js/vr.js"></script>
+	<script type="text/javascript" src="/js/utility.js"></script>
+	<script type="text/javascript" src="/js/VRK.js"></script>
+  <script type="text/javascript" src="/js/vOS.js"></script>
 </head>
 <body>
-<div id="code"></div>
 <div id="viewer"></div>
 <script>
+appQueryURL = <% if (app) { %> '<%= app.url %>'<%} else {%> undefined <%}%>;
+recentApps = <% if (recentApps) { %> [
+  <% for (i in recentApps) { %>
+    '<%= recentApps[i] %>' <% if (i < recentApps.length) { %> , <% } %>
+  <% } %>
+] <%} else {%> [] <%}%>;
 
+recentApps.map(function(appID) {
+  $.get('/appInfo?app_id=' + appID, function(data){
+    (function(kM){
+      $.getScript(data.url, function() {
+        //eval(data.contents);
+        console.log(data);
+        kM.add(exports);
+      });
+    })(kM);
+  });
+});
+
+(function(kM){
+  $.getScript(appQueryURL, function() {
+    //eval(data.contents);
+    console.log(appQueryURL);
+    kM.open(kM.add(exports));
+  });
+})(kM);
+
+/*$.get('/appList', function(data) {
+  console.log(data);
+  appList = data;
+  data.map(function(appURL) {
+    $.getScript(appURL, function() {
+      //eval(data.contents);
+      kM.add(exports);
+    });
+  });
+});*/
+
+console.log(appQueryURL);
+console.log(recentApps);
+</script>
+<script>
 function toggleFullScreen() {
   if ((document.fullScreenElement && document.fullScreenElement !== null) ||    // alternative standard method
       (!document.mozFullScreen && !document.webkitIsFullScreen)) {               // current working methods
@@ -56,7 +95,7 @@ var GAMEPAD_SPEED = 0.04;
 var DEADZONE = 0.2;
 var SHOW_SETTINGS = true;
 var NAV_DELTA = 45;
-var FAR = 1000;
+var FAR = 5000;
 var USE_DEPTH = true;
 var WORLD_FACTOR = 1.0;
 var OculusRift = {
@@ -85,6 +124,10 @@ var HMDRotation = new THREE.Quaternion();
 var lastUpdate = 0;
 
 var socket = io.connect('/');
+socket.on('disconnect', function() {
+  window.location = "/";
+});
+
 socket.emit('declare-type', {
 	type: 'output',
 	session_id: <%= session_id %>
@@ -201,7 +244,8 @@ var initWebGL = function() {
 	renderer.setSize(WIDTH, HEIGHT);
 
 	// Set the window resolution of the rift in case of not native
-	OculusRift.hResolution = WIDTH, OculusRift.vResolution = HEIGHT,
+	OculusRift.hResolution = WIDTH;
+  OculusRift.vResolution = HEIGHT;
 
 	effect = new THREE.OculusRiftEffect( renderer, {HMD:OculusRift, worldFactor:WORLD_FACTOR} );
 	effect.setSize(WIDTH, HEIGHT );
@@ -498,7 +542,6 @@ var render = function() {
       BaseRotationEuler.y = 0;
     }
     renderer.setViewport(0, 0, WIDTH, HEIGHT);
-    console.log(scene);
     renderer.render(scene, camera);
     wasUsingRift = false;
   }
