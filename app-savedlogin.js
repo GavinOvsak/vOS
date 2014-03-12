@@ -4,9 +4,10 @@ var socket = require('socket.io')
   , passport = require('passport')
   , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 //  , GooglePlusStrategy = require('passport-google-plus')
-  , mongoose = require('mongoose');
+  , mongoose = require('mongoose')
+  , secrets = require('./secrets.json');
 
-mongoose.connect('mongodb://nodejitsu_gavinovsak:443o6o6a2svn8b6mctd725bhje@ds061518.mongolab.com:61518/nodejitsu_gavinovsak_nodejitsudb6004727084');
+mongoose.connect(secrets.mongoURL);
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -81,8 +82,8 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-var GOOGLE_CLIENT_ID = "16685699509-9es3r68f818dgcrgs10ta9dm91ggpfo0.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "fuN38N6pLZHuScKPn3goUEnD";
+var GOOGLE_CLIENT_ID = secrets.google.clientID;
+var GOOGLE_CLIENT_SECRET = secrets.google.clientSecret;
 
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
