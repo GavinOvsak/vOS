@@ -78,7 +78,6 @@ app.post('/recentApps', [
 app.get('/appList', [
   login.ensureLoggedIn('/'),
   function(req, res) {
-    console.log('TESTA');
     vOS_App.find( {}, function(err, apps) {
       if (err) { console.log(err); }
       console.log(apps);
@@ -155,6 +154,16 @@ app.get('/appInfo', [
       res.json(null);
     }
 }]);
+
+app.get('/all', function(req, res) {
+  vOS_App.find( {}, function(err, apps) {
+    res.render('all', {
+      user: req.user,
+      home: false,
+      allApps: apps
+    });
+  });
+});
 
 app.get('/app', function(req, res) {
   vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
@@ -265,6 +274,29 @@ app.get('/try', function(req, res) {
       home: false
     });
 });
+
+app.get('/debug', function(req, res) {
+  var recents = ['5315354db87e860000a11cbc'];
+  var render = function(app) {
+    res.render('vOS', {
+      user: {debug: true},
+      layout: false,
+      session_id: 'debug',
+      recentApps: recents,
+      userID: '1',
+      app: app
+    });
+  }
+  if (req.query.app_id) {
+    vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
+        console.log(app);
+        render(app);
+      });
+  } else {
+    render(undefined);
+  }
+});
+
 app.get('/enter', function(req, res) {
   if (req.query.session_id && sessions[req.query.session_id]) {
     var recents = ['5315354db87e860000a11cbc'];
@@ -295,6 +327,7 @@ app.get('/enter', function(req, res) {
             layout: false,
             session_id: req.query.session_id,
             recentApps: recents,
+            userID: req.user.id,
             app: app
           });
         } else {
@@ -307,6 +340,7 @@ app.get('/enter', function(req, res) {
         layout: false,
         session_id: req.query.session_id,
         recentApps: recents,
+        userID: req.user.id,
         app: undefined
       });
     } else {
@@ -322,6 +356,7 @@ app.get('/latestAPK', function(req, res) {
   res.download(file);
 });
 app.use('/js', express.static(__dirname + '/js'));
+app.use('/Browserify', express.static(__dirname + '/Browserify'));
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/static', express.static(__dirname + '/public'));
 
@@ -331,7 +366,7 @@ io.set('log level', 0);
 var keyOptions = ['2', '3', '4', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
 var codes = {
-/*  "AAA": websiteSocket
+/*  "AAA": {socket: websiteSocket, name: name}
 */
 };
 
@@ -348,9 +383,9 @@ var makeKey = function() {
   var key = '';
   while(key == '' || codes[key]) {
     key = '';
-    key += keyOptions[Math.floor(Math.random()*keyOptions.length)];
-    key += keyOptions[Math.floor(Math.random()*keyOptions.length)];
-    key += keyOptions[Math.floor(Math.random()*keyOptions.length)];
+    key += keyOptions[Math.floor(Math.random() * keyOptions.length)];
+    key += keyOptions[Math.floor(Math.random() * keyOptions.length)];
+    key += keyOptions[Math.floor(Math.random() * keyOptions.length)];
   }
   return key;
 }
@@ -404,10 +439,16 @@ io.sockets.on('connection', function (socket) {
     console.log(data.type);
     if (data.type == 'page') {
       //Make key, tie it to website socket.
-      var key = makeKey(); 
-      codes[key] = socket;
+      var key = makeKey();
+      codes[key] = {
+        socket: socket,
+        name: data.name
+      };
       console.log('Key: ' + key);
-      socket.emit('code', key);
+      socket.emit('code', {
+        code: key,
+        name: data.name
+      });
       socket.on('disconnect', function() {
         //console.log(Object.keys(codes));
         delete codes[key];
@@ -432,22 +473,25 @@ io.sockets.on('connection', function (socket) {
         var code = raw.toUpperCase();
         //If code exists, make a session and send it to the page.
         if (codes[code] != undefined) {
-          var newSessionId = lastSession++;
-          sessions[newSessionId] = {
+          var newSessionID = lastSession++;
+          sessions[newSessionID] = {
             user_id: data.user_id,
             input: socket
           };
           socket.on('disconnect', function() {
-            killSession(newSessionId);
+            killSession(newSessionID);
           });
           socket.on('connection', function(status) {
             if (status == 'cancelled') {
-              killSession(newSessionId);
+              killSession(newSessionID);
             }
           });
 
           socket.emit('response', 'correct pair code');
-          codes[code].emit('session_id', newSessionId);
+          codes[code].socket.emit('session_id', {
+            id: newSessionID,
+            name: codes[code].name
+          });
           delete codes[code];
         } else {
           socket.emit('error', 'incorrect pair code');

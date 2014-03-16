@@ -26,26 +26,27 @@
 	<% } %>
 </div>
 <script type="text/javascript" src="/js/three.min.js"></script>
-<script type="text/javascript" src="/js/VRK.js"></script>
+<script type="text/javascript" src="/Browserify/controls.js"></script>
 <script>
 var socket2 = io.connect('/');//Need a different code
-socket2.on('code', function(code) {
-	$('#directCode').text(code);
+socket2.on('code', function(data) {
+	if (data.name == 'appSpecific') {
+		$('#directCode').text(data.code);
+	}
 });
-socket2.on('session_id', function(id) {
-	console.log(id);
-	window.location = "/enter?session_id=" + id + "&app_id=<%= app._id %>";
+socket2.on('session_id', function(data) {
+	console.log(data.id);
+	if (data.name == 'appSpecific') {
+		window.location = "/enter?session_id=" + data.id + "&app_id=<%= app._id %>";
+	}
 });      
-socket2.emit('declare-type', {type: 'page'});
+socket2.emit('declare-type', {type: 'page', name: 'appSpecific'});
 
 var $compactView = $('#compactView');
 var $immersiveView = $('#immersiveView');
 
 WIDTH = 400;
 HEIGHT = 400;
-console.log(WIDTH);
-console.log(HEIGHT);
-console.log($compactView);
 var VIEW_ANGLE = 45,
   ASPECT = WIDTH / HEIGHT,
   NEAR = 0.1,
@@ -96,36 +97,86 @@ var render = function() {
 
 render();
 
-(function(THREE, VRK, appURL, scene){
-  $.getScript(appURL, function() {
-    //eval(data.contents);
-    //console.log(appURL);
-    var app = exports;
-    app.setUpKeyboard({
-   	  add: function(){},
-      set: function(){}
-    });
-    if (app.drawFront) {
-	  app.drawFront(scene);
-    }
-  });
-})(THREE, VRK, '<%= app.url %>', scene1);
+var mockState = {
+	unitWidth: 1/12,
+	unitHeight: 1/9,
+	hidden: true,
+	getPanelApp: function() {},
+	canMinimize: function() {},
+	canMaximize: function() {},
+	close: function() {},
+	toggleMaxMin: function() {},
+	mode: 'Normal',
+	modes: {
+		Normal: 'normal',
+		AppSwitch: 'app-switch',
+		Notifications: 'notifications'
+	}
+};
 
-(function(THREE, VRK, appURL, scene){
-  $.getScript(appURL, function() {
-    //eval(data.contents);
-    //console.log(appURL);
-    var app = exports;
-    app.setUpKeyboard({
-   	  add: function(){},
-      set: function(){}
-    });
-    if (app.drawFrontAndBack) {
-	  app.drawFrontAndBack(scene);
-    } else if (app.drawBack){
-	  app.drawBack(scene);
-    }
-  });
-})(THREE, VRK, '<%= app.url %>', scene2);
+var mockUtil = {
+	makeText: function() {},
+	setPanelPosition: function() {},
+	distance: function() {},
+	vector: function() {}
+};
+
+var controls = controlObjects.setUp(mockState, mockUtil);
+
+(function(THREE, controls, appURL, scene){
+	window.module = {};
+	window.module.exports = {};
+	window.exports = window.module.exports;
+	window.Controls = controls;
+  	$.getScript(appURL, function() {
+	    //eval(data.contents);
+	    //console.log(appURL);
+	    var app = window.module.exports;
+        if (app != undefined) {
+	        var mockData = {
+	        	panel: {
+				   	  add: function(){},
+				      set: function(){}
+				},
+				userID: '1'
+		    };
+	        app.setUp(mockData);
+		    if (app.drawFront) {
+			  app.drawFront(scene);
+		    }
+	    } else {
+            console.log('App from ' + data.url + ' Failed To Load');
+        }
+	});
+})(THREE, controls, '<%= app.url %>', scene1);
+
+(function(THREE, controls, appURL, scene){
+  	window.module = {};
+  	window.module.exports = {};
+	window.exports = window.module.exports;
+	window.Controls = controls;
+	$.getScript(appURL, function() {
+		//eval(data.contents);
+	    //console.log(appURL);
+	    var app = window.module.exports;
+	    if (app != undefined) {
+	    	var mockData = {
+	        	panel: {
+				   	  add: function(){},
+				      set: function(){}
+				},
+				userID: '1'
+		    };
+	        app.setUp(mockData);
+		    if (app.drawFrontAndBack) {
+			  app.drawFrontAndBack(scene);
+		    } else if (app.drawBack){
+			  app.drawBack(scene);
+		    }
+	    } else {
+	        console.log('App from ' + data.url + ' Failed To Load');
+	    }
+  	});
+})(THREE, controls, '<%= app.url %>', scene2);
 
 </script>

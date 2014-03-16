@@ -1,41 +1,11 @@
-var requireState = function(){
-
-};
-
-var requireControls = function() {
-
-};
-
-var setUpRemoteController = function() {
-
-};
-
-var setUpDeviceInputs = function(){
-
-};
-
-var setUpAppSwitcher = function() {
-
-};
-
-var checkParams = function() {
-
-};
-
-var display = function() {
-
-};
-
-//---------------------  Put above in their own files -------------
-
 $(document).ready(function() {
+	var state = require('./state');
+	var util = require('./util');
+	var controls = require('./controls').setUp(state, util);
 
-	var state = requireState();
-	var controls = requireControls();
-
-	remoteController.setUp(state);
-	deviceInputs.setUp(state);
-	appSwitcher.setUp(state);
-	params.check(state);
-	display.start(state);
+	require('./remoteController').setUp(state, util);
+	require('./deviceInputs').setUp(state, util);
+	require('./appSwitcher').setUp(state, util, controls);
+	require('./params').check(state, util, controls);
+	require('./display').start(state, util, controls);
 });

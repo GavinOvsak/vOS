@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node app.js"
   },
-  "version": "0.1.0-76",
+  "version": "0.1.0-131",
   "engines": {
     "node": "0.10.x"
   },
@@ -20,5 +20,8 @@
     "express": "3.4.7",
     "socket.io": "0.9.16",
     "ejs": "0.8.5"
-  }
+  },
+  "bundleDependencies": [
+    "./secrets.json"
+  ]
 }

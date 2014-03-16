@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<div class="container">
+	<br>
+	<legend> All Apps </legend>
+	<% for (i in allApps) {%>
+		<a class="name" href="/app?app_id=<%= allApps[i]._id %>"><%= allApps[i].name %></a>
+		<br>
+	<% } %>
+</div>

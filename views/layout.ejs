@@ -16,15 +16,19 @@
 
     <script type="text/javascript">
       var socket = io.connect('/');
-      socket.on('code', function(code) {
-        console.log(code);
-        $('#code').text('Quick Pair Code: '+ code);
+      socket.on('code', function(data) {
+        if (data.name == 'basic') {
+          console.log(data.code);
+          $('#code').text('Quick Pair Code: '+ data.code);
+        }
       });
-      socket.on('session_id', function(id) {
-        console.log(id);
-        window.location = "/enter?session_id=" + id;
-      });      
-      socket.emit('declare-type', {type: 'page'});
+      socket.on('session_id', function(data) {
+        if (data.name == 'basic') {
+          console.log(data.id);
+          window.location = "/enter?session_id=" + data.id;
+        }
+      });
+      socket.emit('declare-type', {type: 'page', name: 'basic'});
 
       (function() {
           var po = document.createElement('script');
