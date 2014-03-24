@@ -4,10 +4,11 @@ if (exports == undefined) {
 	var exports = controlObjects;
 }
 
+//Sign In Fix
+//CORS Pictures
 
 exports.setUp = function(state, util) {
 	var controls = {};
-
 
 	controls.Object = function(x, y, width, height, options) {
 		this.x = (x || 0) * state.unitWidth;
@@ -159,15 +160,9 @@ exports.setUp = function(state, util) {
 				this.options[key] = this.options[key] || defaultOptions[key];
 			}
 
-			if (this.options.direction == controls.LinearSlider.direction.VERTICAL) {
-				this.line_width = 0.1 * state.unitWidth;
-				this.grip_height = this.width * state.unitWidth;
-				this.grip_width = 0.5 * state.unitHeight;
-			} else if (this.options.direction == controls.LinearSlider.direction.HORIZONTAL) {
-				this.line_width = 0.1 * state.unitHeight;
-				this.grip_height = this.height * state.unitHeight;
-				this.grip_width = 0.5 * state.unitWidth;
-			}
+			this.line_width = 0.1;
+			this.grip_height = 0.5;
+
 			this.progress = this.options.initProgress;
 
 			this.initGrab = {
@@ -185,9 +180,9 @@ exports.setUp = function(state, util) {
 
 			if (this.point != null) {
 				if (this.options.direction == controls.LinearSlider.direction.VERTICAL) {
-					this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/(this.height - this.grip_height);
+					this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/(this.height - this.grip_height * state.unitHeight);
 				} else if(this.options.direction == controls.LinearSlider.direction.HORIZONTAL) {
-					this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.width - this.grip_height);
+					this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.width - this.grip_height * state.unitWidth);
 				}
 			}
 			this.progress = Math.max(Math.min(this.progress, 1), 0);
@@ -195,13 +190,13 @@ exports.setUp = function(state, util) {
 		},
 		contains: function(x, y) {
 			if (this.options.direction == controls.LinearSlider.direction.VERTICAL) {
-				return x > this.x && x < this.x + this.grip_width && 
-					y > this.y + (this.height - this.grip_height) * this.progress && 
-					y < this.y + (this.height - this.grip_height) * this.progress + this.grip_height;
+				return x > this.x && x < this.x + this.width && 
+					y > this.y + (this.height - this.grip_height * state.unitHeight) * this.progress && 
+					y < this.y + (this.height - this.grip_height * state.unitHeight) * this.progress + this.grip_height * state.unitHeight;
 			} else if (this.options.direction == controls.LinearSlider.direction.HORIZONTAL) {
-				return y > this.y && y < this.y + this.grip_width && 
-					x > this.x + (this.width - this.grip_height) * this.progress && 
-					x < this.x + (this.width - this.grip_height) * this.progress + this.grip_height;
+				return y > this.y && y < this.y + this.height && 
+					x > this.x + (this.width - this.grip_height * state.unitWidth) * this.progress && 
+					x < this.x + (this.width - this.grip_height * state.unitWidth) * this.progress + this.grip_height * state.unitWidth;
 			}
 		},
 		onRelease_callback: function(progress) {},
@@ -242,142 +237,23 @@ exports.setUp = function(state, util) {
 
 			if (this.options.direction == controls.LinearSlider.direction.VERTICAL) {
 				var line = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.line_width, this.height), line_material);
-				util.setPanelPosition(panelMesh, line, this.x + (this.width - this.line_width)/2, this.y, 0.1);
+					new THREE.PlaneGeometry(this.line_width * state.unitWidth, this.height), line_material);
+				util.setPanelPosition(panelMesh, line, this.x + (this.width - this.line_width * state.unitWidth)/2, this.y, 0.1);
 				var gripMesh = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.grip_width, this.grip_height), grip_material);
-				util.setPanelPosition(panelMesh, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + (this.height - this.grip_height) * this.progress, 0.11);
+					new THREE.PlaneGeometry(this.width, this.grip_height * state.unitHeight), grip_material);
+				util.setPanelPosition(panelMesh, gripMesh, this.x, this.y + (this.height - this.grip_height * state.unitHeight) * this.progress, 0.11);
 			} else if (this.options.direction == controls.LinearSlider.direction.HORIZONTAL) {
 				var line = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.width, this.line_width), line_material);
-				util.setPanelPosition(panelMesh, line, this.x, this.y + (this.height - this.line_width)/2, 0.1);
+					new THREE.PlaneGeometry(this.width, this.line_width * state.unitHeight), line_material);
+				util.setPanelPosition(panelMesh, line, this.x, this.y + (this.height - this.line_width * state.unitHeight)/2, 0.1);
 				var gripMesh = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.grip_height, this.grip_width), grip_material);
-				util.setPanelPosition(panelMesh, gripMesh, this.x + (this.width - this.grip_height) * this.progress, this.y + (this.height - this.grip_width)/2, 0.11);
+					new THREE.PlaneGeometry(this.grip_height * state.unitWidth, this.height), grip_material);
+				util.setPanelPosition(panelMesh, gripMesh, this.x + (this.width - this.grip_height * state.unitWidth) * this.progress, this.y, 0.11);
 			}
 			scene.add(line);
 			scene.add(gripMesh);
 		}
 	};
-/*
-	controls.LinearSlider = function(x, y, width, height, returnsToCenter, direction, initProgress) {
-		this.x = x * state.unitWidth;
-		this.y = y * state.unitHeight;
-		this.width = width * state.unitWidth;
-		this.height = height * state.unitHeight;
-		this.direction = direction;
-		if (this.direction == undefined) {
-			this.direction = controls.LinearSlider.direction.VERTICAL;
-		}
-		if (this.direction == controls.LinearSlider.direction.VERTICAL) {
-			this.line_width = 0.1 * state.unitWidth;
-			this.grip_width = width * state.unitWidth;
-			this.grip_height = 0.5 * state.unitHeight;
-		} else if (this.direction == controls.LinearSlider.direction.HORIZONTAL) {
-			this.line_width = 0.1 * state.unitHeight;
-			this.grip_width = height * state.unitHeight;
-			this.grip_height = 0.5 * state.unitWidth;
-		}
-
-		if (initProgress != undefined) {
-			this.progress = initProgress;
-		} else {
-			this.progress = 0.5;
-		}
-
-		this.returnsToCenter = returnsToCenter;
-
-		this.initGrab = {
-			x: 0,
-			y: 0,
-			progress: 0
-		};
-
-		this.available = true;
-		this.point = undefined;
-		this.getProgress = function() {
-			if (this.point != null) {
-				if (this.direction == controls.LinearSlider.direction.VERTICAL) {
-					this.progress = this.initGrab.progress + (this.point.y - this.initGrab.y)/(this.height - this.grip_height);
-				} else if(this.direction == controls.LinearSlider.direction.HORIZONTAL) {
-					this.progress = this.initGrab.progress + (this.point.x - this.initGrab.x)/(this.width - this.grip_height);
-				}
-			}
-			this.progress = Math.max(Math.min(this.progress, 1), 0);
-			return this.progress;
-		};
-		this.contains = function(x, y) {
-			if (this.direction == controls.LinearSlider.direction.VERTICAL) {
-				return x > this.x && x < this.x + this.grip_width && 
-					y > this.y + (this.height - this.grip_height) * this.progress && 
-					y < this.y + (this.height - this.grip_height) * this.progress + this.grip_height;
-			} else if (this.direction == controls.LinearSlider.direction.HORIZONTAL) {
-				return y > this.y && y < this.y + this.grip_width && 
-					x > this.x + (this.width - this.grip_height) * this.progress && 
-					x < this.x + (this.width - this.grip_height) * this.progress + this.grip_height;
-			}
-		};
-		this.onRelease_callback = function(progress) {};
-		this.onRelease = function(callback) {
-			this.onRelease_callback = callback;
-		};
-		this.setProgress = function(progress) {
-			this.progress = progress;
-		};
-		this.release = function(x, y) {
-			this.onRelease_callback(this.getProgress());
-			if (this.returnsToCenter) {
-				this.progress = 0.5;
-			}
-			this.available = true;
-			this.point = undefined;
-		}
-		this.onMove_callback = function(progress) {};
-		this.onMove = function(callback) {
-			this.onMove_callback = callback;
-		}
-		this.move = function(x, y) {
-			this.onMove_callback(this.getProgress());
-		}
-		this.registerPoint = function(point) {
-			this.initGrab.x = point.x;
-			this.initGrab.y = point.y;
-			this.initGrab.progress = this.progress;
-			this.point = point;
-			point.onRelease(this.release.bind(this));
-			point.onMove(this.move.bind(this));
-			this.available = false;
-		};
-		this.draw = function(scene, panelMesh) {
-			//Draw line and then draw grip on top.
-			var line_material = new THREE.MeshBasicMaterial({color: 0x222222});
-			var grip_material = new THREE.MeshBasicMaterial({color: 0x224222});
-
-			if (this.direction == controls.LinearSlider.direction.VERTICAL) {
-				var line = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.line_width, this.height), line_material);
-				util.setPanelPosition(panelMesh, line, this.x + (this.width - this.line_width)/2, this.y, 0.1);
-				var gripMesh = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.grip_width, this.grip_height), grip_material);
-				util.setPanelPosition(panelMesh, gripMesh, this.x + (this.width - this.grip_width)/2, this.y + (this.height - this.grip_height) * this.progress, 0.11);
-			} else if (this.direction == controls.LinearSlider.direction.HORIZONTAL) {
-				var line = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.width, this.line_width), line_material);
-				util.setPanelPosition(panelMesh, line, this.x, this.y + (this.height - this.line_width)/2, 0.1);
-				var gripMesh = new THREE.Mesh(
-					new THREE.PlaneGeometry(this.grip_height, this.grip_width), grip_material);
-				util.setPanelPosition(panelMesh, gripMesh, this.x + (this.width - this.grip_height) * this.progress, this.y + (this.height - this.grip_width)/2, 0.11);
-			}
-			scene.add(line);
-			scene.add(gripMesh);
-		};
-	};
-
-	controls.LinearSlider.direction = {
-		VERTICAL: 'vertical',
-		HORIZONTAL: 'horizontal'
-	};
-*/
 
 	controls.Treadmill = function() {
 		controls.Object.apply(this, arguments);
@@ -433,7 +309,7 @@ exports.setUp = function(state, util) {
 		contains: function(x, y) {
 			return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
 		},
-		onRelease_callback: function(progress) {},
+		onRelease_callback: function(x, y, angle, zoom) {},
 		onRelease: function(callback) {
 			this.onRelease_callback = callback;
 		},
@@ -498,7 +374,6 @@ exports.setUp = function(state, util) {
 				this.available = false;
 		},
 		getNewState: function() {
-			var options = controls.Treadmill.option;
 			var newState = this.cloneState(this.startState);
 			if (this.options.rotate) {
 				newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
@@ -542,178 +417,6 @@ exports.setUp = function(state, util) {
 		}
 	};
 
-	controls.Treadmill.option = {
-		X: 'x',
-		Y: 'y',
-		Rotate: 'rotate',
-		Zoom: 'Zoom',
-		ZoomIn: 'Zoom In',
-		ZoomOut: 'Zoom Out'
-	};
-
-/*
-	controls.Treadmill = function(x, y, width, height, options){
-		this.options = options; //Array of strings
-
-		this.x = x * state.unitWidth;
-		this.y = y * state.unitHeight;
-		this.width = width * state.unitWidth;
-		this.height = height * state.unitHeight;
-		this.available = true;
-		this.max_fingers = 2;//Could modify later to handle more
-
-		this.state = {
-			x: 0,
-			y: 0,
-			angle: 0,
-			zoom: 1
-		};
-		this.startState = {
-			x: 0,
-			y: 0,
-			angle: 0,
-			zoom: 1
-		};
-		this.grabInfo = {
-			x: 0,
-			y: 0,
-			angle: 0,
-			zoom: 1
-		};
-		this.points = {};
-		this.cloneState = function(state) {
-			return {
-				x: state.x,
-				y: state.y,
-				angle: state.angle,
-				zoom: state.zoom,
-			};
-		};
-		this.contains = function(x, y) {
-			return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
-		};
-		this.onRelease_callback = function(progress) {};
-		this.onRelease = function(callback) {
-			this.onRelease_callback = callback;
-		};
-		this.release = function(x, y, i) {
-			this.onRelease_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
-			this.available = true;
-			this.startState = {
-				x: this.state.x,
-				y: this.state.y,
-				angle: this.state.angle,
-				zoom: this.state.zoom
-			};
-			delete this.points[i];
-			this.setGrabInfo();
-		};
-		this.getTouchAngle = function() {
-			if (Object.keys(this.points).length < 2) {
-				return 0;
-			} else if (this.points[0] != undefined && this.points[1] != undefined){
-				return Math.atan2(this.points[0].x - this.points[1].x, this.points[0].y - this.points[1].y);
-			}
-			return 0;
-		};
-		this.getTouchCenter = function() {
-			var x = 0;
-			var y = 0;
-
-			for (i in this.points) {
-				if (this.points[i] != undefined) {
-					x += this.points[i].x;
-					y += this.points[i].y;
-				}
-			}
-			return {
-				x: x/Math.max(1, Object.keys(this.points).length),
-				y: y/Math.max(1, Object.keys(this.points).length)		
-			};
-		};
-		this.getTouchSeparation = function() {
-			if (Object.keys(this.points).length < 2) {
-				return 1;
-			} else if (this.points[0] != undefined && this.points[1] != undefined) {
-				return util.distance(this.points[0], this.points[1]);
-			}
-		};
-		this.setGrabInfo = function() {
-			var center = this.getTouchCenter();
-			this.grabInfo = {
-				x: center.x,
-				y: center.y,
-				angle: this.getTouchAngle(),
-				zoom: this.getTouchSeparation()
-			};
-		};
-		this.registerPoint = function(point) {
-			this.startState = this.cloneState(this.state);
-			this.points[point.i] = point;
-			this.setGrabInfo();
-			point.onRelease(this.release.bind(this));
-			point.onMove(this.move.bind(this));
-			if (Object.keys(this.points).length >= this.max_fingers)
-				this.available = false;
-		};
-		this.getNewState = function() {
-			var isContained = function(array, item) {
-				return array.indexOf(item) >= 0;
-			}
-			var options = controls.Treadmill.option;
-			var newState = this.cloneState(this.startState);
-			if (isContained(this.options, options.Rotate)) {
-				newState.angle = this.startState.angle + this.getTouchAngle() - this.grabInfo.angle;
-			}
-			var disp = util.vector(this.getTouchCenter(), this.grabInfo);
-			if (isContained(this.options, options.X)) {
-				newState.x = this.startState.x + disp.x * Math.cos(newState.angle) - disp.y * Math.sin(newState.angle);
-			}
-			if (isContained(this.options, options.Y)) {
-				newState.y = this.startState.y + disp.x * Math.sin(newState.angle) + disp.y * Math.cos(newState.angle);
-			}
-			if (isContained(this.options, options.Zoom) >= 0 || 
-				(isContained(this.options, options.ZoomIn) >= 0 && this.grabInfo.zoom > this.getTouchSeparation()) ||
-				(isContained(this.options, options.ZoomOut) >= 0 && this.grabInfo.zoom < this.getTouchSeparation())) {
-				newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
-			}
-			return newState;
-		};
-		this.onMove_callback = function(x, y, angle, zoom) {};
-		this.onMove = function(callback) {
-			this.onMove_callback = callback;
-		};
-		this.move = function(x, y, angle, zoom) {
-			this.state = this.getNewState();
-			this.onMove_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
-		};
-		this.draw = function(scene, panelMesh) {
-			var material = new THREE.MeshBasicMaterial({color: 0x222222});
-			treadMesh = new THREE.Mesh(
-				new THREE.PlaneGeometry(this.width, this.height),
-				material);
-			util.setPanelPosition(panelMesh, treadMesh, this.x, this.y, 0.1);
-			scene.add(treadMesh);
-
-
-			//Draw Lines to show movement
-			//start with vertical lines. Ideally would draw only what is needed. Use modulus.
-
-			//Shift then rotate?
-
-			//Line is a point and a direction. Write function to take it in along with bounds to crop.
-		};
-	};
-
-	controls.Treadmill.option = {
-		X: 'x',
-		Y: 'y',
-		Rotate: 'rotate',
-		Zoom: 'Zoom',
-		ZoomIn: 'Zoom In',
-		ZoomOut: 'Zoom Out'
-	};*/
-
 	controls.Label = function() {
 		controls.Object.apply(this, arguments);
 		this.applyDefaults();
@@ -723,6 +426,7 @@ exports.setUp = function(state, util) {
 		available: false,
 		applyDefaults: function() {
 			var defaultOptions = {
+				text: '',
 				px: 30
 			};
 			this.options = this.options || {};
@@ -760,45 +464,7 @@ exports.setUp = function(state, util) {
 	        scene.add(textmesh);
 		}
 	};
-/*
-	controls.Label = function(x, y, width, height, text, px){
-		this.x = x * state.unitWidth;
-		this.y = y * state.unitHeight;
-		this.width = width/12;
-		this.height = height/9;
-		this.text = text;
-		this.px = px || 30;
-		this.contains = function(x, y) {
-			return false;
-		};
-		this.draw = function(scene, panelMesh) {
-			var material = new THREE.MeshBasicMaterial({color: 0x222222});
 
-			buttonMesh = new THREE.Mesh(
-				new THREE.PlaneGeometry(this.width, this.height), material);
-
-			util.setPanelPosition(panelMesh, buttonMesh, this.x, this.y, 0.1);
-
-			scene.add(buttonMesh);
-			
-			var canvas1 = document.createElement('canvas');
-			canvas1.height = this.px;
-			canvas1.width = 100;
-	        var context1 = canvas1.getContext('2d');
-	        context1.font = "Bold " + this.px + "px Arial";
-	        context1.fillStyle = "rgba(255,255,255,0.95)";
-		    context1.fillText(this.text, 0, this.px);
-	        var texture1 = new THREE.Texture(canvas1) 
-	        texture1.needsUpdate = true;
-		    var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
-		    material1.transparent = true;
-		    var textmesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1);
-		    
-		    util.setPanelPosition(panelMesh, textmesh, this.x, this.y, 0.2);
-	        scene.add(textmesh);
-		};
-	};
-*/
 	controls.Keyboard = function() {
 		controls.Object.apply(this, arguments);
 		this.applyDefaults();

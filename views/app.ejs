@@ -141,8 +141,8 @@ var controls = controlObjects.setUp(mockState, mockUtil);
 				userID: '1'
 		    };
 	        app.setUp(mockData);
-		    if (app.drawFront) {
-			  app.drawFront(scene);
+		    if (app.drawContained) {
+			  app.drawContained(scene);
 		    }
 	    } else {
             console.log('App from ' + data.url + ' Failed To Load');
@@ -168,10 +168,10 @@ var controls = controlObjects.setUp(mockState, mockUtil);
 				userID: '1'
 		    };
 	        app.setUp(mockData);
-		    if (app.drawFrontAndBack) {
-			  app.drawFrontAndBack(scene);
-		    } else if (app.drawBack){
-			  app.drawBack(scene);
+		    if (app.drawImmersive) {
+			  app.drawImmersive(scene);
+		    } else if (app.drawImmersiveBackground){
+			  app.drawImmersiveBackground(scene);
 		    }
 	    } else {
 	        console.log('App from ' + data.url + ' Failed To Load');

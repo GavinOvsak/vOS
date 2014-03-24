@@ -158,18 +158,18 @@ display.start = function(state, util, controls) {
 
 		if(state.front_and_back != null) {
 			(function() {
-				state.front_and_back.external.drawFrontAndBack(scene);
+				state.front_and_back.external.drawImmersive(scene);
 			})();
 		} else {
 			if (state.front != null) {
 				(function() {
 					//debugger;
-					state.front.external.drawFront(scene);
+					state.front.external.drawContained(scene);
 				})();
 			}
 			if (state.back != null) {
 				(function() {
-					state.back.external.drawBack(scene);
+					state.back.external.drawImmersiveBackground(scene);
 				})();
 			}
 		}
