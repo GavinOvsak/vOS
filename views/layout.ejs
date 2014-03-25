@@ -29,7 +29,7 @@
         }
       });
       socket.emit('declare-type', {type: 'page', name: 'basic'});
-
+/*
       (function() {
           var po = document.createElement('script');
           po.type = 'text/javascript'; po.async = true;
@@ -37,9 +37,64 @@
           var s = document.getElementsByTagName('script')[0];
           s.parentNode.insertBefore(po, s);
         })();
+*/
 
-      function signInCallback(authResult) {
+/*      function signinCallback(authResult) {
+        console.log(authResult);
         if (authResult['status']['signed_in']) {
+          // Update the app to reflect a signed in user
+          // Hide the sign-in button now that the user is authorized, for example:
+          document.getElementById('signinButton').setAttribute('style', 'display: none');
+
+        } else {
+          // Update the app to reflect a signed out user
+          // Possible error values:
+          //   "user_signed_out" - User is signed-out
+          //   "access_denied" - User denied access to your app
+          //   "immediate_failed" - Could not automatically log in the user
+          document.getElementById('signinButton').setAttribute('style', 'display: block');
+          //redirect to home if not home;
+          <% if (!home) { %>
+          window.location = '/logout';
+          <% } %>
+          console.log('Sign-in state: ' + authResult['error']);
+        }
+      }
+*/
+      //Only let people who are logged in use vOS
+      //Give userID to apps
+      //check if logged into google and if given access to the app.
+
+     function signinCallback(authResult) {
+        console.log(authResult);
+        if (authResult['status']['signed_in']) {
+          if (authResult['g-oauth-window']) {
+            console.log('reload');
+            window.location.reload();
+          } else {
+          $.ajax({
+              dataType: "json",
+              url: '/auth/google/callback',
+              data: { 
+                result: authResult,  
+                id_token: authResult.id_token,
+                code: authResult.code,
+                access_token: authResult.access_token},
+              type:"POST",
+              contentType:"application/x-www-form-urlencoded; charset=utf-8",
+              crossDomain:true,
+              cache : true, 
+              success:function(data) {
+                  console.log('Signing In');
+                  console.log(data);
+              },
+              error: function(jqXHR, exception, errorstr) {
+                  console.log(jqXHR);
+                  console.log(exception);
+                  console.log(errorstr);
+              }
+          });
+          }/*
           $.post('/auth/google/callback', { 
             result: authResult,  
             id_token: authResult.id_token,
@@ -47,24 +102,26 @@
             access_token: authResult.access_token})
           .done(function(data) {
             console.log('Signing In');
-            $('#signinButton2').hide();
-            $('#loggedIn').show();
-          });
+            
+          });*/
+          $('#signinButton').hide();
+          $('#loggedIn').show();
         } else {
-          $('#signinButton2').show();
+          $('#signinButton').show();
           $('#loggedIn').hide();
         }
       }
 
+      /*function test() {
+        console.log('testt');
+      }*/
+
       function signout() {
-        <% if (!home) { %>
-        window.location = '/logout';
-        <% } %>
-        console.log('Signing Out');
         $.post('/logout', {}).done(function(data) {
           console.log('Logged Out');
+          window.location = 'https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://gavinovsak-vos.jit.su';
         });
-        gapi.auth.signOut();
+        //gapi.auth.signOut();
       }
     </script>
   <body>
@@ -91,21 +148,19 @@
             </li>
             <li><a class="active" href="/try">Try It!</a></li>
           </ul>
-          <% if (user || home) { %>
-          <% if (home) { %>
-            <div id="signinButton2" class="btn pull-right" >
+          <% if (!user) { %>
+            <div id="signinButton" class="btn pull-right" onClick="test()">
               <span
                 class="g-signin"
-                data-callback="signInCallback"
+                data-callback="signinCallback"
                 data-clientid="16685699509-9es3r68f818dgcrgs10ta9dm91ggpfo0.apps.googleusercontent.com"
                 data-cookiepolicy="single_host_origin"
                 data-apppackagename="vOS.controller"
-                data-requestvisibleactions="http://schemas.google.com/AddActivity"
-                data-scope="https://www.googleapis.com/auth/plus.login">
+                data-scope="profile">
               </span>
             </div>
           <% } %>
-          <ul class="nav navbar-nav navbar-right" id="loggedIn"  <% if (home) { %>style="display:none;" <% } %>>
+          <ul class="nav navbar-nav navbar-right" id="loggedIn"  <% if (!user) { %>style="display:none;" <% } %>>
             <li class="dropdown">
               <a class="dropdown-toggle" id="code" data-toggle="dropdown"></a>
               <ul class="dropdown-menu">
@@ -114,7 +169,6 @@
               </ul>
             </li>
           </ul>
-          <% } %>
           <form href="/appSearch" method="GET" id="" class="navbar-form navbar-nav navbar-right" role="form">
             <div class="form-group">
               <input type="text" class="form-control">
@@ -131,7 +185,15 @@
         <a href="http://www.workbygavin.com">Work By Gavin</a>
       </footer>
     </div>
-
+    <!-- data-requestvisibleactions="http://schemas.google.com/AddActivity" -->
+    <!-- Place this asynchronous JavaScript just before your </body> tag -->
+    <script type="text/javascript">
+      (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/client:plusone.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
+    </script>
     <!-- Bootstrap core JavaScript
     ================================================== -->
   	<!-- Placed at the end of the document so the pages load faster -->

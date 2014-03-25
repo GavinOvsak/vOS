@@ -38,18 +38,18 @@ state.open = function(app) {
 		state.back = null;
 		state.front_and_back = app;
 	} else if (state.front_and_back == null || state.front_and_back.index != app.index) {
-		if (app.external.drawFront != null) {
+		if (app.external.drawContained != null) {
 			//if front and back app has back, push to back
-			if (state.front_and_back != null && state.front_and_back.external.drawBack != null) {
+			if (state.front_and_back != null && state.front_and_back.external.drawImmersiveBackground != null) {
 				state.back = state.front_and_back;
 			}
 			state.front_and_back = null;
 			state.front = app;
-		} else if(app.external.drawFrontAndBack) {
+		} else if(app.external.drawImmersive) {
 			state.front = null;
 			state.back = null;
 			state.front_and_back = app;
-		} else if(app.external.drawBack) {
+		} else if(app.external.drawImmersiveBackground) {
 			state.front_and_back = null;
 			state.back = app;
 		}
@@ -89,11 +89,11 @@ state.add = function(extern, controls) {
 };
 
 state.canMaximize = function() {
-	return state.front != null && state.front.external.drawFrontAndBack != null;
+	return state.front != null && state.front.external.drawImmersive != null;
 };
 
 state.canMinimize = function() {
-	return state.front_and_back != null && state.front_and_back.external.drawFront != null;
+	return state.front_and_back != null && state.front_and_back.external.drawContained != null;
 };
 
 state.getPanelApp = function() {
@@ -130,7 +130,7 @@ state.toggleMaxMin = function() {
 
 state.close = function() {
 	if (state.front != null) {
-		if (state.back != null && state.back.external.drawFrontAndBack != null) {
+		if (state.back != null && state.back.external.drawImmersive != null) {
 			state.front_and_back = state.back;
 			state.back = null;
 		}
