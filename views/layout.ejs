@@ -19,7 +19,7 @@
       socket.on('code', function(data) {
         if (data.name == 'basic') {
           console.log(data.code);
-          $('#code').text('Quick Pair Code: '+ data.code);
+          $('#code').html('Quick Pair Code: '+ data.code + ' <b class="caret"></b>');
         }
       });
       socket.on('session_id', function(data) {

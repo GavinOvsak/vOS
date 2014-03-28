@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<div class="container">
+  <br><br>
+  To test vOS control using a locally running server at http://localhost:8081, use this code: <span id="localCode"></span>.
+</div>
+
+<script>
+var socket2 = io.connect('/');//Need a different code
+socket2.on('code', function(data) {
+  if (data.name == 'local') {
+    $('#localCode').text(data.code);
+  }
+});
+socket2.on('session_id', function(data) {
+  console.log(data.id);
+  if (data.name == 'local') {
+    window.location = "/enterLocal?session_id=" + data.id;
+  }
+});      
+socket2.emit('declare-type', {type: 'page', name: 'local'});
+</script>

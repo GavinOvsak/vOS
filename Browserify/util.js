@@ -3,7 +3,7 @@ var util = exports;
 var eccentricity = 80/30;
 util.makeCircle = function(amplitude) {
 	var circle_resolution = 40;
-	var greenLine = new THREE.LineBasicMaterial({color: 0x999999});
+	var greenLine = new THREE.LineBasicMaterial({color: 0x999999, linewidth: 2, });
 	var circle_geometry = new THREE.Geometry();
 	for(var j = 0; j <= circle_resolution; j++) {
 		var theta = (j / circle_resolution) * Math.PI * 2;

@@ -297,6 +297,67 @@ app.get('/debug', function(req, res) {
   }
 });
 
+app.get('/local', function(req, res) {
+    res.render('local', {
+      user: req.user,
+      home: false
+    });
+});
+
+app.get('/enterLocal', function(req, res) {
+  if (req.query.session_id && sessions[req.query.session_id]) {
+    var recents = ['5315354db87e860000a11cbc'];
+    if (req.user) {
+      recents = req.user.recents;
+    }
+    if (!recents || recents.length == 0) {
+      recents = ['5315354db87e860000a11cbc'];
+    }
+    console.log(recents);
+    if (req.query.app_id) {
+      if (req.user && (!req.user.recents || req.user.recents.indexOf(req.query.app_id) == -1)) {
+        //Add to recents
+        if (!req.user.recents) {
+          req.user.recents = []; 
+        }
+        req.user.recents.push(req.query.app_id);
+        req.user.save(function (err, user) {
+          if (err) { console.log(err); }
+          console.log('Added New Recent App');
+        });
+      }
+      vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
+        console.log(app);
+        if (req.user || app) {
+          res.render('localvOS', {
+            user: req.user,
+            layout: false,
+            session_id: req.query.session_id,
+            recentApps: recents,
+            userID: req.user.id,
+            app: app
+          });
+        } else {
+          res.redirect('/local');
+        }
+      });
+    } else if (req.user) {
+      res.render('localvOS', {
+        user: req.user,
+        layout: false,
+        session_id: req.query.session_id,
+        recentApps: recents,
+        userID: req.user.id,
+        app: undefined
+      });
+    } else {
+      res.redirect('/local');
+    }
+  } else {
+    res.redirect('/local');
+  }
+});
+
 app.get('/enter', function(req, res) {
   if (req.query.session_id && sessions[req.query.session_id]) {
     var recents = ['5315354db87e860000a11cbc'];
