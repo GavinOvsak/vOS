@@ -2,9 +2,10 @@
   "name": "vOS",
   "subdomain": "gavinovsak-vOS",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "mocha"
   },
-  "version": "0.1.0-154",
+  "version": "0.1.0-156",
   "engines": {
     "node": "0.10.x"
   },

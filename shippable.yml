@@ -1,0 +1,16 @@
+# Build Environment
+build_environment: Ubuntu 12.04
+
+# language setting
+language: node_js
+
+node_js:
+   - "0.10"
+
+# Running npm test to run your test cases
+script:
+ - npm test
+
+notifications:
+  email:
+        - ovsak.gavin@gmail.com
