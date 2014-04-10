@@ -55,6 +55,7 @@ state.open = function(app) {
 		}
 	}
 	state.mode = state.modes.Normal;
+	console.log(state);
 };
 
 
@@ -62,6 +63,8 @@ state.onAppListUpdate = function(func) {
 	state.onAppListUpdate.listeners.push(func);
 };
 state.onAppListUpdate.listeners = [];
+
+state.fromURL = "/";
 
 state.add = function(extern, controls) {
 	var app = {};
@@ -74,7 +77,9 @@ state.add = function(extern, controls) {
 
 	var appData = {
 		panel: app.panel, 
-		userID: '1'
+		user: {
+			id: '1'
+		}
 	};
 
 	(function(data){

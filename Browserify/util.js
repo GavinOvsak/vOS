@@ -33,6 +33,10 @@ util.makeFullCircle = function(amplitude) {
 	return new THREE.Mesh(geometry, green);
 };
 
+util.inRange = function(test, start, span) {
+	return start < test && test < start + span;
+}
+
 util.makeText = function(text, px, width, height) {
 	var canvas1 = document.createElement('canvas');
 	canvas1.height = px + 10;
@@ -153,3 +157,24 @@ util.toggleFullScreen = function() {
   }
 };
 
+//Doesn't actually seem to be synchronous.
+util.getScriptSync = function(url, callback) {
+	$.ajax({
+        async:false,
+        type:'GET',
+        url:url,
+        data:null,
+        success:callback,
+        dataType:'script',
+        timeout: 500
+    });
+};
+
+//Doesn't actually seem to be synchronous.
+util.getSync = function(url, callback) {
+	$.ajax({
+    	async: false,
+		url: url,
+		success: callback
+	});
+}

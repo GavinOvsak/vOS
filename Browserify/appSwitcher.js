@@ -12,9 +12,10 @@ appSwitcher.setUp = function(state, util, controls) {
 		var column = 0;
 		var index = 0;
 		var app;
+		state.appSwitcherPanel.objects = [state.topBar];
 
 		for (var i = 0; i < state.apps.length; i++) {
-			app = state.apps[i];
+			var app = state.apps[i];
 			
 			var icon = new controls.Button(2 + row * 2, 6 - 2 * column, 1, 1, {
 				text: ' ' + i,

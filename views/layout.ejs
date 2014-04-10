@@ -25,7 +25,7 @@
       socket.on('session_id', function(data) {
         if (data.name == 'basic') {
           console.log(data.id);
-          window.location = "/enter?session_id=" + data.id;
+          window.location = "/enter?session_id=" + data.id + "&from=" + encodeURIComponent(window.location.href);
         }
       });
       socket.emit('declare-type', {type: 'page', name: 'basic'});

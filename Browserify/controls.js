@@ -4,9 +4,6 @@ if (exports == undefined) {
 	var exports = controlObjects;
 }
 
-//Sign In Fix
-//CORS Pictures
-
 exports.setUp = function(state, util) {
 	var controls = {};
 
@@ -51,10 +48,10 @@ exports.setUp = function(state, util) {
 				x: 0,
 				y: 0
 			};
+			this.point = undefined;
 		},
 		available: true,
-		point: undefined,
-		threshold_distance: 0.1,		
+		thresholdDistance: 0.1,		
 		contains: function(x, y) {
 			return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
 		},
@@ -66,10 +63,10 @@ exports.setUp = function(state, util) {
 			this.onClick_callback = callback;
 		},
 		release: function(x, y) {
-			if (this.dragDistance() > this.threshold_distance) {
+			this.available = true;
+			if (this.dragDistance() > this.thresholdDistance) {
 				this.click();
 			}
-			this.available = true;
 			this.point = undefined;
 		},
 		dragDistance: function() {
@@ -88,10 +85,10 @@ exports.setUp = function(state, util) {
 		draw: function(scene, panelMesh) {
 			//change color based on distance
 			var distance = this.dragDistance();
-			var percentClicked = Math.min(distance/this.threshold_distance, 1);
+			var percentClicked = Math.min(distance/this.thresholdDistance, 1);
 
 			var materialOptions = {};
-			if (this.point != null) {
+			if (this.point != undefined) {
 				materialOptions.color = (0 << 16) + (200*(1-percentClicked) << 8) + percentClicked*255;
 			} else {
 				materialOptions.color = (0 << 16) + (200 << 8) + 0;
@@ -322,7 +319,7 @@ exports.setUp = function(state, util) {
 				angle: this.state.angle,
 				zoom: this.state.zoom
 			};
-			delete this.points[i];
+			this.points[i] = undefined;
 			this.setGrabInfo();
 		},
 		getTouchAngle: function() {
@@ -396,7 +393,7 @@ exports.setUp = function(state, util) {
 		onMove: function(callback) {
 			this.onMove_callback = callback;
 		},
-		move: function(x, y, angle, zoom) {
+		move: function(x, y, i) {
 			this.state = this.getNewState();
 			this.onMove_callback(this.state.x, this.state.y, this.state.angle, this.state.zoom);
 		},
@@ -470,28 +467,169 @@ exports.setUp = function(state, util) {
 		this.applyDefaults();
 	};
 
+	//Number of cursors.. Do like android. Many cursors, one line.
+
 	controls.Keyboard.prototype = {
+		thresholdDistance: 0.1,
+		gestureThresholdDistance: 0.2,
 		available: true,
 		applyDefaults: function() {
-			var defaultOptions = {};
+			var defaultOptions = {
+				startText: ''
+			};
+
+			this.points = [];
+			this.gesturePoint = undefined;
+
+			this.makeKeys();
 
 			this.options = this.options || {};
 			for (var key in defaultOptions) {
 				this.options[key] = this.options[key] || defaultOptions[key];
 			}
 		},
+		makeKey: function(char, x, y, width, height) {
+			return {
+				char: char,
+				x: x,
+				y: y,
+				width: width,
+				height: height,
+				toString: function() {
+					return this.char;
+				},
+				contains: function(x, y) {
+					return util.inRange(x, this.x, this.width) && 
+						util.inRange(y, this.y, this.height);
+				}
+			}
+		},
+		initPoint: function(point) {
+			var initKey = this.getKey(point.x, point.y);
+			this.points[point.i] = {
+				initGrab: {
+					x: point.x,
+					y: point.y,
+					key: initKey
+				},
+				key: initKey,
+				trail: [],
+				keyTrail: [],
+				dragDist: function() {
+					return util.distance(this, this.initGrab);
+				},
+				update: function(x, y, key) {
+					if (this.x != x || this.y != y) {
+						this.x = x;
+						this.y = y;
+						this.key = key;
+						this.trail.push({
+							x: this.x, 
+							y: this.y
+						});
+						this.keyTrail.push(key);
+					}
+				}
+			};
+		},
+		makeKeys: function() {
+			this.keys = [
+				this.makeKey('Q', 10, 10, 90, 120),
+				this.makeKey('W', 117, 10, 90, 120),
+				this.makeKey('E', 224, 9, 90, 120),
+				this.makeKey('R', 333, 9, 90, 120),
+				this.makeKey('T', 440, 9, 90, 120),
+				this.makeKey('Y', 548, 10, 90, 120),
+				this.makeKey('U', 656, 9, 90, 120),
+				this.makeKey('I', 765, 9, 90, 120),
+				this.makeKey('O', 872, 9, 90, 120),
+				this.makeKey('P', 980, 10, 90, 120),
+				this.makeKey('A', 62, 158, 90, 120),
+				this.makeKey('S', 170, 158, 90, 120),
+				this.makeKey('D', 279, 158, 90, 120),
+				this.makeKey('F', 387, 158, 90, 120),
+				this.makeKey('G', 494, 158, 90, 120),
+				this.makeKey('H', 602, 158, 90, 120),
+				this.makeKey('J', 710, 158, 90, 120),
+				this.makeKey('K', 819, 156, 90, 120),
+				this.makeKey('L', 927, 158, 90, 120),
+				this.makeKey('Z', 128, 304, 90, 120),
+				this.makeKey('X', 236, 304, 90, 120),
+				this.makeKey('C', 344, 304, 90, 120),
+				this.makeKey('V', 452, 304, 90, 120),
+				this.makeKey('B', 561, 304, 90, 120),
+				this.makeKey('N', 669, 304, 90, 120),
+				this.makeKey('M', 776, 304, 90, 120),
+				this.makeKey('Space', 344, 453, 522, 120),
+				this.makeKey('<-', 1086, 10, 100, 120)
+			];
+		},
+		getKey: function(x, y) {
+			for (var i in this.keys) {
+				if (this.keys[i].contains(x, y)) {
+					return this.keys[i];
+				}
+			}
+		},
 		contains: function(x, y) {
-			return false;
+			return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
+		},
+		getText: function() {
+			return this.options.text;
+		},
+		setText: function(text) {
+			if (Object.prototype.toString.call(text) == '[object String]')
+				this.options.text = text;
+			return this.options.text;
+		},
+		registerPoint: function(point) {
+			this.initPoint(point);
+			point.onRelease(this.release.bind(this));
+			point.onMove(this.move.bind(this));
+		},
+		release: function(x, y, i) {
+			if (this.gesturePoint == this.points[i]) {
+				//Implement epic gesture algorithm, plain for now
+
+				this.text += this.points[i].key;
+				this.onTextUpdate_callback(this.text);
+			} else if (this.points[i].dragDist() > this.thresholdDistance) {
+				this.text += this.points[i].key;
+				this.onTextUpdate_callback(this.text);
+			}
+			if (this.gesturePoint == this.points[i])
+				this.gesturePoint = undefined;
+			this.points[i] = undefined;
+		},
+		move: function(x, y, i) {
+			this.points[i].update(x, y, this.getKey(x, y));
+			if (!this.gesturePoint && this.points[i].dragDist() > this.gestureThresholdDistance) {
+				this.gesturePoint = this.points[i];
+			}
+		},
+		onTextUpdate_callback: function(text) {},
+		onTextUpdate: function(callback) {
+			this.onTextUpdate_callback = callback;
 		},
 		draw: function(scene, panelMesh) {
 			var material = new THREE.MeshBasicMaterial({color: 0x222222});
+			for (i in this.keys) {
+				keyMesh = new THREE.Mesh(
+				new THREE.PlaneGeometry(this.keys[i].width/1200 * this.width, this.keys[i].height/600 * this.height), material);
+				util.setPanelPosition(panelMesh, keyMesh, this.keys[i].x/1200 * this.width + this.x, (1 - (this.keys[i].y + this.keys[i].height)/600) * this.height + this.y, 0.01);
+				scene.add(keyMesh);
+			}
 
-			buttonMesh = new THREE.Mesh(
-				new THREE.PlaneGeometry(this.width, this.height),
-				material);
-
-			util.setPanelPosition(panelMesh, buttonMesh, this.x, this.y, 0.1);
-
+			if (this.gesturePoint) {
+				var greenLine = new THREE.LineBasicMaterial({color: 0x999999, linewidth: 2, });
+				var gestureGeometry = new THREE.Geometry();
+				for (i in this.gesturePoint.trail) {
+					gestureGeometry.vertices.push( new THREE.Vector3(this.gesturePoint.trail[i].x, this.gesturePoint.trail[i].y, 0));
+				}
+				var gestureLine = new THREE.Line(gestureGeometry, greenLine);
+				util.setPanelPosition(panelMesh, gestureLine, this.x, this.y, 0.02);
+				scene.add(gestureLine);
+			}
 		}
 	};
 
@@ -592,13 +730,12 @@ exports.setUp = function(state, util) {
 
 	//Panel is an 8 x 12 grid
 	controls.Panel = function() {
-	//	this.objects = [state.topBar];
+		this.objects = [];
 		this.add = function(object){
 			this.objects.push(object);
 		};
 		this.set = function(array){
 			this.objects = array;
-	//		this.objects.push(state.topBar);
 		};
 	};
 
@@ -625,7 +762,7 @@ exports.setUp = function(state, util) {
 			return which != 'none';
 		},
 		moving: false,
-		threshold_distance: 0.1,
+		thresholdDistance: 0.1,
 		whichButton: function(x,y) {
 			if (state.hidden) {
 				return 'hideBar';
@@ -668,7 +805,7 @@ exports.setUp = function(state, util) {
 		},
 		release: function(x, y) {
 			//if far enough, click.
-			if (this.buttonPosition[this.buttonSelected] != undefined && this.dragDistance() > this.threshold_distance) {
+			if (this.buttonPosition[this.buttonSelected] != undefined && this.dragDistance() > this.thresholdDistance) {
 				this.click(this.buttonSelected);
 			} else if (this.buttonSelected == 'hideBar') {
 				if (y > 0.5) {
@@ -721,7 +858,7 @@ exports.setUp = function(state, util) {
 		},
 		draw: function(scene, board) {
 			var distance = this.dragDistance(util);
-			var percentClicked = Math.min(distance/this.threshold_distance, 1);
+			var percentClicked = Math.min(distance/this.thresholdDistance, 1);
 
 			if (!state.hidden || this.buttonSelected == 'hideBar') {
 				var barMaterial = new THREE.MeshBasicMaterial({color: 0x00CC00});

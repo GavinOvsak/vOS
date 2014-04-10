@@ -59,7 +59,7 @@ remoteController.setUp = function(state, util) {
 	var socket = io.connect('/');
 	socket.on('disconnect', function() {
 	  	if (sessionId != 'debug') {
-			window.location = "/";
+			window.location = state.fromURL;
 		}
 	});
 
@@ -70,7 +70,7 @@ remoteController.setUp = function(state, util) {
 
 	socket.on('error', function(result) {
 		if (sessionId != 'debug') {
-			window.location = "/";
+			window.location = state.fromURL;
 		}
 	});
 

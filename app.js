@@ -228,7 +228,7 @@ passport.use(new GooglePlusStrategy({
           id: profile.id,
           name: profile.displayName,
           email: profile.email,
-          recent: ['5315354db87e860000a11cbc']
+          recent: ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
         });
         newUser.save(function (err, user) {
           if (err) { console.log(err); }
@@ -276,7 +276,7 @@ app.get('/try', function(req, res) {
 });
 
 app.get('/debug', function(req, res) {
-  var recents = ['5315354db87e860000a11cbc'];
+  var recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
   var render = function(app) {
     res.render('vOS', {
       user: {debug: true},
@@ -306,12 +306,12 @@ app.get('/local', function(req, res) {
 
 app.get('/enterLocal', function(req, res) {
   if (req.query.session_id && sessions[req.query.session_id]) {
-    var recents = ['5315354db87e860000a11cbc'];
+    var recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
     if (req.user) {
       recents = req.user.recents;
     }
     if (!recents || recents.length == 0) {
-      recents = ['5315354db87e860000a11cbc'];
+      recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
     }
     console.log(recents);
     if (req.query.app_id) {
@@ -360,12 +360,12 @@ app.get('/enterLocal', function(req, res) {
 
 app.get('/enter', function(req, res) {
   if (req.query.session_id && sessions[req.query.session_id]) {
-    var recents = ['5315354db87e860000a11cbc'];
+    var recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
     if (req.user) {
       recents = req.user.recents;
     }
     if (!recents || recents.length == 0) {
-      recents = ['5315354db87e860000a11cbc'];
+      recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
     }
     console.log(recents);
     if (req.query.app_id) {
@@ -424,21 +424,29 @@ app.use('/static', express.static(__dirname + '/public'));
 var io = socket.listen(app.listen(8081));
 io.set('log level', 0);
 
-var keyOptions = ['2', '3', '4', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+var keyOptions = ['2', '3', '4', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
 var codes = {
 /*  "AAA": {socket: websiteSocket, name: name}
 */
 };
 
-var lastSession = 0;
-var sessions = {
+//sessions could be an array. earliest undefined could be stored, and could find the next one from there.
+
+var earliestUndefined = 0;
+var getNewSessionID = function() {
+  while (sessions[earliestUndefined]) {
+    earliestUndefined ++;
+  }
+  return earliestUndefined;
+};
+var sessions = [];
   /*"1234234": {
     userID: 1,
     input: inputSocket,
     output: outputSocket
   }*/
-};
+
 
 var makeKey = function() {
   var key = '';
@@ -489,6 +497,7 @@ var killSession = function(session_id) {
       sessions[session_id].output.emit('error', 'input disconnected');
     }
     delete sessions[session_id];
+    earliestUndefined = session_id;
   }
 }
 
@@ -534,7 +543,7 @@ io.sockets.on('connection', function (socket) {
         var code = raw.toUpperCase();
         //If code exists, make a session and send it to the page.
         if (codes[code] != undefined) {
-          var newSessionID = lastSession++;
+          var newSessionID = getNewSessionID();
           sessions[newSessionID] = {
             user_id: data.user_id,
             input: socket
