@@ -1,0 +1,8 @@
+{
+  "ext": "*.js",
+  "verbose": true,
+  "exec": "node",
+  "ignore": [
+    "js/bundle.js"
+  ]
+}

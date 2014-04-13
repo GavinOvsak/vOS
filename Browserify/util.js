@@ -178,3 +178,74 @@ util.getSync = function(url, callback) {
 		success: callback
 	});
 }
+
+util.match = function(path, word) {
+	/* Checks if a word is present in a path or not. */
+	var letters = word.split('');
+	for (i in letters) {
+		var index = path.indexOf(letters[i]);
+		if (index < 0)
+			return false;
+		path = path.substring(index + 1);
+	}
+	return true;
+};
+ 
+util.get_keyboard_row = function( char ) {
+    // Returns the row number of the character
+    var keyboardLayout = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+    for (row_no in keyboardLayout) {
+        if (keyboardLayout[row_no].indexOf(char) >= 0) {
+            return row_no;
+        }
+    }
+};
+ 
+util.compress = function(sequence) {
+    // Removes redundant sequential characters. ex : 11123311 => 1231
+    var ret_val = [ sequence[0] ];
+    for (i in sequence) {
+        if (ret_val[ret_val.length - 1] != sequence[i]) {
+            ret_val.push(sequence[i]);
+        }
+    }
+    return ret_val;
+};
+
+util.get_minimum_wordlength = function(path) {
+    /*
+    Returns the minimum possible word length from the path.
+    Uses the number of transitions from different rows in 
+    the keyboard layout to determin the minimum length
+    */
+    row_numbers = path.split('').map(util.get_keyboard_row);
+    compressed_row_numbers = util.compress(row_numbers);
+    return compressed_row_numbers.length - 3;
+};
+
+util.get_suggestion = function(state, path, probs) {
+    /* Returns suggestions for a given path. */
+ 
+    if (path.length == 0)
+      return [];
+    var suggestions = state.wordlist.filter( function(x) {
+    	return /*x[0] == path[0].toLowerCase() &&*/ x[x.length - 1] == path[path.length - 1].toLowerCase();
+    });
+
+//    console.log(suggestions);
+
+    suggestions = suggestions.filter(function(x) { 
+    	return util.match(path.toLowerCase(), x);
+    });
+ 
+    console.log(suggestions);
+
+    var min_length = util.get_minimum_wordlength(path.toLowerCase());
+    console.log(min_length);
+    suggestions = suggestions.filter(function(x) { 
+    	return x.length > min_length;
+    });
+ 
+    return suggestions;
+};
+

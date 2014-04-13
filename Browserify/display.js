@@ -88,6 +88,7 @@ display.start = function(state, util, controls) {
 	  state.width = window.innerWidth;
 	  state.height = window.innerHeight;
 	  setUiSize();
+	  ASPECT = state.width / state.height;
 
 	  OculusRift.hResolution = state.width,
 	  OculusRift.vResolution = state.height,

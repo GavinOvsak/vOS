@@ -323,7 +323,7 @@ exports.setUp = function(state, util) {
 			this.setGrabInfo();
 		},
 		getTouchAngle: function() {
-			if (Object.keys(this.points).length < 2) {
+			if (this.getNumPoints() < 2) {
 				return 0;
 			} else if (this.points[0] != undefined && this.points[1] != undefined){
 				return Math.atan2(this.points[0].x - this.points[1].x, this.points[0].y - this.points[1].y);
@@ -335,18 +335,25 @@ exports.setUp = function(state, util) {
 			var y = 0;
 
 			for (i in this.points) {
-				if (this.points[i] != undefined) {
+				if (this.points[i]) {
 					x += this.points[i].x;
 					y += this.points[i].y;
 				}
 			}
 			return {
-				x: x/Math.max(1, Object.keys(this.points).length),
-				y: y/Math.max(1, Object.keys(this.points).length)		
+				x: x/Math.max(1, this.getNumPoints()),
+				y: y/Math.max(1, this.getNumPoints())		
 			};
 		},
+		getNumPoints: function() {
+			var counter = 0;
+			for (key in this.points) {
+				counter += (this.points[key]) ? 1 : 0;
+			}
+			return counter;
+		},
 		getTouchSeparation: function() {
-			if (Object.keys(this.points).length < 2) {
+			if (this.getNumPoints() < 2) {
 				return 1;
 			} else if (this.points[0] != undefined && this.points[1] != undefined) {
 				return util.distance(this.points[0], this.points[1]);
@@ -367,7 +374,7 @@ exports.setUp = function(state, util) {
 			this.setGrabInfo();
 			point.onRelease(this.release.bind(this));
 			point.onMove(this.move.bind(this));
-			if (Object.keys(this.points).length >= this.max_fingers)
+			if (this.getNumPoints() >= this.max_fingers)
 				this.available = false;
 		},
 		getNewState: function() {
@@ -386,6 +393,9 @@ exports.setUp = function(state, util) {
 				(this.options.zoomIn && this.grabInfo.zoom > this.getTouchSeparation()) ||
 				(this.options.zoomOut && this.grabInfo.zoom < this.getTouchSeparation())) {
 				newState.zoom = this.startState.zoom * this.grabInfo.zoom / this.getTouchSeparation();
+				if (!newState.zoom) {
+					debugger;
+				}
 			}
 			return newState;
 		},
@@ -479,6 +489,7 @@ exports.setUp = function(state, util) {
 			};
 
 			this.points = [];
+			this.text = '';
 			this.gesturePoint = undefined;
 
 			this.makeKeys();
@@ -488,8 +499,9 @@ exports.setUp = function(state, util) {
 				this.options[key] = this.options[key] || defaultOptions[key];
 			}
 		},
-		makeKey: function(char, x, y, width, height) {
+		makeKey: function(char, x, y, width, height, apply) {
 			return {
+				apply: apply,
 				char: char,
 				x: x,
 				y: y,
@@ -499,69 +511,91 @@ exports.setUp = function(state, util) {
 					return this.char;
 				},
 				contains: function(x, y) {
-					return util.inRange(x, this.x, this.width) && 
-						util.inRange(y, this.y, this.height);
+					return util.inRange(x, this.x/1200, this.width/1200) && 
+						util.inRange(y, 1 - (this.y + this.height)/600, this.height/600);
 				}
 			}
 		},
 		initPoint: function(point) {
 			var initKey = this.getKey(point.x, point.y);
 			this.points[point.i] = {
-				initGrab: {
-					x: point.x,
-					y: point.y,
-					key: initKey
-				},
-				key: initKey,
+				key: undefined,
+				gesturing: false,
 				trail: [],
 				keyTrail: [],
 				dragDist: function() {
-					return util.distance(this, this.initGrab);
+					//should be total length
+					if (this.initGrab)
+						return util.distance(this, this.initGrab);
+					else
+						return 0;
 				},
 				update: function(x, y, key) {
+					if (key && !this.initGrab) {
+						this.initGrab = {
+							x: x,
+							y: y,
+							key: key
+						};
+					}
 					if (this.x != x || this.y != y) {
 						this.x = x;
 						this.y = y;
-						this.key = key;
 						this.trail.push({
 							x: this.x, 
 							y: this.y
 						});
-						this.keyTrail.push(key);
+						if (this.key != key) {
+							if (this.keyTrail.length != 0) {
+								this.keyTrail[this.keyTrail.length - 1].trailEnd = this.trail.length;
+							}
+							if (key) {
+								this.keyTrail.push({key: key, trailStart: this.trail.length});
+							}
+						}
+						this.key = key;
 					}
 				}
 			};
+			this.points[point.i].update(point.x, point.y, initKey);
+			if (initKey) {
+				this.points[point.i].initGrab = {
+					x: point.x,
+					y: point.y,
+					key: initKey
+				};
+			}
 		},
 		makeKeys: function() {
 			this.keys = [
-				this.makeKey('Q', 10, 10, 90, 120),
-				this.makeKey('W', 117, 10, 90, 120),
-				this.makeKey('E', 224, 9, 90, 120),
-				this.makeKey('R', 333, 9, 90, 120),
-				this.makeKey('T', 440, 9, 90, 120),
-				this.makeKey('Y', 548, 10, 90, 120),
-				this.makeKey('U', 656, 9, 90, 120),
-				this.makeKey('I', 765, 9, 90, 120),
-				this.makeKey('O', 872, 9, 90, 120),
-				this.makeKey('P', 980, 10, 90, 120),
-				this.makeKey('A', 62, 158, 90, 120),
-				this.makeKey('S', 170, 158, 90, 120),
-				this.makeKey('D', 279, 158, 90, 120),
-				this.makeKey('F', 387, 158, 90, 120),
-				this.makeKey('G', 494, 158, 90, 120),
-				this.makeKey('H', 602, 158, 90, 120),
-				this.makeKey('J', 710, 158, 90, 120),
-				this.makeKey('K', 819, 156, 90, 120),
-				this.makeKey('L', 927, 158, 90, 120),
-				this.makeKey('Z', 128, 304, 90, 120),
-				this.makeKey('X', 236, 304, 90, 120),
-				this.makeKey('C', 344, 304, 90, 120),
-				this.makeKey('V', 452, 304, 90, 120),
-				this.makeKey('B', 561, 304, 90, 120),
-				this.makeKey('N', 669, 304, 90, 120),
-				this.makeKey('M', 776, 304, 90, 120),
-				this.makeKey('Space', 344, 453, 522, 120),
-				this.makeKey('<-', 1086, 10, 100, 120)
+				this.makeKey('Q', 10, 10, 90, 120, function(text){ return text + 'Q';}),
+				this.makeKey('W', 117, 10, 90, 120, function(text){ return text + 'W';}),
+				this.makeKey('E', 224, 9, 90, 120, function(text){ return text + 'E';}),
+				this.makeKey('R', 333, 9, 90, 120, function(text){ return text + 'R';}),
+				this.makeKey('T', 440, 9, 90, 120, function(text){ return text + 'T';}),
+				this.makeKey('Y', 548, 10, 90, 120, function(text){ return text + 'Y';}),
+				this.makeKey('U', 656, 9, 90, 120, function(text){ return text + 'U';}),
+				this.makeKey('I', 765, 9, 90, 120, function(text){ return text + 'I';}),
+				this.makeKey('O', 872, 9, 90, 120, function(text){ return text + 'O';}),
+				this.makeKey('P', 980, 10, 90, 120, function(text){ return text + 'P';}),
+				this.makeKey('A', 62, 158, 90, 120, function(text){ return text + 'A';}),
+				this.makeKey('S', 170, 158, 90, 120, function(text){ return text + 'S';}),
+				this.makeKey('D', 279, 158, 90, 120, function(text){ return text + 'D';}),
+				this.makeKey('F', 387, 158, 90, 120, function(text){ return text + 'F';}),
+				this.makeKey('G', 494, 158, 90, 120, function(text){ return text + 'G';}),
+				this.makeKey('H', 602, 158, 90, 120, function(text){ return text + 'H';}),
+				this.makeKey('J', 710, 158, 90, 120, function(text){ return text + 'J';}),
+				this.makeKey('K', 819, 156, 90, 120, function(text){ return text + 'K';}),
+				this.makeKey('L', 927, 158, 90, 120, function(text){ return text + 'L';}),
+				this.makeKey('Z', 128, 304, 90, 120, function(text){ return text + 'Z';}),
+				this.makeKey('X', 236, 304, 90, 120, function(text){ return text + 'X';}),
+				this.makeKey('C', 344, 304, 90, 120, function(text){ return text + 'C';}),
+				this.makeKey('V', 452, 304, 90, 120, function(text){ return text + 'V';}),
+				this.makeKey('B', 561, 304, 90, 120, function(text){ return text + 'B';}),
+				this.makeKey('N', 669, 304, 90, 120, function(text){ return text + 'N';}),
+				this.makeKey('M', 776, 304, 90, 120, function(text){ return text + 'M';}),
+				this.makeKey('Space', 344, 453, 522, 120, function(text){ return text + ' ';}),
+				this.makeKey('<-', 1086, 10, 100, 120, function(text){ return (text.length > 0) ? text.substring(text.length - 1) : text;})
 			];
 		},
 		getKey: function(x, y) {
@@ -588,15 +622,38 @@ exports.setUp = function(state, util) {
 			point.onMove(this.move.bind(this));
 		},
 		release: function(x, y, i) {
-			if (this.gesturePoint == this.points[i]) {
-				//Implement epic gesture algorithm, plain for now
+			if (this.points[i].initGrab) {
+				if (this.gesturePoint == this.points[i]) {
+					//Implement epic gesture algorithm, plain for now
 
-				this.text += this.points[i].key;
-				this.onTextUpdate_callback(this.text);
-			} else if (this.points[i].dragDist() > this.thresholdDistance) {
-				this.text += this.points[i].key;
-				this.onTextUpdate_callback(this.text);
+					var keySequence = '';
+					var curvatures = [];
+					console.log(this.gesturePoint.keyTrail);
+					for (index in this.gesturePoint.keyTrail) {
+						var trailStart = this.gesturePoint.keyTrail[index].trailStart;
+						var trailEnd = this.gesturePoint.keyTrail[index].trailEnd;
+						var segment = this.gesturePoint.trail.slice(trailStart, trailEnd);
+						keySequence += this.gesturePoint.keyTrail[index].key.char;
+						var data = segment.map(function(n){
+							return [n.x, n.y];
+						});
+						curvatures.push(1/ss.r_squared(data, ss.linear_regression().data(data).line()));
+					}
+					console.log(keySequence);
+					console.log(curvatures);
+
+					//Find Possible Words
+
+				    console.log(util.get_suggestion(state, keySequence, curvatures));
+
+					this.text = this.points[i].initGrab.key.apply(this.text);
+					this.onTextUpdate_callback(this.text);
+				} else if (this.points[i].dragDist() > this.thresholdDistance) {
+					this.text = this.points[i].initGrab.key.apply(this.text);
+					this.onTextUpdate_callback(this.text);
+				}
 			}
+			console.log(this.text);
 			if (this.gesturePoint == this.points[i])
 				this.gesturePoint = undefined;
 			this.points[i] = undefined;
@@ -605,6 +662,7 @@ exports.setUp = function(state, util) {
 			this.points[i].update(x, y, this.getKey(x, y));
 			if (!this.gesturePoint && this.points[i].dragDist() > this.gestureThresholdDistance) {
 				this.gesturePoint = this.points[i];
+				this.gesturePoint.gesturing = true;
 			}
 		},
 		onTextUpdate_callback: function(text) {},
@@ -613,11 +671,30 @@ exports.setUp = function(state, util) {
 		},
 		draw: function(scene, panelMesh) {
 			var material = new THREE.MeshBasicMaterial({color: 0x222222});
+
+			var progress = {};
+			for (i in this.points) {
+				if (this.points[i] && this.points[i].initGrab && this.points[i] != this.gesturePoint)
+					progress[this.points[i].initGrab.key] = Math.min(this.points[i].dragDist()/this.thresholdDistance, 1);
+			}
+
+			var keyMaterialOptions;
+
 			for (i in this.keys) {
+				keyMaterialOptions = {color: 0x222222};
+				if (progress[this.keys[i].char]) {
+					keyMaterialOptions.color = (34 << 16) + (200 * progress[this.keys[i].char] << 8) + (1 - progress[this.keys[i].char]) * 255;
+				}
+				var keyMaterial = new THREE.MeshBasicMaterial(keyMaterialOptions);
 				keyMesh = new THREE.Mesh(
-				new THREE.PlaneGeometry(this.keys[i].width/1200 * this.width, this.keys[i].height/600 * this.height), material);
+				new THREE.PlaneGeometry(this.keys[i].width/1200 * this.width, this.keys[i].height/600 * this.height), keyMaterial);
 				util.setPanelPosition(panelMesh, keyMesh, this.keys[i].x/1200 * this.width + this.x, (1 - (this.keys[i].y + this.keys[i].height)/600) * this.height + this.y, 0.01);
 				scene.add(keyMesh);
+
+				//Draw The Letters
+				var contentMesh = util.makeText(this.keys[i].char, 30, this.keys[i].width/1200 * this.width, this.keys[i].height/1200 * this.height);
+			    util.setPanelPosition(panelMesh, contentMesh, this.keys[i].x/1200 * this.width + this.x, (1 - (this.keys[i].y + this.keys[i].height)/600) * this.height + this.y, 0.02);
+		        scene.add( contentMesh );
 			}
 
 			if (this.gesturePoint) {

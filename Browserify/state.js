@@ -55,7 +55,6 @@ state.open = function(app) {
 		}
 	}
 	state.mode = state.modes.Normal;
-	console.log(state);
 };
 
 
@@ -209,3 +208,11 @@ state.drawPanel = function(scene, util) {
 		}
 	}
 };
+
+$.ajax({
+	url: 'http://gavinovsak-vos.jit.su/static/wordlist.txt',
+	success: function(wordlist) {
+		state.wordlist = wordlist.split('\r\n');
+	}
+});
+

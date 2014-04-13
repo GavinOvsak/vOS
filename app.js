@@ -8,6 +8,17 @@ var socket = require('socket.io')
   , mongoose = require('mongoose')
   , secrets = require('./secrets.json');
 
+var sys = require('sys')
+var exec = require('child_process').exec;
+function puts(error, stdout, stderr) { 
+  if (error) {
+    console.log(error);
+    process.exit(1);
+  } 
+  sys.puts(stdout); 
+}
+exec("browserify ./Browserify/main.js -o ./js/bundle.js", puts);
+
 mongoose.connect(secrets.mongoURL);
 
 var vOS_App = mongoose.model('vOS_App', { 
