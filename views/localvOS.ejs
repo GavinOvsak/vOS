@@ -21,53 +21,9 @@
 <div id="viewer"></div>
 <script>
 appQueryURL = <% if (app) { %> '<%= app.url %>'<%} else {%> undefined <%}%>;
-recentApps = <% if (recentApps) { %> [
-  <% for (i in recentApps) { %>
-    '<%= recentApps[i] %>' <% if (i < recentApps.length) { %> , <% } %>
-  <% } %>
-] <%} else {%> [] <%}%>;
 sessionId = '<%= session_id %>';
-userID = '<%= userID %>';
+token = '<%= token %>';
 </script>
 <script type="text/javascript" src="http://localhost:8081/js/bundle.js"></script>
-<!---
-<meta name="google-signin-clientid" content="16685699509-9es3r68f818dgcrgs10ta9dm91ggpfo0.apps.googleusercontent.com" />
-<meta name="google-apppackagename" content="vOS.controller" />
-<meta name="google-signin-scope" content="https://www.googleapis.com/auth/plus.login" />
-<meta name="google-signin-requestvisibleactions" content="http://schemas.google.com/AddActivity" />
-<meta name="google-signin-cookiepolicy" content="single_host_origin" />
-<script src="https://apis.google.com/js/client.js?onload=onLoadCallback"></script>
-<script type="text/javascript">
-(function() {
-	var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-	po.src = 'https://apis.google.com/js/client:plusone.js';
-	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-})();
-
-function signinCallback(authResult) {
-	console.log(authResult);
-}
-
-function render() {
-   // Additional params including the callback, the rest of the params will
-   // come from the page-level configuration.
-   
-
-   /*
-   // Attach a click listener to a button to trigger the flow.
-   var signinButton = document.getElementById('signinButton');
-   signinButton.addEventListener('click', function() {
-      // Will use page level configuration
-   });*/
-}
-
-function onLoadCallback() {
-	var additionalParams = {
-	 'callback': signinCallback
-	};
-
-	gapi.auth.signIn(additionalParams);
-}
-</script> -->
 </body>
 </html>

@@ -12698,10 +12698,6 @@ faddish
 faddist
 fade
 faerie
-fag
-faggot
-fagot
-fagoting
 faience
 fail
 failing
@@ -16119,6 +16115,7 @@ hatemonger
 hater
 hath
 hatred
+hats
 hatter
 hauberk
 haughtily

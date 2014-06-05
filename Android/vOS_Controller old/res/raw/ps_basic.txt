@@ -1,0 +1,26 @@
+precision mediump float;
+uniform vec3 uLightPos;
+uniform vec4 lightColor;
+
+uniform samplerCube sTexture;
+
+// material
+uniform vec4 matAmbient;
+uniform vec4 matDiffuse;
+uniform vec4 matSpecular;
+uniform float matShininess;
+
+varying vec3 vEyeNormal;
+varying vec3 vNormal;
+varying vec3 vPosition;
+
+void main() {
+	float distance = length(uLightPos - vPosition);
+	vec3 lightVec = normalize(uLightPos - vPosition);
+	vec4 diffuseTerm = matDiffuse * max(dot(vEyeNormal, lightVec), 0.0);
+	
+	vec3 reflectV = reflect(-lightVec, vEyeNormal);
+	vec4 specularTerm = matSpecular * pow(max(dot(reflectV, vEyeNormal), 0.0), matShininess);
+	
+	gl_FragColor = textureCube(sTexture, vNormal) * matAmbient + diffuseTerm + specularTerm;
+}

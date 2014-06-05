@@ -1,0 +1,16 @@
+{
+	"folders":
+	[
+		{
+			"path": "/Users/Gavin/Google Drive/Development/vOS"
+		}
+	],
+	"settings":
+    {
+        "CoffeeScript":
+        {
+            "compileOnSave": true,
+            "compileDir": "compiledJS"
+        }
+    }
+}

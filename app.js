@@ -4,20 +4,22 @@ var socket = require('socket.io')
   , login = require('connect-ensure-login')
   , passport = require('passport')
   , partials = require('express-partials')
-  , GooglePlusStrategy = require('passport-google-plus')
+  , LocalStrategy = require('passport-local').Strategy
   , mongoose = require('mongoose')
   , secrets = require('./secrets.json');
 
-var sys = require('sys')
-var exec = require('child_process').exec;
-function puts(error, stdout, stderr) { 
-  if (error) {
-    console.log(error);
-    process.exit(1);
-  } 
-  sys.puts(stdout); 
-}
-exec("browserify ./Browserify/main.js -o ./js/bundle.js", puts);
+/*if (!process.env.NODE_ENV || process.env.NODE_ENV != 'production') {
+  var sys = require('sys')
+  var exec = require('child_process').exec;
+  function puts(error, stdout, stderr) { 
+    if (error) {
+      console.log(error);
+      process.exit(1);
+    } 
+    sys.puts(stdout);
+  }
+  exec("browserify ./Browserify/main.js -o ./js/bundle.js", puts);
+}*/
 
 mongoose.connect(secrets.mongoURL);
 
@@ -28,10 +30,16 @@ var vOS_App = mongoose.model('vOS_App', {
   owner: String
 });
 
+var testName = 'Friend'
+var testUser = 'friend@vos.com';
+var testPassword = 'I come in peace';
+
 var User = mongoose.model('User', { 
-  id: String,
   name: String,
   email: String,
+  password: String,
+  token: String,
+  sessionID: String,
   recent: Array
 });
 
@@ -43,32 +51,234 @@ db.once('open', function callback () {
   });*/
 });
 
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+
+passport.deserializeUser(function(obj, done) {
+  User.findOne( {_id: obj}, function(err, person) {
+    done(err, person);
+  });
+});
+
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  }, function(email, password, done) {
+    console.log('----');
+    console.log(email);
+    console.log(password);
+    User.find( {email: email, password: password}, function(err, people) {
+      if (err) { done(err); }
+      if (people.length == 1) {
+        done(null, people[0]);
+      } else {
+        done(null);
+      }
+    });
+  // Create or update user, call done() when complete...
+  //    process.nextTick(function () {
+  //      done(null, profile, tokens);
+  //    });
+  }
+));
+
+
 var app = express();
 
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(partials());
-app.use(express.logger());
-app.use(express.cookieParser());
-app.use(express.bodyParser());
-app.use(express.session({ secret: 'virtual OS secret' }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(app.router);
-app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+app.configure(function() {
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'ejs');
+  app.use(partials());
+//  app.use(express.logger());
+  app.use(express.cookieParser());
+  app.use(express.bodyParser());
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(express.session({ secret: 'virtual OS secret' }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(app.router);
+  app.use('/js', express.static(__dirname + '/js'));
+  app.use('/Browserify', express.static(__dirname + '/Browserify'));
+  app.use('/css', express.static(__dirname + '/css'));
+  app.use('/fonts', express.static(__dirname + '/fonts'));
+  app.use('/static', express.static(__dirname + '/public'));
+  app.get('/latestAPK', function(req, res) {
+    var file = __dirname + '/public/vOS_Controller.apk';
+    res.download(file);
+  });
+});
 
-app.post('/auth/google/callback', 
+
+/*app.post('/auth/google/callback', 
   passport.authenticate('google'),
   function(req, res) {
     res.send(req.user);
+});*/
+/*
+app.post('/signin', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err) }
+    console.log('user');
+    console.log(user);
+    if (!user) {
+//      req.flash('error', info.message);
+      return res.redirect('/error');
+    }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.json(user);
+    });
+  })(req, res, next);
+});
+*/
+
+app.post('/signin', 
+  passport.authenticate('local', { failureRedirect: '/fail' }),
+  function(req, res) {
+    res.redirect('/');
+  }
+);
+
+/*app.post('/registerAndSignIn', function(req, res) {
+  User.find( {email: req.body.email}, function(err, people) {
+    if (err) { console.log(err); }
+    console.log(people);
+    if (people.length == 0) {
+      var newUser = new User(
+      {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        recent: ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
+      });
+      newUser.save(function (err, user) {
+        if (err) { console.log(err); }
+        console.log('Successful Save');
+        console.log(user);
+      });
+      console.log(newUser);
+      req.login(newUser, function(err) {
+        if (err) { console.log(err); }
+        return res.redirect('/');
+      });
+    } else {
+      if (people[0].password == req.body.password) {
+        req.login(people[0]);
+      } else {
+        res.redirect('/');
+        console.log('Email already exists');
+      }
+    }
+  });
+});*/
+
+var register = function(name, email, password, succeed, fail) {
+  User.find( {email: email}, function(err, people) {
+    if (err) { console.log(err); }
+    var user;
+    if (people.length > 0) {
+      if (people[0].password == password) {
+        user = people[0];
+      } else {
+        return fail();
+      }
+    }
+    if (!user && name && password) {
+      user = new User(
+      {
+        name: name,
+        email: email,
+        password: password,
+        recent: ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
+      });
+      user.save(function (err, user) {
+        if (err) { console.log(err); }
+      });
+    }
+    if (user) {
+      succeed(user)
+    } else {
+      fail();
+    }
+  });
+};
+
+var makeToken = function(done) {
+  var token = '' + Math.floor(Math.random() * Math.pow(10, 10));
+  User.findOne({token: token}, function(err, user) {
+    if (err) { console.log(err); }
+    if (user) {
+      makeToken(done);
+    } else {
+      done(token);
+    }
+  });
+};
+
+app.post('/registerAndSignIn', function(req, res) {
+  register(req.body.name, req.body.email, req.body.password, function(user) {
+    req.login(user, function(err) {
+      if (err) { console.log(err); }
+      res.redirect('/');
+    });
+  }, function() {
+    console.log('Email already exists with a different password or there are missing fields');
+    res.redirect('/');
+  })
 });
 
-app.post('/logout', function(req, res){
+app.post('/registerForToken', function(req, res) {
+  register(req.body.name, req.body.email, req.body.password, function(user) {
+    makeToken(function(token) {
+      user.token = token;
+      user.save(function(err, user) {
+        if (err) { console.log(err); }
+      });
+      res.json(user);
+    });
+  }, function() {
+    console.log('Email already exists with a different password or there are missing fields');
+    res.json('Email already exists with a different password or there are missing fields');
+  });
+});
+
+app.get('/userFromToken', function(req, res) {
+  if (req.query.token) {
+    User.findOne( {token: req.query.token}, function(err, user) {
+      if (err) { console.log(err); }
+      res.json(user);
+    });
+  }
+});
+
+/*
+app.get('/token', function(req, res) {
+  //receiving a username and password
+  User.findOne( {email: req.query.email, password: req.query.password}, function(err, user) {
+    if (err) { console.log(err); }
+    if (!user) { return res.json(undefined); }
+    if (user.token != undefined) {
+      //get rid of token and disconnect old connection.
+    }
+    makeToken(function(token) {
+      user.token = token;
+      user.save(function(err, user) {
+        if (err) { console.log(err); }
+      });
+      res.json(user.token);
+    });
+  });
+//  res.json('Success');
+});*/
+
+/*app.post('/logout', function(req, res){
   req.logout();
   res.json({});
-});
+});*/
 
-app.get('/logout', function(req, res){
+app.get('/signout', function(req, res){
   req.logout();
   res.redirect('/');
 });
@@ -91,7 +301,7 @@ app.get('/appList', [
   function(req, res) {
     vOS_App.find( {}, function(err, apps) {
       if (err) { console.log(err); }
-      console.log(apps);
+//      console.log(apps);
       res.json(apps);
     });
   }
@@ -105,7 +315,7 @@ app.post('/dashboard/update', [
     if (update.id) {
       vOS_App.findOne( {_id: update.id}, function(err, app) {
         if (err) { console.log(err); }
-        console.log(app);
+//        console.log(app);
         if (app) {
           for (key in update) {
             app[key] = update[key];
@@ -120,13 +330,13 @@ app.post('/dashboard/update', [
         }
       });
     } else {
-      console.log(req.user.id)
+//      console.log(req.user._id)
       var newApp = new vOS_App(
       {
         name: update.name,
         description: update.description,
         url: update.url,
-        owner: req.user.id
+        owner: req.user._id
       });
       newApp.save(function (err, user) {
         if (err) { console.log(err); }
@@ -141,9 +351,9 @@ app.post('/dashboard/update', [
 app.get('/dashboard', [
   login.ensureLoggedIn('/'),
   function(req, res) {
-    vOS_App.find( {owner: req.user.id}, function(err, apps) {
+    vOS_App.find( {owner: req.user._id}, function(err, apps) {
       if (err) { console.log(err); }
-      console.log(apps);
+//      console.log(apps);
       res.render('dashboard', {
         user: req.user,
         home: false,
@@ -158,7 +368,7 @@ app.get('/appInfo', [
     if (req.query.app_id) {
       vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
         console.log(err);
-        console.log(app);
+//        console.log(app);
         res.json(app);
       });
     } else {
@@ -178,7 +388,7 @@ app.get('/all', function(req, res) {
 
 app.get('/app', function(req, res) {
   vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
-    console.log(app);
+//    console.log(app);
     res.render('app', {
       user: req.user,
       home: false,
@@ -207,52 +417,15 @@ app.get('/appSearch', [
 
 app.delete('/app', function(req, res) {
   vOS_App.remove( {_id: req.query.app_id}, function(err, app) {
-    console.log(app);
+//    console.log(app);
     res.json(app);
   });
 });
 
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
 
-passport.deserializeUser(function(obj, done) {
-  User.findOne( {id: obj}, function(err, person) {
-    if (err) { console.log(err); }
-    done(null, person);
-  });
-});
+//var GOOGLE_CLIENT_ID = secrets.google.clientID;
+//var GOOGLE_CLIENT_SECRET = secrets.google.clientSecret;
 
-var GOOGLE_CLIENT_ID = secrets.google.clientID;
-var GOOGLE_CLIENT_SECRET = secrets.google.clientSecret;
-
-passport.use(new GooglePlusStrategy({
-    clientId: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://gavinovsak-vos.jit.su/auth/google/callback"
-  },
-  function(tokens, profile, done) {
-    User.find( {id: profile.id}, function(err, people) {
-      if (people.length == 0) {
-        var newUser = new User(
-        {
-          id: profile.id,
-          name: profile.displayName,
-          email: profile.email,
-          recent: ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
-        });
-        newUser.save(function (err, user) {
-          if (err) { console.log(err); }
-          console.log('Successful Save');
-        });
-      }
-    })
-    // Create or update user, call done() when complete...
-    process.nextTick(function () {
-      done(null, profile, tokens);
-    });
-  }
-));
 
 var featured_apps = [
   '5315354db87e860000a11cbc'
@@ -279,12 +452,23 @@ app.get('/about', function(req, res) {
       home: false
     });
 });
+
 app.get('/try', function(req, res) {
     res.render('try', {
       user: req.user,
       home: false
     });
 });
+
+app.get('/account', [
+  login.ensureLoggedIn('/'),
+  function(req, res) {
+    res.render('account', {
+      user: req.user,
+      home: false
+    });
+  }
+]);
 
 app.get('/debug', function(req, res) {
   var recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
@@ -294,13 +478,12 @@ app.get('/debug', function(req, res) {
       layout: false,
       session_id: 'debug',
       recentApps: recents,
-      userID: '1',
       app: app
     });
   }
   if (req.query.app_id) {
     vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
-        console.log(app);
+//        console.log(app);
         render(app);
       });
   } else {
@@ -315,122 +498,56 @@ app.get('/local', function(req, res) {
     });
 });
 
-app.get('/enterLocal', function(req, res) {
+var enter = function(req, res, viewName) {
   if (req.query.session_id && sessions[req.query.session_id]) {
     var recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
-    if (req.user) {
-      recents = req.user.recents;
-    }
-    if (!recents || recents.length == 0) {
-      recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
-    }
-    console.log(recents);
-    if (req.query.app_id) {
-      if (req.user && (!req.user.recents || req.user.recents.indexOf(req.query.app_id) == -1)) {
-        //Add to recents
-        if (!req.user.recents) {
-          req.user.recents = []; 
+
+    console.log("view name: " + viewName);
+    User.findOne({token: sessions[req.query.session_id].token}, function(err, user) {
+      if (user) {
+        recents = user.recents;
+      }
+      if (!recents || recents.length == 0) {
+        recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
+      }
+      //console.log(recents);
+
+      if (req.query.app_id) {
+        if (user && (!user.recents || user.recents.indexOf(req.query.app_id) == -1)) {
+          //Add to recents
+          user.recents.push(req.query.app_id);
+          user.save(function (err, user) {
+            if (err) { console.log(err); }
+            console.log('Added New Recent App');
+          });
         }
-        req.user.recents.push(req.query.app_id);
-        req.user.save(function (err, user) {
-          if (err) { console.log(err); }
-          console.log('Added New Recent App');
-        });
       }
       vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
+        if(err) {console.log(err);}
         console.log(app);
-        if (req.user || app) {
-          res.render('localvOS', {
-            user: req.user,
-            layout: false,
-            session_id: req.query.session_id,
-            recentApps: recents,
-            userID: req.user.id,
-            app: app
-          });
-        } else {
-          res.redirect('/local');
-        }
+
+        console.log("view name: " + viewName);
+        res.render(viewName, {
+          layout: false,
+          session_id: req.query.session_id,
+          token: sessions[req.query.session_id].token,
+          user: user,
+          app: app
+        });
       });
-    } else if (req.user) {
-      res.render('localvOS', {
-        user: req.user,
-        layout: false,
-        session_id: req.query.session_id,
-        recentApps: recents,
-        userID: req.user.id,
-        app: undefined
-      });
-    } else {
-      res.redirect('/local');
-    }
+    });
   } else {
     res.redirect('/local');
   }
+};
+
+app.get('/enterLocal', function(req, res) {
+  enter(req, res, 'localvOS');
 });
 
 app.get('/enter', function(req, res) {
-  if (req.query.session_id && sessions[req.query.session_id]) {
-    var recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
-    if (req.user) {
-      recents = req.user.recents;
-    }
-    if (!recents || recents.length == 0) {
-      recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'];
-    }
-    console.log(recents);
-    if (req.query.app_id) {
-      if (req.user && (!req.user.recents || req.user.recents.indexOf(req.query.app_id) == -1)) {
-        //Add to recents
-        if (!req.user.recents) {
-          req.user.recents = []; 
-        }
-        req.user.recents.push(req.query.app_id);
-        req.user.save(function (err, user) {
-          if (err) { console.log(err); }
-          console.log('Added New Recent App');
-        });
-      }
-      vOS_App.findOne( {_id: req.query.app_id}, function(err, app) {
-        console.log(app);
-        if (req.user || app) {
-          res.render('vOS', {
-            user: req.user,
-            layout: false,
-            session_id: req.query.session_id,
-            recentApps: recents,
-            userID: req.user.id,
-            app: app
-          });
-        } else {
-          res.redirect('/');
-        }
-      });
-    } else if (req.user) {
-      res.render('vOS', {
-        user: req.user,
-        layout: false,
-        session_id: req.query.session_id,
-        recentApps: recents,
-        userID: req.user.id,
-        app: undefined
-      });
-    } else {
-      res.redirect('/');
-    }
-  } else {
-    res.redirect('/');
-  }
+  enter(req, res, 'vOS');
 });
-
-app.get('/latestAPK', function(req, res) {
-  var file = __dirname + '/public/vOS_Controller.apk';
-  res.download(file);
-});
-app.use('/js', express.static(__dirname + '/js'));
-app.use('/Browserify', express.static(__dirname + '/Browserify'));
-app.use('/css', express.static(__dirname + '/css'));
-app.use('/static', express.static(__dirname + '/public'));
 
 var io = socket.listen(app.listen(8081));
 io.set('log level', 0);
@@ -500,6 +617,7 @@ var bind = function(session) {
 }
 
 var killSession = function(session_id) {
+  console.log('Killing session ' + session_id);
   if (sessions[session_id]) {
     if (sessions[session_id].input != undefined) {
       sessions[session_id].input.emit('error', 'output disconnected');
@@ -514,6 +632,11 @@ var killSession = function(session_id) {
 
 io.sockets.on('connection', function (socket) {
   //console.log(socket);
+
+  socket.on('ping', function(data) {
+      socket.emit('ping-back', data);
+  });
+
   console.log('connected');
   socket.on('declare-type', function (data) {
     //Types of connections: page, output, input
@@ -535,6 +658,7 @@ io.sockets.on('connection', function (socket) {
         delete codes[key];
       });
     }
+
     if (data.type == 'output') { 
       //Check if session is real, if so, add self as output and bind.
       if (data.session_id != undefined && sessions[data.session_id] != undefined && sessions[data.session_id].output == undefined) {
@@ -548,6 +672,7 @@ io.sockets.on('connection', function (socket) {
         socket.emit('error', 'incorrect session id');
       }
     }
+
     if (data.type == 'input') {
       //Listen for code
       socket.on('code', function (raw) {
@@ -555,10 +680,26 @@ io.sockets.on('connection', function (socket) {
         //If code exists, make a session and send it to the page.
         if (codes[code] != undefined) {
           var newSessionID = getNewSessionID();
+
+          //tell user which session they are on
+          User.findOne({token: data.token}, function(err, user) {
+            if (err) { console.log(err); }
+            if (user) {
+              user.sessionID = newSessionID;
+              user.save(function (err, user) {
+                if (err) { console.log(err); }
+              });
+            }
+          })
+
           sessions[newSessionID] = {
-            user_id: data.user_id,
+            token: data.token,
             input: socket
           };
+
+          console.log('New session at ' + newSessionID);
+//          console.log(sessions[newSessionID]);
+
           socket.on('disconnect', function() {
             killSession(newSessionID);
           });

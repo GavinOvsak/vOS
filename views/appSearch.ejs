@@ -1,4 +1,31 @@
 <!DOCTYPE html>
 <div class="container">
-	Search Coming Soon!
+  <div class="row">
+  	<h2>Search Results For "<%= query %>"</h2>
+    <hr>
+  </div>
+  <% for(var row = 0; row * 3 <= results.length - results.length % 3; row++) { %>
+    <div class="row">
+      <% for (var i = row * 3; i < (row + 1) * 3 && i < results.length; i++) { %>
+        <div class="col-md-4 resultsApp" data-id="<%= results[i]._id %>">
+          <a href="/app?app_id=<%= results[i]._id %>"><h2 class="name"></h2></a>
+          <p class="description"></p>
+          <br>
+          <p><a class="btn btn-default" href="/app?app_id=<%= results[i]._id %>" role="button">Try It Out</a></p>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
 </div>
+<script>
+  $(document).ready(function() {
+    $('.resultsApp').each(function() {
+      var name = $(this).find('.name');
+      var description = $(this).find('.description');
+      $.get('/appInfo?app_id=' + $(this).attr('data-id'), function(app){
+        name.text(app.name);
+        description.text(app.description);
+      })
+    });
+  });
+</script>

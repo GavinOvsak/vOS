@@ -16,7 +16,8 @@
        android:textSize="30sp"
        android:layout_margin="10sp"
        android:gravity="center"
-       android:text="Go to \n gavinovsak-vos.jit.su \n and type in the code from the website."/>
+       android:textColor="#FFFFFF"
+       android:text="Go to vos.jit.su \n and type the pair code here."/>
     
     <EditText
 	   android:id="@+id/code"
@@ -24,7 +25,9 @@
 	   android:layout_height="wrap_content"
 	   android:gravity="center"
 	   android:keepScreenOn="true"
-	   android:hint="Screen Code"
+	   android:hint="Pair Code"
+       android:textColor="#FFFFFF"
+       android:textColorHint="#DDDDDD"
 	   android:textSize="30sp"
 	   android:textStyle="bold" />
 
@@ -45,5 +48,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="10sp"
         android:onClick="connect"
+        android:background="#DDDDDD"
         android:text="Connect" />
 </LinearLayout>

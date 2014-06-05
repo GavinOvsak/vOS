@@ -16,6 +16,6 @@ socket2.on('session_id', function(data) {
   if (data.name == 'local') {
     window.location = "/enterLocal?session_id=" + data.id + "&from=" + encodeURIComponent(window.location.href);
   }
-});      
+});
 socket2.emit('declare-type', {type: 'page', name: 'local'});
 </script>

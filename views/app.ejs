@@ -26,7 +26,7 @@
 	<% } %>
 </div>
 <script type="text/javascript" src="/js/three.min.js"></script>
-<script type="text/javascript" src="/Browserify/controls.js"></script>
+<script type="text/javascript" src="/Browserify/compiledJS/controls.js"></script>
 <script>
 var socket2 = io.connect('/');//Need a different code
 socket2.on('code', function(data) {
@@ -53,13 +53,13 @@ var VIEW_ANGLE = 45,
   FAR = 10000;
 var camera_start = {
 	x: Math.PI/2,
-	y: -200,
-	z: 10
+	y: 0,
+	z: 3
 };
 
 var camera1 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 camera1.rotation.x = camera_start.x;
-camera1.position.y = camera_start.y;
+camera1.position.y = camera_start.y + 200;
 camera1.position.z = camera_start.z;
 camera1.position.z = 40;
 var renderer1 = new THREE.WebGLRenderer( {antialias:true} );
@@ -85,8 +85,8 @@ var render = function() {
 
 	angle += 0.01;
 	camera1.rotation.y = angle;
-	camera1.position.y = Math.cos(camera1.rotation.y) * camera_start.y + Math.sin(camera1.rotation.y) * camera_start.x;
-	camera1.position.x = -Math.sin(camera1.rotation.y) * camera_start.y + Math.cos(camera1.rotation.y) * camera_start.x;
+	camera1.position.y = Math.cos(camera1.rotation.y) * (camera_start.y - 70) + Math.sin(camera1.rotation.y) * camera_start.x + 200;
+	camera1.position.x = -Math.sin(camera1.rotation.y) * (camera_start.y - 70) + Math.cos(camera1.rotation.y) * camera_start.x;
 	renderer1.render(scene1, camera1);
 
 	camera2.rotation.y = angle;
@@ -124,6 +124,119 @@ var mockUtil = {
 var controls = controlObjects.setUp(mockState, mockUtil);
 
 (function(THREE, controls, appURL, scene){
+  window.Controls = controls;
+  window.vOS = {
+    onEvent: function(eventType, f) {
+      this.app.event[eventType] = f;
+    },
+    makeTextMesh: function(options) {
+      text = options.text || '';
+      px = options.px || 30;
+      width = options.width || 20;
+      height = options.height || 20;
+      canvas1 = document.createElement('canvas');
+      canvas1.height = px + 10;
+      canvas1.width = canvas1.height * width / height * 2;
+      context1 = canvas1.getContext('2d');
+      context1.font = 'Bold ' + px + ' px Arial';
+      context1.fillStyle = 'rgba(255,255,255,0.95)';
+      context1.fillText(' ' + text, 0, px);
+      texture1 = new THREE.Texture(canvas1); 
+      texture1.needsUpdate = true;
+      material1 = new THREE.MeshBasicMaterial( {map: texture1, side: THREE.DoubleSide } );
+      material1.transparent = true;
+      return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
+    },
+    getValues: function() {},
+    getValue: function(name) {},
+    addListener: function(name, f) {},
+    removeListener: function(name, f) {},
+    app: {
+      event: {}
+    }
+  }
+
+  var mockApp = {
+    panel: {
+        add: function(){},
+        set: function(){}
+    },
+    user: {
+      id: 1
+    }
+  };
+  $.getScript(appURL, function() {
+    if (vOS.app.event.load) {
+      vOS.app.event.load(mockApp);
+
+      if (mockApp.drawContained) {
+        mockApp.drawContained(scene);
+      }
+    } else {
+      console.log('App from ' + appURL + ' Failed To Load')
+    }
+  });
+})(THREE, controls, '<%= app.url %>', scene1);
+
+
+(function(THREE, controls, appURL, scene){
+  window.Controls = controls;
+  window.vOS = {
+    onEvent: function(eventType, f) {
+      this.app.event[eventType] = f;
+    },
+    makeTextMesh: function(options) {
+      text = options.text || '';
+      px = options.px || 30;
+      width = options.width || 20;
+      height = options.height || 20;
+      canvas1 = document.createElement('canvas');
+      canvas1.height = px + 10;
+      canvas1.width = canvas1.height * width / height * 2;
+      context1 = canvas1.getContext('2d');
+      context1.font = 'Bold ' + px + ' px Arial';
+      context1.fillStyle = 'rgba(255,255,255,0.95)';
+      context1.fillText(' ' + text, 0, px);
+      texture1 = new THREE.Texture(canvas1); 
+      texture1.needsUpdate = true;
+      material1 = new THREE.MeshBasicMaterial( {map: texture1, side: THREE.DoubleSide } );
+      material1.transparent = true;
+      return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
+    },
+    getValues: function() {},
+    getValue: function(name) {},
+    addListener: function(name, f) {},
+    removeListener: function(name, f) {},
+    app: {
+      event: {}
+    }
+  }
+
+  var mockApp = {
+    panel: {
+        add: function(){},
+        set: function(){}
+    },
+    user: {
+      id: 1
+    }
+  };
+  $.getScript(appURL, function() {
+    if (vOS.app.event.load) {
+      vOS.app.event.load(mockApp);
+      if (mockApp.drawImmersive) {
+		mockApp.drawImmersive(scene);
+      } else if (mockApp.drawImmersiveBackground){
+	    mockApp.drawImmersiveBackground(scene);
+      }
+    } else {
+      console.log('App from ' + appURL + ' Failed To Load')
+    }
+  });
+})(THREE, controls, '<%= app.url %>', scene2);
+
+/*
+(function(THREE, controls, appURL, scene){
 	window.module = {};
 	window.module.exports = {};
 	window.exports = window.module.exports;
@@ -148,35 +261,7 @@ var controls = controlObjects.setUp(mockState, mockUtil);
             console.log('App from ' + data.url + ' Failed To Load');
         }
 	});
-})(THREE, controls, '<%= app.url %>', scene1);
+})(THREE, controls, '<%= app.url %>', scene1);*/
 
-(function(THREE, controls, appURL, scene){
-  	window.module = {};
-  	window.module.exports = {};
-	window.exports = window.module.exports;
-	window.Controls = controls;
-	$.getScript(appURL, function() {
-		//eval(data.contents);
-	    //console.log(appURL);
-	    var app = window.module.exports;
-	    if (app != undefined) {
-	    	var mockData = {
-	        	panel: {
-				   	  add: function(){},
-				      set: function(){}
-				},
-				userID: '1'
-		    };
-	        app.setUp(mockData);
-		    if (app.drawImmersive) {
-			  app.drawImmersive(scene);
-		    } else if (app.drawImmersiveBackground){
-			  app.drawImmersiveBackground(scene);
-		    }
-	    } else {
-	        console.log('App from ' + data.url + ' Failed To Load');
-	    }
-  	});
-})(THREE, controls, '<%= app.url %>', scene2);
 
 </script>

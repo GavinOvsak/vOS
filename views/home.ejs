@@ -3,16 +3,20 @@
   <div class="container">
     <h1>Welcome To The Future!</h1>
     <p>vOS is a new platform for virtual reality applications. Think of it like an immersive computer controlled by your tablet.</p>
-    <div style="text-align: center;">
-    <iframe width="560" height="315" src="//www.youtube.com/embed/FQ8MfqMUImU" frameborder="0" allowfullscreen></iframe>
-  </div>
+    <div class="row col-sm-offset-3 col-sm-6">
+      <a href="/app?app_id=<%= displayApp._id %>">
+        <div id="compactView" style="width:600;height:400;text-align: center"></div>
+      </a>
+      <p>Download the vOS Controller from the <a href="https://play.google.com/store/apps/details?id=vOS.controller">Google Play Store</a><p>
+    </div>
   </div>
 </div>
 <div class="container">
-<div class="row">
-	<h2>Featured Apps:</h2>
-  <hr>
-</div>
+  <div class="row">
+    <div id="vOS-embed" data-app="5315354db87e860000a11cbc"></div>
+  	<h2>Featured Apps:</h2>
+    <hr>
+  </div>
   <% for(var row = 0; row * 3 <= featured.length - featured.length % 3; row++) { %>
     <div class="row">
       <% for (var i = row * 3; i < (row + 1) * 3 && i < featured.length; i++) { %>
@@ -38,3 +42,141 @@
     });
   });
 </script>
+<script type="text/javascript" src="/js/three.min.js"></script>
+<script type="text/javascript" src="/Browserify/compiledJS/controls.js"></script>
+<script>
+var socket2 = io.connect('/');//Need a different code
+socket2.on('code', function(data) {
+  if (data.name == 'appSpecific') {
+    $('#directCode').text(data.code);
+  }
+});
+socket2.on('session_id', function(data) {
+  console.log(data.id);
+  if (data.name == 'appSpecific') {
+    window.location = "/enter?session_id=" + data.id + "&app_id=<%= displayApp._id %>&from=" + encodeURIComponent(window.location.href);
+  }
+});
+socket2.emit('declare-type', {type: 'page', name: 'appSpecific'});
+
+var $compactView = $('#compactView');
+
+WIDTH = 600;
+HEIGHT = 400;
+var VIEW_ANGLE = 45,
+  ASPECT = WIDTH / HEIGHT,
+  NEAR = 0.1,
+  FAR = 10000;
+var camera_start = {
+  x: Math.PI/2,
+  y: -200,
+  z: 10
+};
+
+var camera1 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+camera1.rotation.x = camera_start.x;
+camera1.position.y = camera_start.y;
+camera1.position.z = camera_start.z;
+camera1.position.z = 40;
+var renderer1 = new THREE.WebGLRenderer( {antialias:true} );
+renderer1.autoClearColor = true;
+renderer1.setSize(WIDTH, HEIGHT);
+$compactView.append(renderer1.domElement);
+var scene1 = new THREE.Scene();
+
+var angle = 0;
+var render = function() {
+  requestAnimationFrame( render );
+
+  angle += 0.01;
+  camera1.rotation.y = angle;
+  camera1.position.y = Math.cos(camera1.rotation.y) * camera_start.y + Math.sin(camera1.rotation.y) * camera_start.x;
+  camera1.position.x = -Math.sin(camera1.rotation.y) * camera_start.y + Math.cos(camera1.rotation.y) * camera_start.x;
+  renderer1.render(scene1, camera1);
+};
+
+render();
+
+var mockState = {
+  unitWidth: 1/12,
+  unitHeight: 1/9,
+  hidden: true,
+  getPanelApp: function() {},
+  canMinimize: function() {},
+  canMaximize: function() {},
+  close: function() {},
+  toggleMaxMin: function() {},
+  mode: 'Normal',
+  modes: {
+    Normal: 'normal',
+    AppSwitch: 'app-switch',
+    Notifications: 'notifications'
+  }
+};
+
+var mockUtil = {
+  makeText: function() {},
+  setPanelPosition: function() {},
+  distance: function() {},
+  vector: function() {}
+};
+
+var controls = controlObjects.setUp(mockState, mockUtil);
+
+(function(THREE, controls, appURL, scene){
+  window.Controls = controls;
+  window.vOS = {
+    onEvent: function(eventType, f) {
+      this.app.event[eventType] = f;
+    },
+    makeTextMesh: function(options) {
+      text = options.text || '';
+      px = options.px || 30;
+      width = options.width || 20;
+      height = options.height || 20;
+      canvas1 = document.createElement('canvas');
+      canvas1.height = px + 10;
+      canvas1.width = canvas1.height * width / height * 2;
+      context1 = canvas1.getContext('2d');
+      context1.font = 'Bold ' + px + ' px Arial';
+      context1.fillStyle = 'rgba(255,255,255,0.95)';
+      context1.fillText(' ' + text, 0, px);
+      texture1 = new THREE.Texture(canvas1); 
+      texture1.needsUpdate = true;
+      material1 = new THREE.MeshBasicMaterial( {map: texture1, side: THREE.DoubleSide } );
+      material1.transparent = true;
+      return new THREE.Mesh(new THREE.PlaneGeometry(width, height), material1);
+    },
+    getValues: function() {},
+    getValue: function(name) {},
+    addListener: function(name, f) {},
+    removeListener: function(name, f) {},
+    app: {
+      event: {}
+    }
+  }
+
+  var mockApp = {
+    panel: {
+        add: function(){},
+        set: function(){}
+    },
+    user: {
+      id: 1
+    }
+  };
+  $.getScript(appURL, function() {
+    if (vOS.app.event.load) {
+      vOS.app.event.load(mockApp);
+
+      if (mockApp.drawContained) {
+        mockApp.drawContained(scene);
+      }
+    } else {
+      console.log('App from ' + appURL + ' Failed To Load')
+    }
+  });
+})(THREE, controls, '<%= displayApp.url %>', scene1);
+
+</script>
+<script type="text/javascript" src="http://vos.jit.su/js/embed.js"/>

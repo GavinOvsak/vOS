@@ -1,27 +1,26 @@
 {
   "name": "vOS",
-  "subdomain": "gavinovsak-vOS",
+  "subdomain": "vOS",
   "repository": "https://github.com/GavinOvsak/vOS",
   "scripts": {
-    "start": "node app.js",
+    "start": "node server.js",
     "test": "mocha"
   },
-  "version": "0.1.0-161",
+  "version": "0.1.0-208",
   "engines": {
     "node": "0.10.x"
   },
   "dependencies": {
     "express-partials": "0.2.0",
     "connect-ensure-login": "0.1.1",
-    "passport-google-oauth": "0.1.5",
     "mongoose": "3.8.8",
     "passport": "0.2.0",
-    "passport-google-plus": "0.2.0",
-    "passport-google": "0.3.0",
     "lodash": "2.4.1",
     "express": "3.4.7",
     "socket.io": "0.9.16",
-    "ejs": "0.8.5"
+    "passport-local": "1.0.0",
+    "ejs": "0.8.5",
+    "mongoose-text-search": "0.0.2"
   },
   "bundleDependencies": [
     "./secrets.json"

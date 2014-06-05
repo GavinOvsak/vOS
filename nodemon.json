@@ -1,7 +1,10 @@
 {
-  "ext": "*.js",
+  "ext": "js coffee",
   "verbose": true,
-  "exec": "node",
+  "execMap": {
+    "coffee": "./run.sh",
+    "js": "node"
+  },
   "ignore": [
     "js/bundle.js"
   ]

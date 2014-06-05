@@ -19,7 +19,7 @@
       socket.on('code', function(data) {
         if (data.name == 'basic') {
           console.log(data.code);
-          $('#code').html('Quick Pair Code: '+ data.code + ' <b class="caret"></b>');
+          $('#code').html('Pair Code: ' + data.code);
         }
       });
       socket.on('session_id', function(data) {
@@ -29,104 +29,11 @@
         }
       });
       socket.emit('declare-type', {type: 'page', name: 'basic'});
-/*
-      (function() {
-          var po = document.createElement('script');
-          po.type = 'text/javascript'; po.async = true;
-          po.src = 'https://plus.google.com/js/client:plusone.js';
-          var s = document.getElementsByTagName('script')[0];
-          s.parentNode.insertBefore(po, s);
-        })();
-*/
-
-/*      function signinCallback(authResult) {
-        console.log(authResult);
-        if (authResult['status']['signed_in']) {
-          // Update the app to reflect a signed in user
-          // Hide the sign-in button now that the user is authorized, for example:
-          document.getElementById('signinButton').setAttribute('style', 'display: none');
-
-        } else {
-          // Update the app to reflect a signed out user
-          // Possible error values:
-          //   "user_signed_out" - User is signed-out
-          //   "access_denied" - User denied access to your app
-          //   "immediate_failed" - Could not automatically log in the user
-          document.getElementById('signinButton').setAttribute('style', 'display: block');
-          //redirect to home if not home;
-          <% if (!home) { %>
-          window.location = '/logout';
-          <% } %>
-          console.log('Sign-in state: ' + authResult['error']);
-        }
-      }
-*/
-      //Only let people who are logged in use vOS
-      //Give userID to apps
-      //check if logged into google and if given access to the app.
-
-     function signinCallback(authResult) {
-        console.log(authResult);
-        if (authResult['status']['signed_in']) {
-          if (authResult['g-oauth-window']) {
-            console.log('reload');
-            window.location.reload();
-          } else {
-          $.ajax({
-              dataType: "json",
-              url: '/auth/google/callback',
-              data: { 
-                result: authResult,  
-                id_token: authResult.id_token,
-                code: authResult.code,
-                access_token: authResult.access_token},
-              type:"POST",
-              contentType:"application/x-www-form-urlencoded; charset=utf-8",
-              crossDomain:true,
-              cache : true, 
-              success:function(data) {
-                  console.log('Signing In');
-                  console.log(data);
-              },
-              error: function(jqXHR, exception, errorstr) {
-                  console.log(jqXHR);
-                  console.log(exception);
-                  console.log(errorstr);
-              }
-          });
-          }/*
-          $.post('/auth/google/callback', { 
-            result: authResult,  
-            id_token: authResult.id_token,
-            code: authResult.code,
-            access_token: authResult.access_token})
-          .done(function(data) {
-            console.log('Signing In');
-            
-          });*/
-          $('#signinButton').hide();
-          $('#loggedIn').show();
-        } else {
-          $('#signinButton').show();
-          $('#loggedIn').hide();
-        }
-      }
-
-      /*function test() {
-        console.log('testt');
-      }*/
-
-      function signout() {
-        $.post('/logout', {}).done(function(data) {
-          console.log('Logged Out');
-          window.location = 'https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://gavinovsak-vos.jit.su';
-        });
-        //gapi.auth.signOut();
-      }
     </script>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
+        
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -148,33 +55,61 @@
             </li>
             <li><a class="active" href="/try">Try It!</a></li>
           </ul>
-          <% if (!user) { %>
-            <div id="signinButton" class="btn pull-right" onClick="test()">
-              <span
-                class="g-signin"
-                data-callback="signinCallback"
-                data-clientid="16685699509-9es3r68f818dgcrgs10ta9dm91ggpfo0.apps.googleusercontent.com"
-                data-cookiepolicy="single_host_origin"
-                data-apppackagename="vOS.controller"
-                data-scope="profile">
-              </span>
-            </div>
-          <% } %>
-          <ul class="nav navbar-nav navbar-right" id="loggedIn"  <% if (!user) { %>style="display:none;" <% } %>>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a id="code"></a></li>
+            <% if (!user) { %>
+            <li id="signInButton"><a data-target="#form" data-toggle="modal">Sign In</a></li>
+            <% } else { %>
             <li class="dropdown">
-              <a class="dropdown-toggle" id="code" data-toggle="dropdown"></a>
+              <a class="dropdown-toggle" data-toggle="dropdown">More<b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="/try">Download App</a></li>
-                <li><a onClick="signout()">Logout</a></li>
+                <li><a href="/account">Account</a></li>
+                <li><a href="/signout">Sign Out</a></li>
               </ul>
             </li>
+            <% } %>
           </ul>
-          <form href="/appSearch" method="GET" id="" class="navbar-form navbar-nav navbar-right" role="form">
+          <form action="/appSearch" method="GET" id="" class="navbar-form navbar-nav navbar-right" role="frm">
             <div class="form-group">
-              <input type="text" class="form-control">
+              <input type="text" name="query" placeholder="Search Apps" <% if (locals.query != null) { %>value="<%= query %>"<% } %> class="form-control">
             </div>
-            <button type="search" class="btn btn-success">Search Apps</button>
+            <button type="search" class="btn btn-success">Go</button>
           </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="form" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="modal-title" id="myModalLabel">Please Sign In</h3>
+          </div>
+          <div class="modal-body">
+            <form role="form" id="signinform" method="post">
+              <fieldset>
+                <div class="form-group" id="nameField"  style="display:none;">
+                  <input type="text" name="name" class="form-control input-lg" placeholder="Full Name">
+                </div>
+                <div class="form-group" id="email">
+                  <input type="email" name="email" class="form-control input-lg" placeholder="Email Address">
+                </div>
+                <div class="form-group" id="password">
+                  <input type="password" name="password" class="form-control input-lg" placeholder="Password">
+                </div>
+                <span class="button-checkbox" id='loginsettings'>
+                  <button type="button" class="btn" data-color="info">Remember Me</button>
+                  <input type="checkbox" name="remember_me" id="remember_me" checked="checked" style="display:none;">
+                  <a id="forgot" class="btn btn-link pull-right">Forgot Password?</a>
+                </span>
+              </fieldset>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" aria-hidden="true" id="change">Go to Registration</button>
+            <input class="btn btn-primary" aria-hidden="true" type="submit" name="submit" value="Submit" id="submit">
+          </div>
         </div>
       </div>
     </div>
@@ -185,17 +120,92 @@
         <a href="http://www.workbygavin.com">Work By Gavin</a>
       </footer>
     </div>
-    <!-- data-requestvisibleactions="http://schemas.google.com/AddActivity" -->
-    <!-- Place this asynchronous JavaScript just before your </body> tag -->
     <script type="text/javascript">
-      (function() {
-       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-       po.src = 'https://apis.google.com/js/client:plusone.js';
-       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-     })();
+    $(function(){
+        var isRegistering = false;
+        $('#change').click(function() {
+          if(isRegistering) {
+            $('#myModalLabel').text('Please Sign In');
+            $('#nameField').hide();
+            $('#loginsettings').show();
+            $(this).text('Go to Registration');
+          } else {
+            $('#myModalLabel').text('Please Register');
+            $('#nameField').show();
+            $('#loginsettings').hide();
+            $(this).text('Go to Sign In');
+          }
+          isRegistering = !isRegistering;
+        });
+
+        $('#submit').click(function() {
+          //Check if fields are valid
+          $('#form').modal('hide');
+          if(isRegistering) {
+            $('#signinform').attr('action','/registerAndSignIn');
+          } else {
+            $('#signinform').attr('action','/signin');
+          }
+          $('#signinform').submit();
+        });
+
+        $('.button-checkbox').each(function(){
+        var $widget = $(this),
+          $button = $widget.find('button'),
+          $checkbox = $widget.find('input:checkbox'),
+          color = $button.data('color'),
+          settings = {
+              on: {
+                icon: 'glyphicon glyphicon-check'
+              },
+              off: {
+                icon: 'glyphicon glyphicon-unchecked'
+              }
+          };
+
+        $button.on('click', function () {
+          $checkbox.prop('checked', !$checkbox.is(':checked'));
+          $checkbox.triggerHandler('change');
+          updateDisplay();
+        });
+
+        $checkbox.on('change', function () {
+          updateDisplay();
+        });
+
+        function updateDisplay() {
+          var isChecked = $checkbox.is(':checked');
+          // Set the button's state
+          $button.data('state', (isChecked) ? "on" : "off");
+
+          // Set the button's icon
+          $button.find('.state-icon')
+            .removeClass()
+            .addClass('state-icon ' + settings[$button.data('state')].icon);
+
+          // Update the button's color
+          if (isChecked) {
+            $button
+              .removeClass('btn-default')
+              .addClass('btn-' + color + ' active');
+          }
+          else
+          {
+            $button
+              .removeClass('btn-' + color + ' active')
+              .addClass('btn-default');
+          }
+        }
+        function init() {
+          updateDisplay();
+          // Inject the icon if applicable
+          if ($button.find('.state-icon').length == 0) {
+            $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
+          }
+        }
+        init();
+      });
+    });
     </script>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-  	<!-- Placed at the end of the document so the pages load faster -->
   </body>
 </html>
