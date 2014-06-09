@@ -1467,10 +1467,10 @@ exports.setUp = function(state, util) {
               v = extras[k];
               vOS.app[k] = v;
             }
-            app = state.add(vOS.app, controls);
-            if (open) {
-              state.open(app, controls);
-            }
+          }
+          app = state.add(vOS.app, controls);
+          if (open) {
+            state.open(app, controls);
           }
         } else {
           console.log('App from ' + appURL + ' Failed To Load');

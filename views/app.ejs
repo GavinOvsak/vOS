@@ -54,14 +54,13 @@ var VIEW_ANGLE = 45,
 var camera_start = {
 	x: Math.PI/2,
 	y: 0,
-	z: 3
+	z: 15
 };
 
 var camera1 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 camera1.rotation.x = camera_start.x;
 camera1.position.y = camera_start.y + 200;
 camera1.position.z = camera_start.z;
-camera1.position.z = 40;
 var renderer1 = new THREE.WebGLRenderer( {antialias:true} );
 renderer1.autoClearColor = true;
 renderer1.setSize(WIDTH, HEIGHT);
@@ -72,7 +71,6 @@ var camera2 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 camera2.rotation.x = camera_start.x;
 camera2.position.y = camera_start.y;
 camera2.position.z = camera_start.z;
-camera2.position.z = 40;
 var renderer2 = new THREE.WebGLRenderer( {antialias:true} );
 renderer2.autoClearColor = true;
 renderer2.setSize(WIDTH, HEIGHT);
@@ -83,10 +81,10 @@ var angle = 0;
 var render = function() {
 	requestAnimationFrame( render );
 
-	angle += 0.01;
+	angle += 0.005;
 	camera1.rotation.y = angle;
-	camera1.position.y = Math.cos(camera1.rotation.y) * (camera_start.y - 70) + Math.sin(camera1.rotation.y) * camera_start.x + 200;
-	camera1.position.x = -Math.sin(camera1.rotation.y) * (camera_start.y - 70) + Math.cos(camera1.rotation.y) * camera_start.x;
+	camera1.position.y = Math.cos(camera1.rotation.y) * (camera_start.y - 140) + Math.sin(camera1.rotation.y) * camera_start.x + 200;
+	camera1.position.x = -Math.sin(camera1.rotation.y) * (camera_start.y - 140) + Math.cos(camera1.rotation.y) * camera_start.x;
 	renderer1.render(scene1, camera1);
 
 	camera2.rotation.y = angle;

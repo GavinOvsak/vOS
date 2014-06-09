@@ -31,7 +31,6 @@ params.check = (state, util, controls) ->
 
 #  recentApps = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'] #For now. Use ajax get request to userFromToken later
 
-
   if appQueryURL?
     state.addURL(appQueryURL, null, true)
 

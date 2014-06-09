@@ -1619,10 +1619,10 @@ exports.setUp = function(state, util) {
               v = extras[k];
               vOS.app[k] = v;
             }
-            app = state.add(vOS.app, controls);
-            if (open) {
-              state.open(app, controls);
-            }
+          }
+          app = state.add(vOS.app, controls);
+          if (open) {
+            state.open(app, controls);
           }
         } else {
           console.log('App from ' + appURL + ' Failed To Load');
@@ -2157,7 +2157,8 @@ remoteController.setUp = function(state, util) {
 
 
 },{}],8:[function(require,module,exports){
-var every, numColumns, numRows, state;
+var every, numColumns, numRows, state,
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 state = exports;
 
@@ -2212,12 +2213,11 @@ state.BaseRotation = new THREE.Quaternion();
 every = 0;
 
 state.open = function(app) {
-  debugger;
-  if (!((state.front_and_back != null) && state.front_and_back.index === app.index) && !((state.front != null) && state.front.index === app.index) && !((state.back != null) && state.back.index === app.index) && (state.user != null)) {
-    debugger;
+  var listener, _i, _len, _ref, _ref1, _results;
+  if (!((state.front_and_back != null) && state.front_and_back.index === app.index) && !((state.front != null) && state.front.index === app.index) && !((state.back != null) && state.back.index === app.index) && (state.user != null) && (_ref = app._id, __indexOf.call(state.user.recent, _ref) < 0)) {
     state.user.recent.push(app._id);
-    $.post('http://vos.jit.su/recentApps?token=' + token, state.user.recent, function(err, data) {
-      debugger;
+    $.post('http://vos.jit.su/recentApps?token=' + token, {
+      recent: state.user.recent
     });
   }
   if ((state.back != null) && state.back.index === app.index) {
@@ -2240,7 +2240,14 @@ state.open = function(app) {
       state.back = app;
     }
   }
-  return state.mode = state.modes.Normal;
+  state.mode = state.modes.Normal;
+  _ref1 = state.onAppListUpdate.listeners;
+  _results = [];
+  for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+    listener = _ref1[_i];
+    _results.push(listener());
+  }
+  return _results;
 };
 
 state.onAppListUpdate = function(func) {
@@ -2259,7 +2266,7 @@ state.add = function(app, controls) {
   app.external = {
     panel: app.panel,
     user: {
-      id: state.user._id,
+      id: state.user.id,
       name: state.user.name
     }
   };

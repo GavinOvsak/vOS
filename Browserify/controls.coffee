@@ -1089,7 +1089,6 @@ exports.setUp = (state, util) ->
 	          console.log('App from ' + appURL + ' Failed To Load')
 	      )
 	      ###
-	      #debugger;
 	      window.vOS = {
 	        onEvent: (eventType, f) ->
 	          this.app.event[eventType] = f
@@ -1120,9 +1119,9 @@ exports.setUp = (state, util) ->
 		        if extras?
 		          for k, v of extras
 		            vOS.app[k] = v
-	           	app = state.add(vOS.app, controls)
-	           	if open
-	              state.open(app, controls) 	             
+		        app = state.add(vOS.app, controls)
+		        if open
+		          state.open(app, controls) 	             
 	        else
 	          console.log('App from ' + appURL + ' Failed To Load')
 	        #window.app

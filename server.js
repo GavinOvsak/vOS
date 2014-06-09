@@ -234,7 +234,8 @@ app.get('/userFromToken', function(req, res) {
       if (user != null) {
         publicUser = {
           name: user.name,
-          recent: user.recent
+          recent: user.recent,
+          id: user._id
         };
         return res.json(publicUser);
       } else {
@@ -256,22 +257,24 @@ app.post('/recentApps', function(req, res) {
     return User.findOne({
       token: req.query.token
     }, function(err, user) {
-      var newList;
       if (err) {
         console.log(err);
       }
-      newList = req.body;
-      req.user.recent = newList;
-      req.user.save(function(err, user) {
-        if (err) {
-          console.log(err);
-        }
-        return console.log('Successful App Update');
-      });
-      return res.json(req.user);
+      if ((user != null) && req.body.recent.constructor === Array) {
+        user.recent = req.body.recent;
+        user.save(function(err, user) {
+          if (err) {
+            console.log(err);
+          }
+          return console.log('Successful App Update');
+        });
+        return res.json(user);
+      } else {
+        return res.json(req.body);
+      }
     });
   } else {
-    return res.json();
+    return res.json(req.body);
   }
 });
 

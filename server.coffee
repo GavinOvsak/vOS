@@ -149,7 +149,8 @@ app.get '/userFromToken', (req, res) ->
       if user?
         publicUser = {
           name: user.name,
-          recent: user.recent
+          recent: user.recent,
+          id: user._id
         }
         res.json(publicUser)
       else
@@ -166,15 +167,17 @@ app.post('/recentApps', (req, res) ->
   if req.query.token?
     User.findOne token: req.query.token, (err, user) ->
       console.log err if err
-      newList = req.body
-      req.user.recent = newList
-      req.user.save((err, user) ->
-        console.log err if err
-        console.log 'Successful App Update'
-      )
-      res.json(req.user)
+      if user? and req.body.recent.constructor is Array
+        user.recent = req.body.recent
+        user.save((err, user) ->
+          console.log err if err
+          console.log 'Successful App Update'
+        )
+        res.json(user)
+      else
+        res.json(req.body)
   else 
-    res.json()
+    res.json(req.body)
 )
 
 ###

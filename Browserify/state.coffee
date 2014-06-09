@@ -36,15 +36,12 @@ every = 0
 
 state.open = (app) ->
 
-	debugger
 	if not (state.front_and_back? and state.front_and_back.index is app.index) and 
 			not (state.front? and state.front.index is app.index) and 
-			not (state.back? and state.back.index is app.index) and state.user?
-		debugger
+			not (state.back? and state.back.index is app.index) and state.user? and
+			app._id not in state.user.recent
 		state.user.recent.push(app._id)
-		$.post('http://vos.jit.su/recentApps?token=' + token, state.user.recent, (err, data)->
-			debugger
-			)
+		$.post('http://vos.jit.su/recentApps?token=' + token, {recent: state.user.recent})
 		#Post app list update
 
 	#if is already in front+back or back, go to front+back. If is already in front go to front
@@ -68,6 +65,9 @@ state.open = (app) ->
 			state.back = app
 	state.mode = state.modes.Normal
 
+	for listener in state.onAppListUpdate.listeners
+		listener()
+
 state.onAppListUpdate = (func) ->
 	state.onAppListUpdate.listeners.push(func)
 
@@ -81,11 +81,10 @@ state.add = (app, controls) ->
 	app.panel = new controls.Panel(app)
 	app.index = state.apps.length
 	state.apps.push(app)
-#	debugger;
 	app.external = {
 		panel: app.panel,
 		user: {
-			id: state.user._id,
+			id: state.user.id,
 			name: state.user.name
 		}
 	}
