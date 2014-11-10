@@ -4,6 +4,130 @@
 		"selected_items":
 		[
 			[
+				"up",
+				"uploadedFile"
+			],
+			[
+				"password",
+				"passwordAlert"
+			],
+			[
+				"cur",
+				"currentlyOpen"
+			],
+			[
+				"on",
+				"onClick"
+			],
+			[
+				"app",
+				"appID"
+			],
+			[
+				"Vi",
+				"VIEW_ANGLE"
+			],
+			[
+				"is",
+				"isCardboard"
+			],
+			[
+				"mi",
+				"mirrorViews"
+			],
+			[
+				"Oc",
+				"OculusRift"
+			],
+			[
+				"set",
+				"setHMD"
+			],
+			[
+				"mir",
+				"mirrorCanvas"
+			],
+			[
+				"render",
+				"renderTarget"
+			],
+			[
+				"so",
+				"socket"
+			],
+			[
+				"mirr",
+				"mirrors"
+			],
+			[
+				"un",
+				"undefined"
+			],
+			[
+				"k",
+				"keyCode"
+			],
+			[
+				"par",
+				"paramList"
+			],
+			[
+				"floo",
+				"floorGeometry"
+			],
+			[
+				"cen",
+				"centerFloorTile"
+			],
+			[
+				"sta",
+				"start_position"
+			],
+			[
+				"st",
+				"start_position"
+			],
+			[
+				"res",
+				"resetPosition"
+			],
+			[
+				"paus",
+				"paused"
+			],
+			[
+				"ha",
+				"hardButton"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"pa",
+				"paused"
+			],
+			[
+				"fn",
+				"function"
+			],
+			[
+				"easy",
+				"easyButton"
+			],
+			[
+				"p",
+				"people"
+			],
+			[
+				"new",
+				"newhash"
+			],
+			[
+				"u",
+				"user"
+			],
+			[
 				"geo",
 				"geometry"
 			],
@@ -54,14 +178,6 @@
 			[
 				"exp",
 				"exportVisuals"
-			],
-			[
-				"app",
-				"appQueryURL"
-			],
-			[
-				"par",
-				"parsed"
 			],
 			[
 				"po",
@@ -184,14 +300,6 @@
 				"sessions"
 			],
 			[
-				"is",
-				"isOn"
-			],
-			[
-				"new",
-				"newSessionID"
-			],
-			[
 				"make",
 				"makeToken"
 			],
@@ -206,10 +314,6 @@
 			[
 				"pl",
 				"plots"
-			],
-			[
-				"res",
-				"result"
 			],
 			[
 				"crop",
@@ -244,10 +348,6 @@
 				"prototype"
 			],
 			[
-				"st",
-				"starCount"
-			],
-			[
 				"init",
 				"initKey"
 			],
@@ -262,10 +362,6 @@
 			[
 				"ini",
 				"initGrab"
-			],
-			[
-				"k",
-				"key"
 			],
 			[
 				"min",
@@ -292,10 +388,6 @@
 				"gestureLine"
 			],
 			[
-				"pa",
-				"paramList"
-			],
-			[
 				"onT",
 				"onTextUpdate_callback"
 			],
@@ -318,10 +410,6 @@
 			[
 				"retu",
 				"return"
-			],
-			[
-				"set",
-				"setText"
 			],
 			[
 				"getT",
@@ -426,120 +514,72 @@
 			[
 				"aud",
 				"audiences"
-			],
-			[
-				"l",
-				"log"
-			],
-			[
-				"vO",
-				"vOS_App"
-			],
-			[
-				"inpu",
-				"input"
-			],
-			[
-				"ou",
-				"output"
-			],
-			[
-				"paren",
-				"parentDiv"
-			],
-			[
-				"data",
-				"dawnmountain"
-			],
-			[
-				"z",
-				"z"
-			],
-			[
-				"Ma",
-				"Matrix4"
-			],
-			[
-				"fron",
-				"front_and_back"
-			],
-			[
-				"Li",
-				"LinearSlider"
-			],
-			[
-				"di",
-				"direction"
-			],
-			[
-				"not",
-				"notificationSettings"
-			],
-			[
-				"ob",
-				"objects"
-			],
-			[
-				"start",
-				"startState"
-			],
-			[
-				"y",
-				"y"
-			],
-			[
-				"New",
-				"newState"
-			],
-			[
-				"max",
-				"max_fingers"
-			],
-			[
-				"point",
-				"points"
-			],
-			[
-				"on",
-				"onRelease_callback"
-			],
-			[
-				"hight",
-				"height"
-			],
-			[
-				"an",
-				"angle"
-			],
-			[
-				"fun",
-				"function"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "Browserify/util.coffee",
+			"file": "Browserify/appSwitcher.coffee",
 			"settings":
 			{
-				"buffer_size": 8102,
+				"buffer_size": 6812,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/Gavin/Google Drive/Development/workbygavinsite/static/app/stemkoski-vertex-colors.js",
+			"file": "views/account.ejs",
 			"settings":
 			{
-				"buffer_size": 16822,
+				"buffer_size": 3153,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Browserify/remoteController.coffee",
+			"file": "views/forgot.ejs",
 			"settings":
 			{
-				"buffer_size": 2685,
+				"buffer_size": 1306,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "views/layout.ejs",
+			"settings":
+			{
+				"buffer_size": 10569,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "views/about.ejs",
+			"settings":
+			{
+				"buffer_size": 274,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "secrets.json",
+			"settings":
+			{
+				"buffer_size": 3386,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "package.json",
+			"settings":
+			{
+				"buffer_size": 671,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "views/dashboard.ejs",
+			"settings":
+			{
+				"buffer_size": 4551,
 				"line_ending": "Unix"
 			}
 		},
@@ -547,79 +587,15 @@
 			"file": "server.coffee",
 			"settings":
 			{
-				"buffer_size": 15470,
+				"buffer_size": 24491,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Browserify/deviceInputs.coffee",
+			"file": "views/documentation.ejs",
 			"settings":
 			{
-				"buffer_size": 1514,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Browserify/controls.coffee",
-			"settings":
-			{
-				"buffer_size": 38783,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "js/bundle.js",
-			"settings":
-			{
-				"buffer_size": 87870,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Browserify/params.coffee",
-			"settings":
-			{
-				"buffer_size": 3523,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "server.js",
-			"settings":
-			{
-				"buffer_size": 18365,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Browserify/display.coffee",
-			"settings":
-			{
-				"buffer_size": 5727,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Browserify/appSwitcher.coffee",
-			"settings":
-			{
-				"buffer_size": 3450,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "views/app.ejs",
-			"settings":
-			{
-				"buffer_size": 7845,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Browserify/state.coffee",
-			"settings":
-			{
-				"buffer_size": 6369,
+				"buffer_size": 273,
 				"line_ending": "Unix"
 			}
 		},
@@ -627,15 +603,7 @@
 			"file": "views/home.ejs",
 			"settings":
 			{
-				"buffer_size": 5568,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Browserify/compiledJS/params.js",
-			"settings":
-			{
-				"buffer_size": 3863,
+				"buffer_size": 5639,
 				"line_ending": "Unix"
 			}
 		}
@@ -668,32 +636,48 @@
 	},
 	"file_history":
 	[
-		"/Users/Gavin/Google Drive/Development/vOS/js/bundle.js",
-		"/Users/Gavin/Google Drive/Development/vOS/server.js",
-		"/Users/Gavin/Google Drive/Development/vOS/compiledJS/server.js",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/state.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/public/home.js",
-		"/Users/Gavin/Google Drive/Development/vOS/views/app.ejs",
-		"/Users/Gavin/Google Drive/Development/vOS/views/home.ejs",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/params.coffee",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/display.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/js/embed.js",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/controls.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/appSwitcher.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/views/layout.ejs",
-		"/Users/Gavin/Google Drive/Development/vOS/public/homeNewAPI.js",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/remoteController.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/package.json",
-		"/Users/Gavin/Google Drive/Development/vOS/vOS.sublime-project",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/params.coffee",
+		"/Users/Gavin/Google Drive/Development/vOS/js/bundle.js",
+		"/Users/Gavin/Google Drive/Development/vOS/public/flight.js",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/deviceInputs.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/server.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/views/appSearch.ejs",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/main.coffee",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/state.coffee",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/controls.coffee",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/compiledJS/controls.js",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/preCS/stateOld.js",
+		"/Users/Gavin/Google Drive/Development/vOS/views/localvOS.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/views/local.ejs",
+		"/Users/Gavin/Google Drive/Development/BiancaWebsite/BiancaHome.html",
+		"/Users/Gavin/Google Drive/Development/vOS/views/pair.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/views/cardboard.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/views/vOS.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/DeviceOrientationControls.js",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/remoteController.coffee",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/util.coffee",
-		"/Users/Gavin/Google Drive/Development/vOS/Browserify/appSwitcher.js",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/compiledJS/display.js",
+		"/Users/Gavin/Google Drive/Development/vOS/js/OculusRiftEffect.js",
+		"/Users/Gavin/Google Drive/Development/vOS/views/mirror.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/js/mirror.js",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/main.coffee",
+		"/Users/Gavin/Google Drive/Development/vOS/views/home.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/views/app.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/views/layout.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/js/embed.js",
+		"/Users/Gavin/Google Drive/Development/vOS/server.coffee",
+		"/Users/Gavin/Google Drive/Development/vOS/views/cardboardvOS.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/views/dashboard.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/appSwitcher.coffee",
+		"/Users/Gavin/Google Drive/Development/vOS/server.js",
+		"/Users/Gavin/Google Drive/Development/workbygavinsite/static/app/stemkoski-vertex-colors.js",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/compiledJS/params.js",
+		"/Users/Gavin/Google Drive/Development/vOS/package.json",
+		"/Users/Gavin/Google Drive/Development/vOS/compiledJS/server.js",
 		"/Users/Gavin/Google Drive/Development/vOS/run.sh",
+		"/Users/Gavin/Google Drive/Development/vOS/public/home.js",
+		"/Users/Gavin/Google Drive/Development/vOS/public/homeNewAPI.js",
+		"/Users/Gavin/Google Drive/Development/vOS/vOS.sublime-project",
+		"/Users/Gavin/Google Drive/Development/vOS/views/appSearch.ejs",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/preCS/stateOld.js",
+		"/Users/Gavin/Google Drive/Development/vOS/Browserify/appSwitcher.js",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/package.json",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/controlsOld.js",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/deviceInputsOld.js",
@@ -708,25 +692,20 @@
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/display.js",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/params.js",
 		"/Users/Gavin/Google Drive/Development/vOS/nodemon.json",
-		"/Users/Gavin/Google Drive/Development/vOS/views/local.ejs",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/state.js",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/utilOld.js",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/util.js",
 		"/Users/Gavin/Google Drive/Development/vOS/setup.sh",
 		"/Users/Gavin/Google Drive/Development/vOS/public/wordlist.txt",
 		"/Users/Gavin/Google Drive/Development/vOS/app.js",
-		"/Users/Gavin/Google Drive/Development/vOS/views/vOS.ejs",
-		"/Users/Gavin/Google Drive/Development/vOS/views/localvOS.ejs",
 		"/Users/Gavin/Google Drive/Development/vOS/js/vr.js",
 		"/Users/Gavin/Google Drive/Development/PrattLab/demo.js",
 		"/Users/Gavin/Google Drive/Development/PrattLab/test.js",
 		"/Users/Gavin/Google Drive/Development/PrattLab/data.tsv",
 		"/Users/Gavin/Google Drive/Development/vOS/test/test.js",
 		"/Users/Gavin/Google Drive/Development/vOS/shippable.yml",
-		"/Users/Gavin/Google Drive/Development/vOS/views/dashboard.ejs",
 		"/Users/Gavin/Google Drive/Development/vOS/views/about.ejs",
 		"/Users/Gavin/Google Drive/Development/vOS/views/documentation.ejs",
-		"/Users/Gavin/Google Drive/Development/workbygavinsite/static/app/stemkoski-vertex-colors.js",
 		"/Users/Gavin/Google Drive/Development/vOS/js/controlsCondensed.js",
 		"/Users/Gavin/Google Drive/Development/workbygavinsite/static/app/chess.js",
 		"/Users/Gavin/Google Drive/Development/vOS/Browserify/bundle.js",
@@ -742,7 +721,6 @@
 		"/Users/Gavin/Google Drive/Development/vOS/js/vOS.js",
 		"/Users/Gavin/Google Drive/Development/vOS/node_modules/passport-google-plus/lib/strategy.js",
 		"/Users/Gavin/Google Drive/Development/vOS/app-savedlogin.js",
-		"/Users/Gavin/Google Drive/Development/vOS/js/OculusRiftEffect.js",
 		"/Users/Gavin/Google Drive/Development/vOS/public/2DvOS.html",
 		"/Users/Gavin/Google Drive/Development/vOS/js/applist.js",
 		"/Users/Gavin/Google Drive/Development/TowerView/pillsmartweb/app.js",
@@ -785,17 +763,7 @@
 		"/Users/Gavin/Google Drive/Development/VR-Keyboard/public/stemkoski-CSS3D.js",
 		"/Users/Gavin/Google Drive/Development/VR-Keyboard/public/stemkoski-Bubbles.js",
 		"/Users/Gavin/Google Drive/Development/VR-Keyboard/public/stemkoski-text3D",
-		"/Users/Gavin/Google Drive/Development/VR-Keyboard/public/utility.js",
-		"/Users/Gavin/Android/AndroidJS/templates/android18/Java/AndroidJSListAdapter.java",
-		"/Users/Gavin/Android/AndroidJS/templates/android18/AndroidJS/assets/android.js",
-		"/Users/Gavin/Android/AndroidJS/templates/android18/Java/AndroidJSActivity.java",
-		"/Users/Gavin/Android/HelloWorld/android_info.json",
-		"/Users/Gavin/Android/AndroidJS/AndroidJS.js",
-		"/Users/Gavin/Android/AndroidJS/AndroidJS.sh",
-		"/Users/Gavin/Android/HelloWorld/js/basic.js",
-		"/Users/Gavin/Android/HelloWorld/output/AndroidJS/AndroidManifest.xml",
-		"/Users/Gavin/Android/HelloWorld/output/AndroidJS/src/com/hello/world/Activity0.java",
-		"/Users/Gavin/Android/AndroidJS/mock/android.js"
+		"/Users/Gavin/Google Drive/Development/VR-Keyboard/public/utility.js"
 	],
 	"find":
 	{
@@ -814,134 +782,134 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"URL",
-			"state.op",
-			"state.",
-			"state.user =",
-			"camera",
-			"multiplySelf",
-			"set_contained_control",
-			"onAppListUpdate",
-			"state.onAppListUpdate",
-			"recent",
-			"req.body",
-			"console.log(req.bo",
-			"user",
-			"token",
-			"post",
-			"appList",
-			"recents",
-			"recent",
-			"smCub",
-			"angle",
-			"camera_start",
-			"camera1",
-			"camera_start",
-			"contained",
-			"camera",
-			"debu",
-			"addURL",
-			"addU",
-			"app",
-			"debu",
-			"zoom",
-			"conso",
+			"redi",
+			"sslHom",
+			"ssl",
+			"normalHome",
+			"dashboard",
+			"id = ",
+			"data-id",
+			"hiddenDiv",
+			"id =",
+			"id",
+			"signin",
+			"submit",
+			"normalHome",
+			"verifySignedIn",
+			"alert",
+			"modal",
+			"toast",
+			"confirm",
+			"transporter",
+			"vOS_App",
+			"account",
+			"verifySignedIn",
+			"google",
+			"email",
+			"make",
+			"verifySignedIn",
 			"remove",
-			"exportVisuals",
-			"console.log",
-			"tread",
-			"debug",
-			"mesh",
-			"circle",
-			"needsUp",
-			"directLight",
-			"pointLight",
-			"directLight",
-			"renderer",
-			"render",
-			"renderer",
-			"barMaterial",
-			"mobileScene",
-			"null",
-			"isnt null",
-			"debu",
-			"canMi",
-			"renderer",
-			"viewer",
-			"mobileScene.add(mesh.clone())",
-			"append",
-			"mobile",
-			"mobileRenderer",
-			"renderer",
-			"scene",
-			".input",
-			".input ",
-			".input =",
-			"sessions[session_id]",
-			"killSession",
-			"console.log(",
-			"console.log('",
-			"killSession",
-			"location",
-			"debug",
-			"load",
-			"openURL",
-			"addURL",
-			"openURL",
-			"util",
-			"appData",
-			"state.",
-			"panel",
-			"points:",
-			"getNum",
-			"tread",
-			"window.vOS =",
-			"window.vOS",
-			"vOS.app",
-			"featured",
-			"immersiveView",
-			"immer",
-			"compactView",
-			"canvas",
-			"scene",
-			";",
-			"panelApp",
-			"appSwitcher",
-			"getPanelApp",
-			"drawCon",
-			"test 2",
-			"material",
-			"FaceColors",
-			"material",
-			"console",
-			"mesh",
-			"meshes",
-			"panelMesh",
-			"setPanelPosition",
-			"boardMesh",
-			"board",
-			"state.top",
-			"state.points",
-			"debugger",
-			"appQueryURL",
-			"getScriptSync",
-			"appInfo",
-			"getSync",
-			"data.url",
-			"appQueryURL",
-			"appswitcherp",
-			"state.modes.AppSwitch",
-			"immer",
-			"query",
-			"state.hidd",
-			"checkGrab",
-			"exportVisuals",
-			"util.setPanelPo",
-			"checkGr",
+			"if err",
+			"if err?",
+			"if err",
 			"user",
-			"userI",
-			"state.hid",
-			"hidden"
+			"recent",
+			"register",
+			"/user",
+			"delete",
+			"user",
+			"post",
+			"	",
+			"alert",
+			"<%",
+			"	",
+			"nameField",
+			"modal",
+			"modeal",
+			"LinearSlider",
+			"featured_apps",
+			"	",
+			"util.",
+			"registerPoint(",
+			"register",
+			"onRelease",
+			"this.point =",
+			"this.point",
+			"release",
+			"Button",
+			"	",
+			"v, k in state.apps",
+			"	",
+			"recent",
+			"	",
+			"addURL",
+			"apps.push",
+			"apps.pu",
+			"start",
+			"recent.push",
+			"recent.pu",
+			"	",
+			"removeAppMRU",
+			"resetPanel",
+			"remove",
+			"debugg",
+			"gavinovsak",
+			"	",
+			";",
+			"recentApps",
+			"appid",
+			"recent",
+			"floorGeometry =",
+			"floorGeometry",
+			"floorMaterial",
+			"debugg",
+			"event",
+			"state.open",
+			"back!",
+			"back",
+			"open",
+			"state.open",
+			".start",
+			".start(",
+			"start",
+			"status",
+			"state.open",
+			"state.start",
+			"start",
+			"open",
+			"console",
+			"	",
+			"state.start",
+			".start =",
+			".start",
+			"start",
+			"open",
+			"addURL",
+			"appSwitcher",
+			"panel",
+			"start",
+			"state.add",
+			"state.open",
+			"extras",
+			"add",
+			"addURl",
+			"adjustedHMDQuarternion",
+			"tilt2",
+			"euler",
+			"alignQuaternion",
+			"object",
+			"autoForward",
+			"autoAlign",
+			"debug",
+			"quaternion",
+			"YXZ",
+			"onScreenOrientationChangeEvent",
+			"onDeviceOrientationChangeEvent",
+			"align",
+			"tempEuler",
+			"zee",
+			"v0",
+			"cardboardCamera"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -959,141 +927,138 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 8,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Browserify/util.coffee",
+					"file": "Browserify/appSwitcher.coffee",
 					"settings":
 					{
-						"buffer_size": 8102,
+						"buffer_size": 6812,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7409,
-								7414
+								3486,
+								3585
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
-							"tab_size": 2,
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1117.0,
+						"translation.y": 1016.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "/Users/Gavin/Google Drive/Development/workbygavinsite/static/app/stemkoski-vertex-colors.js",
+					"file": "views/account.ejs",
 					"settings":
 					{
-						"buffer_size": 16822,
+						"buffer_size": 3153,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11511,
-								11511
+								3101,
+								3101
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/HTML/HTML.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 4090.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "Browserify/remoteController.coffee",
+					"file": "views/forgot.ejs",
 					"settings":
 					{
-						"buffer_size": 2685,
+						"buffer_size": 1306,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2592,
-								2592
+								1146,
+								1146
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 751.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "server.coffee",
+					"file": "views/layout.ejs",
 					"settings":
 					{
-						"buffer_size": 15470,
+						"buffer_size": 10569,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4237,
-								4237
+								7007,
+								7007
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1862.0,
+						"translation.y": 873.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "Browserify/deviceInputs.coffee",
+					"file": "views/about.ejs",
 					"settings":
 					{
-						"buffer_size": 1514,
+						"buffer_size": 274,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								276,
-								276
+								85,
+								120
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/HTML/HTML.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1103,80 +1068,79 @@
 				},
 				{
 					"buffer": 5,
-					"file": "Browserify/controls.coffee",
+					"file": "secrets.json",
 					"settings":
 					{
-						"buffer_size": 38783,
+						"buffer_size": 3386,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								37408,
-								37408
+								3383,
+								3383
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 16201.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "js/bundle.js",
+					"file": "package.json",
 					"settings":
 					{
-						"buffer_size": 87870,
+						"buffer_size": 671,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5036,
-								5036
+								611,
+								611
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2108.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 7,
-					"file": "Browserify/params.coffee",
+					"file": "views/dashboard.ejs",
 					"settings":
 					{
-						"buffer_size": 3523,
+						"buffer_size": 4551,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								421,
-								421
+								2414,
+								2418
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1186,52 +1150,51 @@
 				},
 				{
 					"buffer": 8,
-					"file": "server.js",
+					"file": "server.coffee",
 					"settings":
 					{
-						"buffer_size": 18365,
+						"buffer_size": 24491,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								18365,
-								18365
+								49,
+								49
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 10936.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 9,
-					"file": "Browserify/display.coffee",
+					"file": "views/documentation.ejs",
 					"settings":
 					{
-						"buffer_size": 5727,
+						"buffer_size": 273,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								247,
-								247
+								119,
+								119
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/HTML/HTML.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1241,133 +1204,23 @@
 				},
 				{
 					"buffer": 10,
-					"file": "Browserify/appSwitcher.coffee",
-					"settings":
-					{
-						"buffer_size": 3450,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								772,
-								772
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "views/app.ejs",
-					"settings":
-					{
-						"buffer_size": 7845,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1815,
-								1788
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 507.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "Browserify/state.coffee",
-					"settings":
-					{
-						"buffer_size": 6369,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2526,
-								2526
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1066.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 13,
 					"file": "views/home.ejs",
 					"settings":
 					{
-						"buffer_size": 5568,
+						"buffer_size": 5639,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								672,
-								672
+								414,
+								426
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "Browserify/compiledJS/params.js",
-					"settings":
-					{
-						"buffer_size": 3863,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1279,
-								1279
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1436,6 +1289,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 180.0,
+	"side_bar_width": 198.0,
 	"status_bar_visible": true
 }

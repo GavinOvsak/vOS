@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<div class="container">
+  <div class="row-fluid">
+  	<h2>Forgot Password?</h2>
+  	<!-- 
+  		Need to have fields for:
+  		- Email address
+  		-->
+    <p>
+      <input id="emailAddress" placeholder="Email Address" type="text"></input>
+    </p>
+    <p>
+      <button class="btn btn-secondary" id="send">Send new temporary password</button>
+    </p>
+    <div class="alert alert-success" id="thanks" style="display: none; width: 40%; text-align:center;">Email sent!</div>
+
+    <script>
+    $(document).ready(function() {
+      $('#send').click(function(){
+        console.log('Sending email to : ' + $('#emailAddress').val());
+        $.post('http://localhost:8081/forgot', {email: $('#emailAddress').val()}, function(data, status) {
+          if (data == "No account found") {
+            $('#thanks').removeClass('alert-success');
+            $('#thanks').addClass('alert-danger');
+            $('#thanks').text('No account found');
+            $('#thanks').show();
+          } else {
+            $('#thanks').removeClass('alert-danger');
+            $('#thanks').addClass('alert-success');
+            $('#thanks').text('Email sent!');
+            $('#thanks').show();
+          }
+        });
+      });
+      //on submit, replace email with success alert
+    });
+    </script>
+  </div>
+</div>

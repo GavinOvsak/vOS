@@ -89,7 +89,7 @@ exports.setUp = function(state, util) {
     },
     release: function(x, y) {
       this.available = true;
-      if (this.contains(this.point.x, this.point.y)) {
+      if ((this.point != null) && this.contains(this.point.x, this.point.y)) {
         this.click(!this.isOn);
         if (this.options.toggle) {
           this.isOn = !this.isOn;
@@ -99,12 +99,12 @@ exports.setUp = function(state, util) {
     },
 
     /*
-    		dragDistance: ->
-    			if(this.point?) {
-    				return util.distance(this.point, this.initGrab)
-    			}
-    			return 0
-    		},
+    dragDistance: ->
+        if(this.point?) {
+            return util.distance(this.point, this.initGrab)
+        }
+        return 0
+    },
      */
     registerPoint: function(point) {
       this.initGrab.x = point.x;
@@ -117,6 +117,11 @@ exports.setUp = function(state, util) {
       var buttonMesh, canvas1, contentMesh, material, materialOptions, meshArray, px;
       meshArray = [];
       materialOptions = {};
+      if ((this.point != null) && !this.contains(this.point.x, this.point.y)) {
+        this.available = true;
+        state.points[this.point.i].taken = false;
+        this.point = void 0;
+      }
       if (this.isOn) {
         if (this.point != null) {
           if (this.contains(this.point.x, this.point.y)) {
@@ -155,26 +160,26 @@ exports.setUp = function(state, util) {
       }
 
       /*
-      			else if this.options.image?
-      				canvas1.height = 200
-      				canvas1.width = 200
-      				context1 = canvas1.getContext('2d')
-      				texture1 = new THREE.Texture(canvas1) 
-      				imageObj = new Image()
-      				imageObj.src = this.options.image
-      				imageObj.onload = ->
+      else if this.options.image?
+          canvas1.height = 200
+          canvas1.width = 200
+          context1 = canvas1.getContext('2d')
+          texture1 = new THREE.Texture(canvas1) 
+          imageObj = new Image()
+          imageObj.src = this.options.image
+          imageObj.onload = ->
        */
 
       /*
-               context1.drawImage(imageObj, 0, 0)
-               if ( texture1 ) {
-      				texture1.needsUpdate = true
-      				material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
-      				material1.transparent = true
-      				contentMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
-      				util.setPanelPosition(panelMesh, contentMesh, this.x, this.y, 0.2)
-      				scene.add( contentMesh )
-      			}
+      context1.drawImage(imageObj, 0, 0)
+      if ( texture1 ) {
+          texture1.needsUpdate = true
+          material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
+          material1.transparent = true
+          contentMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
+          util.setPanelPosition(panelMesh, contentMesh, this.x, this.y, 0.2)
+          scene.add( contentMesh )
+      }
        */
       return meshArray;
     }
@@ -526,18 +531,18 @@ exports.setUp = function(state, util) {
       textMesh = util.makeText(this.options.text, this.options.px, this.width, this.height);
 
       /*
-      			canvas1 = document.createElement('canvas')
-      			canvas1.height = this.options.px
-      			canvas1.width = this.options.px * this.width / this.height
-      			context1 = canvas1.getContext('2d')
-      			context1.font = "Bold " + this.options.px + "px Arial"
-      			context1.fillStyle = "rgba(255,255,255,0.95)"
-      			context1.fillText(this.options.text, 0, this.options.px)
-      			texture1 = new THREE.Texture(canvas1) 
-      			texture1.needsUpdate = true
-      			material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
-      			material1.transparent = true
-      			textMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
+      canvas1 = document.createElement('canvas')
+      canvas1.height = this.options.px
+      canvas1.width = this.options.px * this.width / this.height
+      context1 = canvas1.getContext('2d')
+      context1.font = "Bold " + this.options.px + "px Arial"
+      context1.fillStyle = "rgba(255,255,255,0.95)"
+      context1.fillText(this.options.text, 0, this.options.px)
+      texture1 = new THREE.Texture(canvas1) 
+      texture1.needsUpdate = true
+      material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
+      material1.transparent = true
+      textMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
        */
       textMesh.position.x = this.x;
       textMesh.position.y = this.y;
@@ -593,32 +598,6 @@ exports.setUp = function(state, util) {
           return this.getChar();
         },
         contains: function(x, y) {
-
-          /*
-          					heigh: 0.17777777777777778
-          					keyx: 0.6466
-          					keyy: 0.2607111111111111
-          					letter: "M"
-          					wid: 0.075
-          					x: 0.6510417
-          					y: 0.2777778
-           */
-
-          /*
-          					console.log({
-          						x: x,
-          						y: y,
-          						keyx: this.x * keyboard.width + keyboard.x,
-          						keyy: this.y * keyboard.height + keyboard.y,
-          						wid: this.width * keyboard.width,
-          						heigh: this.height * keyboard.height,
-          						letter: this.char,
-          						bool: util.rectContains(x, y, 
-          						this.x * keyboard.width + keyboard.x, 
-          						this.y * keyboard.height + keyboard.y, 
-          						this.width * keyboard.width, this.height * keyboard.height)
-          					})
-           */
           return util.rectContains({
             x: x,
             y: y
@@ -1009,12 +988,12 @@ exports.setUp = function(state, util) {
         color: 0x222222
       });
 
-      /*			
-      			progress = {}
-      			for (i in this.points) {
-      				if (this.points[i] and this.points[i].initGrab and this.points[i] isnt this.gesturePoint)
-      					progress[this.points[i].initGrab.key] = Math.min(this.points[i].dragDist()/this.thresholdDistance, 1)
-      			}
+      /*            
+      progress = {}
+      for (i in this.points) {
+          if (this.points[i] and this.points[i].initGrab and this.points[i] isnt this.gesturePoint)
+              progress[this.points[i].initGrab.key] = Math.min(this.points[i].dragDist()/this.thresholdDistance, 1)
+      }
        */
       _ref = this.keys;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1024,8 +1003,8 @@ exports.setUp = function(state, util) {
         };
 
         /*if (progress[key.char]) {
-        					keyMaterialOptions.color = (34 << 16) + (200 * 0 << 8) + (1 - progress[key.char]) * 255
-        				}
+            keyMaterialOptions.color = (34 << 16) + (200 * 0 << 8) + (1 - progress[key.char]) * 255
+        }
          */
         keyMaterial = new THREE.MeshBasicMaterial(keyMaterialOptions);
         keyMesh = new THREE.Mesh(new THREE.PlaneGeometry(key.width * this.width, key.height * this.height), keyMaterial);
@@ -1098,6 +1077,11 @@ exports.setUp = function(state, util) {
     },
     release: function(x, y) {
       this.available = true;
+      if (this.options.returnsToCenter) {
+        this.onMove_callback(0, 0);
+      } else {
+        this.onMove_callback(x - this.x, y - this.y);
+      }
       this.onRelease_callback(x - this.x, y - this.y);
       return this.point = void 0;
     },
@@ -1406,79 +1390,99 @@ exports.setUp = function(state, util) {
     return (function(state, controls, appURL, util) {
 
       /*
-      	      window.testApps[appID] = {
-      	        event: {}
-      	      }
-      	      util.getSync(appURL, (data, textStatus, jqxhr) ->
-      	        ((vOS, program) ->
-      	            eval(program)
-      	        )({
-      	          onEvent: (eventType, f) ->
-      	            window.testApps[appID].event[eventType] = f
-      	          makeTextMesh: (options) ->
-      	            return {} #To Do
-      	        })
-      	        if window.testApps[appID].event.load?
-      	          state.add(window.testApps[appID], controls)
-      	        else
-      	          console.log('App from ' + appURL + ' Failed To Load')
-      	      )
+      window.testApps[appID] = {
+        event: {}
+      }
+      util.getSync(appURL, (data, textStatus, jqxhr) ->
+        ((vOS, program) ->
+            eval(program)
+        )({
+          onEvent: (eventType, f) ->
+            window.testApps[appID].event[eventType] = f
+          makeTextMesh: (options) ->
+            return {} #To Do
+        })
+        if window.testApps[appID].event.load?
+          state.add(window.testApps[appID], controls)
+        else
+          console.log('App from ' + appURL + ' Failed To Load')
+      )
        */
-      window.vOS = {
-        onEvent: function(eventType, f) {
-          return this.app.event[eventType] = f;
-        },
-        getValues: function() {
-          return state.values;
-        },
-        makeTextMesh: function(options) {
-          var height, px, text, width;
-          text = options.text || '';
-          px = options.px || 30;
-          width = options.width || 20;
-          height = options.height || 20;
-          return util.makeText(text, px, width, height);
-        },
-        getValue: function(name) {
-          return state.values[name];
-        },
-        addListener: function(name, f) {
-          if (state.valueListeners[name] == null) {
-            state.valueListeners[name] = [];
-          }
-          return state.valueListeners[name].push(f);
-        },
-        removeListener: function(name, f) {
-          var index;
-          index = state.valueListeners[name].indexOf(f);
-          if (index > -1) {
-            return state.valueListeners[name].pop(index);
-          }
-        },
-        app: {
-          event: {}
+      var currentlyOpen, k, v, _i, _len, _ref;
+      currentlyOpen = void 0;
+      _ref = state.apps;
+      for (k = _i = 0, _len = _ref.length; _i < _len; k = ++_i) {
+        v = _ref[k];
+        if (v.url === appURL) {
+          currentlyOpen = v;
         }
-      };
-      return util.getScriptSync(appURL, function(data, textStatus, jqxhr) {
-        var app, k, v;
-        if (vOS.app.event.load != null) {
-          if (extras != null) {
-            for (k in extras) {
-              v = extras[k];
-              vOS.app[k] = v;
+      }
+      if (currentlyOpen != null) {
+        return state.open(currentlyOpen, controls);
+      } else {
+        window.vOS = {
+          onEvent: function(eventType, f) {
+            return this.app.event[eventType] = f;
+          },
+          getValues: function() {
+            return state.values;
+          },
+          makeTextMesh: function(options) {
+            var height, px, text, width;
+            text = options.text || '';
+            px = options.px || 30;
+            width = options.width || 20;
+            height = options.height || 20;
+            return util.makeText(text, px, width, height);
+          },
+          getValue: function(name) {
+            return state.values[name];
+          },
+          addListener: function(name, f) {
+            if (state.valueListeners[name] == null) {
+              state.valueListeners[name] = [];
             }
+            return state.valueListeners[name].push(f);
+          },
+          removeListener: function(name, f) {
+            var index;
+            index = state.valueListeners[name].indexOf(f);
+            if (index > -1) {
+              return state.valueListeners[name].pop(index);
+            }
+          },
+          app: {
+            event: {},
+            status: 'ready'
           }
-          app = state.add(vOS.app, controls);
-          if (open) {
-            state.open(app, controls);
-          }
-        } else {
-          console.log('App from ' + appURL + ' Failed To Load');
-        }
-        return window.vOS.app = {
-          event: {}
         };
-      });
+        return util.getScriptSync(appURL, function(data, textStatus, jqxhr) {
+          var listener, _j, _len1, _ref1;
+          if (vOS.app.event.load != null) {
+            if (extras != null) {
+              for (k in extras) {
+                v = extras[k];
+                vOS.app[k] = v;
+              }
+            }
+            state.apps.push(vOS.app);
+            _ref1 = state.onAppListUpdate.listeners;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              listener = _ref1[_j];
+              listener();
+            }
+            if (open) {
+              state.open(vOS.app, controls);
+            }
+          } else {
+            console.log('App from ' + appURL + ' Failed To Load');
+          }
+          return window.vOS.app = {
+            event: {},
+            status: 'ready'
+          };
+        });
+      }
     })(state, controls, url, util);
   };
   return controls;

@@ -1,6 +1,88 @@
 <!DOCTYPE html>
 <div class="container">
-  <div class="row-fluid">
-  	<h2>Account Info Coming</h2>
-  </div>
+<div class="row-fluid">
+<h2>Account Info</h2>
+<!-- 
+  Need to have fields for:
+  - Name
+  X Email address (not now)
+  - password
+  - button to delete account
+
+-->
+<p>
+	Name:  <span id="name"><%= user.name %></span> <a id="nameButton">edit</a>
+	<input id="nameEdit" style="display:none;" placeholder="New Name" value="<%= user.name %>" type="text"></input>
+	<button class="btn btn-secondary"  style="display:none;" id="nameSubmit">Save</button>
+</p>
+<p>
+	Email Address: <%= user.email %>
+</p>
+<div id="passwordChange" style="display:none;">
+	<input id="passwordEdit" placeholder="New Password" type="password"></input><br>
+	<input id="confirmPasswordEdit" placeholder="Confirm Password" type="password"></input>
+	<button class="btn btn-secondary" id="passwordSubmit">Save</button><br><br>
+</div>
+<button id="passwordButton" class="btn btn-primary" id="delete">Change Password</button>
+<button id="deleteButton" class="btn btn-danger">Delete Account</button><br><br>
+<div class="alert alert-danger" id="passwordAlert" style="display: none; width: 40%; text-align:center;">Passwords Don't Match</div>
+
+<script>
+$(document).ready(function() {
+	$('#nameButton').click(function() {
+		$('#nameEdit').show();
+		$('#nameSubmit').show();
+		$('#name').hide();
+		$('#nameButton').hide();
+	});
+	$('#nameSubmit').click(function() {
+		$('#nameEdit').hide();
+		$('#nameSubmit').hide();
+		$('#name').show();
+		$('#nameButton').show();
+		$('#name').text($('#nameEdit').val());
+		console.log('Send name update');
+       	$.post('http://vos.jit.su/user', {name: $('#nameEdit').val()});
+	});
+	$('#passwordButton').click(function() {
+		$('#passwordChange').show();
+		$('#passwordButton').hide();
+	});
+	$('#passwordSubmit').click(function() {
+       //If new password is longer than 6 characters, and passwords match, submit.
+       $('#passwordAlert').show();
+       if ($('#passwordEdit').val().length >= 6 && $('#passwordEdit').val() == $('#confirmPasswordEdit').val()) {
+       	$('#passwordChange').hide();
+       	$('#passwordButton').show();
+       	$('#passwordAlert').removeClass('alert-danger');
+       	$('#passwordAlert').addClass('alert-success');
+       	$('#passwordAlert').text('Password changed!');
+       	console.log('Change password to: ' + $('#passwordEdit').val());
+       	$.post('http://vos.jit.su/user', {password: $('#passwordEdit').val()});
+       } else {
+       	$('#passwordAlert').removeClass('alert-success');
+       	$('#passwordAlert').addClass('alert-danger');
+       	if ($('#passwordEdit').val().length < 6) {
+       		$('#passwordAlert').text('Password must be 6 characters or longer');
+       	} else if ($('#passwordEdit').val() != $('#confirmPasswordEdit').val()) {
+       		$('#passwordAlert').text("Passwords don't match");
+       	}
+       }
+    });
+	$('#deleteButton').click(function() {
+		var cfrm = confirm('Are you sure you want to delete your vOS account?');
+		if (cfrm) {
+			console.log('Delete account');
+			$.ajax({
+			    url: 'http://vos.jit.su/user',
+			    type: 'DELETE',
+			    success: function() {
+			    	location.reload();
+			    }
+			});
+		}
+	});
+})
+</script>
+</div>
 </div>

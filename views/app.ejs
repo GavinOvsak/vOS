@@ -2,25 +2,33 @@
 <div class="container" data-id = "<%= app._id %>">
 	<br>
 	<% if (app) { %>
-	  	<legend>
-	  		App Name: <a class="name" href="/app?app_id=<%= app._id %>"><%= app.name %></a>
-	  	</legend>
-	  	<p>Description:</p>
-	  	<p class="description"><%= app.description %></p>
-	  	<div class="row">
-	  		<div class="col-md-6">
-			  	<h3>Compact Mode Preview:</h3>
-				<div id="compactView" style="width:400;height:400;"></div>
-			</div>
-	  		<div class="col-md-6">
-			  	<h3>Immersive Mode Preview:</h3>
-				<div id="immersiveView" style="width:400;height:400;"></div>
-			</div>
+  	<legend>
+  		App Name: <a class="name" href="/app?app_id=<%= app._id %>"><%= app.name %></a>
+  	</legend>
+  	<p>Description:</p>
+  	<p class="description"><%= app.description %></p>
+  	<div class="row">
+  		<div id="compact" class="col-md-6" style="display:none;">
+		  	<h3>Compact Mode Preview:</h3>
+			  <div id="compactView" style="width:400;height:400;"></div>
+		  </div>
+  	  <div id="immersive" class="col-md-6" style="display:none;">
+		  	<h3>Immersive Mode Preview:</h3>
+			  <div id="immersiveView" style="width:400;height:400;"></div>
+		   </div>
 		</div>
 		<hr>
 		<div class="alert alert-info">
-			Type the code (<b><span id="directCode"></span></b>) into the vOS controller to try this app now! Don't have the vOS controller on your phone? Download it <a href="/try">here</a>.
+			Type the code (<b><span id="directCode"></span></b>) into the vOS controller to try this app now! Don't have the vOS controller on your phone or tablet? Download it <a href="/try">here</a>.
 		</div>
+    <div>
+      Embed A vOS Code To This App: 
+      <input id="embedCode" readonly></input>
+      <script>
+        $('#embedCode').val('<div id="vOS-embed" data-app="<%= app._id %>"></div><script src="http://vos.jit.su/js/embed.js"><\/script>');
+      </script>
+      <div id="vOS-embed" data-app="<%= app._id %>"></div><script src="/js/embed.js"></script>
+    </div>
 	<% } else { %>
 		Sorry, the app you are looking for was either removed or never existed in the first place!
 	<% } %>
@@ -61,7 +69,7 @@ var camera1 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 camera1.rotation.x = camera_start.x;
 camera1.position.y = camera_start.y + 200;
 camera1.position.z = camera_start.z;
-var renderer1 = new THREE.WebGLRenderer( {antialias:true} );
+var renderer1 = new THREE.WebGLRenderer( {antialias:true, alpha:true} );
 renderer1.autoClearColor = true;
 renderer1.setSize(WIDTH, HEIGHT);
 $compactView.append(renderer1.domElement);
@@ -71,7 +79,7 @@ var camera2 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 camera2.rotation.x = camera_start.x;
 camera2.position.y = camera_start.y;
 camera2.position.z = camera_start.z;
-var renderer2 = new THREE.WebGLRenderer( {antialias:true} );
+var renderer2 = new THREE.WebGLRenderer( {antialias:true, alpha:true} );
 renderer2.autoClearColor = true;
 renderer2.setSize(WIDTH, HEIGHT);
 $immersiveView.append(renderer2.domElement);
@@ -169,6 +177,7 @@ var controls = controlObjects.setUp(mockState, mockUtil);
 
       if (mockApp.drawContained) {
         mockApp.drawContained(scene);
+        $('#compact').show();
       }
     } else {
       console.log('App from ' + appURL + ' Failed To Load')
@@ -223,9 +232,11 @@ var controls = controlObjects.setUp(mockState, mockUtil);
     if (vOS.app.event.load) {
       vOS.app.event.load(mockApp);
       if (mockApp.drawImmersive) {
-		mockApp.drawImmersive(scene);
+        mockApp.drawImmersive(scene);
+        $('#immersive').show();
       } else if (mockApp.drawImmersiveBackground){
-	    mockApp.drawImmersiveBackground(scene);
+        mockApp.drawImmersiveBackground(scene);
+        $('#immersive').show();
       }
     } else {
       console.log('App from ' + appURL + ' Failed To Load')

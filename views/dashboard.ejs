@@ -27,10 +27,15 @@
 		    <label for="newAppDescription">Description</label>
 		    <textarea class="form-control" id="newAppDescription" rows="3"></textarea>
 		</div>
-		<div class="form-group">
-		    <label for="newAppURL">URL to App Code</label>
+		<div id="appURLgroup" class="form-group">
+		    <label for="newAppURL">URL to Hosted App Code</label>
 		    <input type="url" class="form-control" id="newAppURL" placeholder="http://yourdomain.com/myapp.js">
 		</div>
+		<div>
+			<label for="codeUpload">Or upload a Javascript File</label>
+		  	<input id="codeUpload" type="file" />
+		</div>
+		<br>
 		<button type="submit" id="newSave" class="btn btn-success">Save</button>
 		<button type="cancel" id="newCancel" class="btn btn-default">Cancel</button>
 	</div>
@@ -43,10 +48,45 @@
 	$(document).ready(function(){
 		var id = undefined;
 		var hiddenDiv = null;
+		var uploadedFile = '';
+
+	  	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		  // Great success! All the File APIs are supported.
+		} else {
+		  alert('The File APIs are not fully supported in this browser.');
+		}
+
+		$('#codeUpload').change(function handleFileSelect(evt) {
+		    var files = evt.target.files; // FileList object
+		    //console.log(files[0]);
+		    var reader = new FileReader();
+		    reader.onload = (function(theFile) {
+		      return function(e) {
+		        uploadedFile = e.target.result;
+		        console.log('New File');
+		        if (id) {
+			        $('#newAppURL').val('http://vos.jit.su/hosted?id=' + id);
+			    } else {
+			    	$('#newAppURL').val('upload');
+			    	$('#appURLgroup').hide();
+			    }
+		      };
+		    })(files[0]);
+		    reader.readAsBinaryString(files[0]);
+		});
+
+		var clearFiles = function() {
+			uploadedFile = '';
+			$('#codeUpload').wrap('<form>').closest('form').get(0).reset();
+			$('#codeUpload').unwrap();
+			$('#appURLgroup').show();
+		};
+
 		$('.edit').click(function(event){
 			if (hiddenDiv) {
 				hiddenDiv.show();
 			}
+			clearFiles();
 			hiddenDiv = $(event.target).parent().parent();
 			hiddenDiv.hide();
 			id = hiddenDiv.attr('data-id');
@@ -54,6 +94,7 @@
 			$('#newAppDescription').val(hiddenDiv.find('.description').text());
 			$('#newAppURL').val(hiddenDiv.find('.url').text());
 			$('#newForm').show();
+			$('#add').hide();
 		});
 		$('.delete').click(function(event){
 			hiddenDiv = $(event.target).parent().parent();
@@ -75,15 +116,23 @@
 			$('#newAppDescription').val('');
 			$('#newAppURL').val('');
 			$('#newForm').show();
+			$('#add').hide();
 			id = undefined;
 		});
 		$('#newSave').click(function(){
+			//if there is code uploaded, include as code. URL changes to vos.jit.su/hosted?id=
+
 			var compiledData = {
 				id: id,
 				name: $('#newAppName').val(),
 				description: $('#newAppDescription').val(),
 				url: $('#newAppURL').val()
 			};
+			
+			if (uploadedFile != '') {
+				compiledData.code = uploadedFile;
+			}
+
 			console.log(compiledData);
 			$.post('/dashboard/update', compiledData).done(function(data){
 				location.reload();
@@ -91,7 +140,9 @@
 		});
 		$('#newCancel').click(function(){
 			console.log('Cancel New App');
+			clearFiles();
 			$('#newForm').hide();
+			$('#add').show();
 			if (hiddenDiv) {
 				hiddenDiv.show();
 			}

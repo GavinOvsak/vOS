@@ -38,12 +38,25 @@
        android:textColor="#FFFFFF"
        android:textColorHint="#DDDDDD"
        android:textStyle="bold" />
-  <LinearLayout
+    <EditText
+       android:id="@+id/confirmPassword"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:keepScreenOn="true"
+       android:visibility="gone"
+       android:inputType="textPassword"
+       android:hint="Confirm Password"
+       android:textSize="30sp"
+       android:textColor="#FFFFFF"
+       android:textColorHint="#DDDDDD"
+       android:textStyle="bold" />
+    <LinearLayout
       android:layout_width="match_parent"
       style="?android:attr/buttonBarStyle"
       android:layout_height="wrap_content"
       android:gravity="center_horizontal" >
 
+    
     <Button
         android:id="@+id/change"
         style="?android:attr/buttonBarButtonStyle"
@@ -66,4 +79,20 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp" />
   </LinearLayout>
+  <LinearLayout
+      android:layout_width="match_parent"
+      style="?android:attr/buttonBarStyle"
+      android:layout_height="wrap_content"
+      android:gravity="center_horizontal" >
+    <Button
+        android:id="@+id/forgotButton"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="10sp"
+        android:gravity="center_vertical"
+        android:text="Forgot Password?"
+        android:textColor="#BBBBBB"
+        android:textSize="30sp" />
+    </LinearLayout>
 </LinearLayout>

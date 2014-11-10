@@ -12,7 +12,7 @@ socket2.on('code', function(data) {
   }
 });
 socket2.on('session_id', function(data) {
-  console.log(data.id);
+//  console.log(data.id);
   if (data.name == 'local') {
     window.location = "/enterLocal?session_id=" + data.id + "&from=" + encodeURIComponent(window.location.href);
   }

@@ -46,10 +46,21 @@ remoteController.setUp = (state, util) ->
 		# 	state.topBar.registerPoint(point)
 		# 	point.taken = true
 
-	state.socket = io.connect('/')
+	state.socket = io.connect('http://vos.jit.su/')
 	state.socket.on('disconnect', ->
 		if sessionId isnt 'debug'
+			console.log('disconnect')
 			window.location = state.fromURL
+	)
+
+	state.socket.on('mirror-views', (data) ->
+		console.log(['mirror-views', data]);
+		state.mirrorViews = data;
+	)
+
+	state.socket.on('mirror-data', (data) ->
+		console.log(['mirror-data', data]);
+		state.mirrorData = data;
 	)
 
 	state.socket.emit('declare-type', {
@@ -59,6 +70,7 @@ remoteController.setUp = (state, util) ->
 
 	state.socket.on('error', (result) ->
 		if sessionId isnt 'debug'
+			console.log(['error', result])
 			window.location = state.fromURL
 	)
 

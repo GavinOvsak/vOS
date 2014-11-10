@@ -4,7 +4,7 @@ var appSwitcher;
 appSwitcher = exports;
 
 appSwitcher.setUp = function(state, util, controls) {
-  var mode, modes, query, resetPanel, searchResults, selectionIndex, update;
+  var mode, modes, page, query, resetPanel, searchResults, selectionIndex, update;
   state.notificationPanel = new controls.Panel();
   state.notificationPanel.objects = [];
   state.appSwitcher = {
@@ -31,46 +31,95 @@ appSwitcher.setUp = function(state, util, controls) {
       return _results;
 
       /*
-      			greenScreen = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-      			screen = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), greenScreen)
-      			screen.rotation.x = Math.PI / 2
-      			screen.position.z = 50
-      			scene.add(screen)
+      greenScreen = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
+      screen = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), greenScreen)
+      screen.rotation.x = Math.PI / 2
+      screen.position.z = 50
+      scene.add(screen)
        */
     }
   };
   query = '';
+  page = 0;
   resetPanel = function(panel) {
-    var app, appIcon, column, description, drag, goToSearch, i, input, output, recentButton, row, search, select, yref, _i, _ref;
+    var app, appIcon, backIcon, closeButton, column, description, drag, goToSearch, i, input, maxPages, nextIcon, output, recentButton, row, search, select, welcome, yref, _i, _ref, _ref1, _ref2;
     panel.objects = [];
     if (mode === modes[0]) {
-      row = 0;
-      column = 0;
-      app;
-      for (i = _i = 0, _ref = state.apps.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        if (!(row < 3)) {
-          continue;
-        }
-        app = state.apps[i];
-        appIcon = new controls.Button(0.5 + column * 6, 5 - 2 * row, 5, 1, {
-          text: app.name,
-          icon: app.icon
+      app = void 0;
+      maxPages = Math.ceil(state.apps.length / 6);
+      if (maxPages === 0) {
+        page = 0;
+      } else if (page > maxPages - 1) {
+        page = maxPages - 1;
+      }
+      if (page > 0) {
+        backIcon = new controls.Button(0, 3, 0.5, 1, {
+          text: '<'
         });
-        appIcon.onClick((function(index) {
-          return function() {
-            return state.open(state.apps[index]);
-          };
-        })(i));
-        panel.add(appIcon);
-        if (column >= 2) {
-          column = 0;
-          row++;
-        } else {
-          column++;
+        backIcon.onClick(function() {
+          page--;
+          return resetPanel(panel);
+        });
+        panel.add(backIcon);
+      }
+      if (page < maxPages - 1) {
+        nextIcon = new controls.Button(11.5, 3, 0.5, 1, {
+          text: '>'
+        });
+        nextIcon.onClick(function() {
+          page++;
+          return resetPanel(panel);
+        });
+        panel.add(nextIcon);
+      }
+      if (state.apps.length > 0) {
+        for (i = _i = _ref = 6 * page, _ref1 = Math.min(6 + 6 * page, state.apps.length); _ref <= _ref1 ? _i < _ref1 : _i > _ref1; i = _ref <= _ref1 ? ++_i : --_i) {
+          app = state.apps[state.apps.length - i - 1];
+          row = Math.floor((i - 6 * page) / 2);
+          column = (i - 6 * page) % 2;
+          closeButton = new controls.Button(5 + column * 5.5, 5 - 2 * row, 0.5, 1, {
+            text: 'X'
+          });
+          closeButton.onClick((function(app) {
+            return function() {
+              var index, index2, k, v, _j, _len, _ref2;
+              index = state.user.recent.indexOf(app._id);
+              if (index >= 0) {
+                state.user.recent.splice(index, 1);
+              }
+              index2 = -1;
+              _ref2 = state.apps;
+              for (k = _j = 0, _len = _ref2.length; _j < _len; k = ++_j) {
+                v = _ref2[k];
+                if (v._id === app._id) {
+                  index2 = k;
+                }
+              }
+              if (index2 >= 0) {
+                state.apps.splice(index2, 1);
+              }
+              $.post('http://vos.jit.su/removeAppMRU?token=' + token, {
+                appID: app._id
+              });
+              return resetPanel(panel);
+            };
+          })(app));
+          appIcon = new controls.Button(1 + column * 5.5, 5 - 2 * row, 4, 1, {
+            text: app.name,
+            icon: app.icon
+          });
+          appIcon.onClick((function(app) {
+            return function() {
+              return state.open(app, controls);
+            };
+          })(app));
+          panel.add(appIcon);
+          panel.add(closeButton);
         }
       }
-      description = new controls.Label(6, 7, 6, 1, {
-        text: 'Please choose an app: '
+      welcome = ((_ref2 = state.user) != null ? _ref2.name : void 0) != null ? state.user.name + ', please choose an app: ' : 'Please choose an app: ';
+      description = new controls.Label(3.5, 7, 8.5, 1, {
+        text: welcome
       });
       panel.add(description);
       goToSearch = new controls.Button(0, 7, 3, 1, {

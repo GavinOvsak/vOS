@@ -17,22 +17,32 @@ params.check = (state, util, controls) ->
 #    window.testApps = []
     window.Controls = controls
 
+    #dont run js yet.
     for appID in state.user.recent
+      console.log('Geting ' + appID)
       util.getSync('/appInfo?app_id=' + appID, (appData, textStatus, jqxhr) ->
-        state.addURL(appData.url, appData)
+        if appData?
+          console.log('Adding ' + appData.url)
+          state.addURL(appData.url, appData, false)
       )
 
   if token isnt ''
     util.getSync('/userFromToken?token=' + token, (data) ->
-      if data.recent
+      if data?.recent?
         state.user = data
-      setUpUser()
+        setUpUser()
     )
 
 #  recentApps = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf'] #For now. Use ajax get request to userFromToken later
 
-  if appQueryURL?
-    state.addURL(appQueryURL, null, true)
+  if paramList['app_id']?
+    util.getSync('/appInfo?app_id=' + paramList['app_id'], (appData, textStatus, jqxhr) ->
+      if appData?
+        state.addURL(appData.url, appData, true)
+    )
+
+#  if appQueryURL?
+#    state.addURL(appQueryURL, null, true)
 
     #((state, controls, appURL) ->
     ###

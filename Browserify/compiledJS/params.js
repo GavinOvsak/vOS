@@ -23,22 +23,30 @@ params.check = function(state, util, controls) {
     _results = [];
     for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
       appID = _ref1[_j];
+      console.log('Geting ' + appID);
       _results.push(util.getSync('/appInfo?app_id=' + appID, function(appData, textStatus, jqxhr) {
-        return state.addURL(appData.url, appData);
+        if (appData != null) {
+          console.log('Adding ' + appData.url);
+          return state.addURL(appData.url, appData, false);
+        }
       }));
     }
     return _results;
   };
   if (token !== '') {
     util.getSync('/userFromToken?token=' + token, function(data) {
-      if (data.recent) {
+      if ((data != null ? data.recent : void 0) != null) {
         state.user = data;
+        return setUpUser();
       }
-      return setUpUser();
     });
   }
-  if (typeof appQueryURL !== "undefined" && appQueryURL !== null) {
-    return state.addURL(appQueryURL, null, true);
+  if (paramList['app_id'] != null) {
+    return util.getSync('/appInfo?app_id=' + paramList['app_id'], function(appData, textStatus, jqxhr) {
+      if (appData != null) {
+        return state.addURL(appData.url, appData, true);
+      }
+    });
 
     /*
       window.testApps[appID] = {

@@ -1,6 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
     <!-- Search, should appear as action button -->
+    <item android:id="@+id/manage"
+          android:title="Manage Account"
+          android:showAsAction="never" />
     <item android:id="@+id/signout"
           android:title="Sign Out"
           android:showAsAction="never" />

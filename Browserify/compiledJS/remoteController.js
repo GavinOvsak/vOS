@@ -64,11 +64,20 @@ remoteController.setUp = function(state, util) {
       return _results;
     }
   };
-  state.socket = io.connect('/');
+  state.socket = io.connect('http://vos.jit.su/');
   state.socket.on('disconnect', function() {
     if (sessionId !== 'debug') {
+      console.log('disconnect');
       return window.location = state.fromURL;
     }
+  });
+  state.socket.on('mirror-views', function(data) {
+    console.log(['mirror-views', data]);
+    return state.mirrorViews = data;
+  });
+  state.socket.on('mirror-data', function(data) {
+    console.log(['mirror-data', data]);
+    return state.mirrorData = data;
   });
   state.socket.emit('declare-type', {
     type: 'output',
@@ -76,6 +85,7 @@ remoteController.setUp = function(state, util) {
   });
   state.socket.on('error', function(result) {
     if (sessionId !== 'debug') {
+      console.log(['error', result]);
       return window.location = state.fromURL;
     }
   });

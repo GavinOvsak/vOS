@@ -25,20 +25,23 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int change=0x7f0a0009;
+        public static final int change=0x7f0a000a;
         public static final int code=0x7f0a0002;
+        public static final int confirmPassword=0x7f0a0009;
         public static final int connect=0x7f0a0004;
         public static final int email=0x7f0a0007;
+        public static final int forgotButton=0x7f0a000c;
         public static final int image=0x7f0a0005;
         public static final int label=0x7f0a0001;
         public static final int linlayout=0x7f0a0000;
-        public static final int menu_enable_fov_ipd=0x7f0a000d;
-        public static final int menu_reset_view=0x7f0a000c;
+        public static final int manage=0x7f0a000d;
+        public static final int menu_enable_fov_ipd=0x7f0a0010;
+        public static final int menu_reset_view=0x7f0a000f;
         public static final int name=0x7f0a0006;
         public static final int password=0x7f0a0008;
-        public static final int signout=0x7f0a000b;
+        public static final int signout=0x7f0a000e;
         public static final int spacer=0x7f0a0003;
-        public static final int submit=0x7f0a000a;
+        public static final int submit=0x7f0a000b;
     }
     public static final class layout {
         public static final int code=0x7f030000;

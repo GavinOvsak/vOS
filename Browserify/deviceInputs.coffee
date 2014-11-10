@@ -5,13 +5,13 @@ USE_TRACKER = false
 
 deviceInputs.setUp = (state, util) ->
   bridge = new OculusBridge({
-      "onConnect" : ->
-          #console.log("we are connected!")
+      'onConnect' : ->
+          #console.log('we are connected!')
       ,
-      "onDisconnect" : ->
-          #console.log("good bye Oculus.")
+      'onDisconnect' : ->
+          #console.log('good bye Oculus.')
       ,
-      "onOrientationUpdate" : (quatValues) ->
+      'onOrientationUpdate' : (quatValues) ->
           HMDRotation.x = quatValues.x
           HMDRotation.y = quatValues.y
           HMDRotation.z = quatValues.z
@@ -19,11 +19,13 @@ deviceInputs.setUp = (state, util) ->
           state.lastUpdate = Date.now()
   })
 
-  bridge.connect()
+  #bridge.connect()
 
-  document.addEventListener("keydown", (e) ->
+  document.addEventListener('keydown', (e) ->
     if e.keyCode is 32
       util.toggleFullScreen()
+    if e.keyCode is 72
+      state.forceDistort = not state.forceDistort
   , false)
 
   # Mouse
@@ -45,6 +47,7 @@ deviceInputs.setUp = (state, util) ->
 
   viewer.mousemove((event) ->
     if mouseButtonDown
+#      debugger
       enableX = (USE_TRACKER || state.vr isnt null) ? 0 : 1
       state.BaseRotationEuler.set(
         util.angleRangeRad(state.BaseRotationEuler.x + (event.clientY - lastClientY) * MOUSE_SPEED * enableX),
@@ -53,5 +56,6 @@ deviceInputs.setUp = (state, util) ->
       )
       lastClientX = event.clientX
       lastClientY = event.clientY
-      state.BaseRotation.setFromEuler(state.BaseRotationEuler, 'YZX')
+      state.BaseRotation.setFromEuler(state.BaseRotationEuler)#new THREE.Euler(state.BaseRotationEuler[0], state.BaseRotationEuler[1], state.BaseRotationEuler[2], 'YZX'))
+#      console.log(state.BaseRotation)
   )

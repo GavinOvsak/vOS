@@ -6,7 +6,27 @@ passport = require('passport')
 partials = require('express-partials')
 mongoose = require('mongoose')
 LocalStrategy = require('passport-local').Strategy
+bcrypt = require('bcrypt')
 secrets = require('./secrets.json')
+http = require('http')
+https = require('https')
+flash = require('connect-flash')
+nodemailer = require('nodemailer')
+
+transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'ovsak.gavin',
+        pass: 'hvagnzflmrssbvkn'#secrets.gmaillPass
+    }
+})
+
+salt = bcrypt.genSaltSync(10)
+
+normalHome = 'http://vos.jit.su'
+sslHome = 'https://vos.jit.su'
+#normalHome = 'http://localhost:8081'
+#sslHome = 'https://localhost'
 
 mongoose.connect secrets.mongoURL
 
@@ -14,14 +34,11 @@ vOS_Schema = mongoose.Schema({
   name: String,
   description: String,
   url: String, 
-  owner: String
+  owner: String,
+  code: String
 });
 
 vOS_App = mongoose.model('vOS_App', vOS_Schema)
-
-testName = 'Friend'
-testUser = 'friend@vos.com'
-testPassword = 'I come in peace'
 
 User = mongoose.model('User', {
   name: String,
@@ -36,10 +53,27 @@ User = mongoose.model('User', {
 db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', ->
-  ###User.remove({}, function() {
+  ###
+  User.remove({email: 'e'}, ->
     console.log('Wiped People')
-  })###
+  )
+  ###
+  vOS_App.find({}, ->
+    console.log(arguments);    
+  )
 )
+
+defaultAppList = [
+  '5408e589fe909b00008fca2d',  #Canyon
+  '5408e56bfe909b00008fca2c' #Flight
+];
+
+featured_apps = [
+  '5408e589fe909b00008fca2d', #Canyon Explorer
+  '5408e56bfe909b00008fca2c', #Flight
+  '543cc3cb432f59e6b37f3c1d'  #Realm
+]
+
 
 passport.serializeUser (user, done) ->
   done null, user._id
@@ -51,13 +85,18 @@ passport.deserializeUser (obj, done) ->
 
 passport.use new LocalStrategy { usernameField: 'email', passwordField: 'password' }, 
   (email, password, done) ->
-    User.find { email: email, password: password}, 
+    User.find { email: email}, 
       (err, people) ->
-        done err if err
-        if people.length is 1
-          done null, people[0]
-        else
-          done null
+        console.log(people)
+        done err if err?
+        once = true
+        for person in people
+          console.log([arguments, person])
+          if bcrypt.compareSync(password, person.password) and once
+            done(null, people[0])
+            once = false
+        if once
+          done(null)
   # Create or update user, call done() when complete...
   #    process.nextTick(function () {
   #      done(null, profile, tokens)
@@ -75,6 +114,7 @@ app.use express.errorHandler { dumpExceptions: true, showStack: true }
 app.use express.session secret: 'virtual OS secret'
 app.use passport.initialize()
 app.use passport.session()
+app.use(flash())
 app.use app.router
 app.use '/js', express.static __dirname + '/js'
 app.use '/Browserify', express.static __dirname + '/Browserify'
@@ -85,16 +125,31 @@ app.get '/latestAPK', (req, res) ->
   file = __dirname + '/public/vOS_Controller.apk'
   res.download(file)
 
+verifySignedIn = (req, res, next) ->
+    if req.user?
+        return next()
+    req.flash('error', 'Please Sign In First')
+    res.redirect(normalHome + '?from=' + encodeURIComponent(req.url))
+
 app.post '/signin', 
   passport.authenticate('local', failureRedirect: '/fail'),
   (req, res) ->
-    res.redirect '/'
+    console.log(req.query)
+    if req.query.from? and req.query.from isnt ''
+      res.redirect(decodeURIComponent(req.query.from))
+    else
+      res.redirect normalHome
+
+app.get('/fail', (req, res) ->
+  req.flash('error', "Oops, I cannot let you in!");
+  res.redirect normalHome
+)
 
 register = (name, email, password, succeed, fail) ->
-  User.find email: email, (err, people) ->
-    console.log err if err
+  User.find(email: email, (err, people) ->
+    console.log err if err?
     if people.length > 0
-      if people[0].password is password
+      if bcrypt.compareSync(password, people[0].password)
         user = people[0]
       else
         return fail()
@@ -103,21 +158,23 @@ register = (name, email, password, succeed, fail) ->
       user = new User {
         name: name,
         email: email,
-        password: password,
-        recent: ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
+        password: bcrypt.hashSync(password, salt),
+        recent: defaultAppList
       }
       user.save (err, user) ->
-        console.log err if err
-    if user
+        console.log err if err?
+        console.log(user)
+    if user?
       succeed user
     else
       fail()
+  )
 
 makeToken = (done) ->
   token = '' + Math.floor(Math.random() * Math.pow 10, 10)
   User.findOne token: token, (err, user) ->
-    console.log err if err
-    if user
+    console.log err if err?
+    if user?
       makeToken done
     else
       done token
@@ -125,18 +182,18 @@ makeToken = (done) ->
 app.post '/registerAndSignIn', (req, res) ->
   register req.body.name, req.body.email, req.body.password, (user) ->
     req.login user, (err) ->
-      console.log err if err
-      res.redirect '/'
+      console.log err if err?
+      res.redirect normalHome
   , ->
     console.log 'Email already exists with a different password or there are missing fields'
-    res.redirect '/'
+    res.redirect normalHome
 
 app.post '/registerForToken', (req, res) ->
   register req.body.name, req.body.email, req.body.password, (user) ->
     makeToken (token) ->
       user.token = token
       user.save (err, user) ->
-        console.log err if err
+        console.log err if err?
       res.json user
   , ->
     console.log 'Email already exists with a different password or there are missing fields'
@@ -145,7 +202,7 @@ app.post '/registerForToken', (req, res) ->
 app.get '/userFromToken', (req, res) ->
   if req.query.token?
     User.findOne token: req.query.token, (err, user) ->
-      console.log err if err
+      console.log err if err?
       if user?
         publicUser = {
           name: user.name,
@@ -158,19 +215,143 @@ app.get '/userFromToken', (req, res) ->
         console.log(req.query.token)
         res.json()
 
-app.get('/signout', (req, res) ->
-  req.logout()
-  res.redirect '/'
+#Can take in name, and password fields
+app.post('/user', [
+  verifySignedIn,
+  (req, res) ->
+    if req.user?
+      if req.body.name?
+        req.user.name = req.body.name
+
+      if req.body.password?
+        req.user.password = bcrypt.hashSync(req.body.password, salt)
+
+      req.user.save((err, user) ->
+        console.log err if err?
+      )
+
+      publicUser = {
+        name: req.user.name,
+        recent: req.user.recent,
+        id: req.user._id
+      }
+      res.json(publicUser)
+    else
+      console.log(req.user)
+      console.log(req.query.token)
+      res.json()
+])
+
+makeId = ->
+  text = ""
+  possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  for i in [0..8]
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  return text
+
+app.post('/forgot', (req, res) ->
+  if req.body.email?
+    User.findOne email: req.body.email, (err, user) ->
+      console.log err if err?
+      if user?
+        tempPass = makeId()
+        #make new password,
+        #Send email to req.query.email
+        mailOptions = {
+          from: 'Gavin from vOS <ovsak.gavin@gmail.com>', # sender address
+          to: req.body.email, # list of receivers
+          subject: 'Password Reset', # Subject line
+          text: 'Your new password for http://vos.jit.su is: ' + tempPass + ' . Please change it to something more memorable!', # plaintext body
+          html: 'Your new password for <a href="http://vos.jit.su">http://vos.jit.su</a> is: <b>' + tempPass + '</b> . Please change it to something more memorable!' # html body
+        };
+
+        # send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) ->
+            if error?
+              console.log(error)
+            else
+              console.log('Message sent: ' + info.response)
+        );
+
+        user.password = bcrypt.hashSync(tempPass, salt)
+
+        user.save((err, user) ->
+          console.log err if err?
+        )
+
+        publicUser = {
+          name: user.name,
+          id: user._id
+        }
+        res.json(publicUser)
+      else
+        res.json('No account found')
+  else
+    res.json('No account found')
 )
 
-app.post('/recentApps', (req, res) ->
+app.delete('/user', [
+  verifySignedIn,
+  (req, res) ->
+    if req.user?
+      publicUser = {
+        name: req.user.name,
+        recent: req.user.recent,
+        id: req.user._id
+      }
+      res.json(publicUser)
+      req.user.remove()
+      req.logout();
+      res.redirect('/');
+    else
+      console.log(req.user)
+      console.log(req.query.token)
+      res.json()
+])
+
+app.get('/signout', (req, res) ->
+  req.logout()
+  res.redirect normalHome
+)
+
+#post /newAppUsed
+
+#post /removeAppMRU
+
+app.post('/newAppUsed', (req, res) ->
   if req.query.token?
     User.findOne token: req.query.token, (err, user) ->
-      console.log err if err
-      if user? and req.body.recent.constructor is Array
-        user.recent = req.body.recent
+      console.log err if err?
+      if user? and req.body.appID?
+        #if in array, remove
+        index = user.recent.indexOf(req.body.appID)
+        if index >= 0
+          user.recent.splice(index, 1)
+        #add to back.
+        user.recent.push(req.body.appID)
+
         user.save((err, user) ->
-          console.log err if err
+          console.log err if err?
+          console.log 'Successful App Update'
+        )
+        res.json(user)
+      else
+        res.json(req.body)
+  else 
+    res.json(req.body)
+)
+
+app.post('/removeAppMRU', (req, res) ->
+  if req.query.token?
+    User.findOne token: req.query.token, (err, user) ->
+      console.log err if err?
+      if user? and req.body.appID?
+        index = user.recent.indexOf(req.body.appID)
+        if index >= 0
+          user.recent.splice(index, 1)
+        
+        user.save((err, user) ->
+          console.log err if err?
           console.log 'Successful App Update'
         )
         res.json(user)
@@ -181,54 +362,98 @@ app.post('/recentApps', (req, res) ->
 )
 
 ###
+app.post('/recentApps', (req, res) ->
+  if req.query.token?
+    User.findOne token: req.query.token, (err, user) ->
+      console.log err if err?
+      if user? and req.body.recent.constructor is Array
+        user.recent = req.body.recent
+        user.save((err, user) ->
+          console.log err if err?
+          console.log 'Successful App Update'
+        )
+        res.json(user)
+      else
+        res.json(req.body)
+  else 
+    res.json(req.body)
+)
+###
+###
 app.get('/appList', [
-  login.ensureLoggedIn('/'),
+  verifySignedIn,
   (req, res) ->
     vOS_App.find {}, (err, apps) ->
-      console.log err if err
+      console.log err if err?
 #      console.log(apps)
       res.json apps
 ])
 ###
 
+app.get('/hosted', (req, res) ->
+  if req.query.id?
+    vOS_App.findOne({_id: req.query.id}, (err, app) ->
+      console.log err if err?
+      if app? and app.code?
+        res.writeHead(200, {'Content-Type': 'application/javascript'})
+        res.write(app.code)
+        res.end()
+      else
+        res.json()
+    )
+  else
+    res.json()
+)
+
 app.post '/dashboard/update', [
-  login.ensureLoggedIn('/'),
+  verifySignedIn,
   (req, res) ->
     update = req.body
     console.log update
     if update.id
       vOS_App.findOne _id: update.id, (err, app) ->
-        console.log err if err
+        console.log err if err?
 #        console.log(app)
-        if app
-          for key in update
-            app[key] = update[key]
+        if app?
+          app.name = update.name if update.name?
+          app.description = update.description if update.description?
+          app.url = update.url if update.url?
+
+          app.code = update.code if update.code?
+
           res.json app
           app.save (err, user) ->
-            console.log err if err
-            console.log 'Successful App Update'
+            console.log err if err?
+#            console.log 'Successful App Update'
         else
           res.json undefined
     else
 #      console.log(req.user._id)
-      newApp = new vOS_App({
+      options = {
         name: update.name,
         description: update.description,
         url: update.url,
         owner: req.user._id
-      })
+      }
+      if update.code?
+        options.code = update.code
+      newApp = new vOS_App(options)
+      
+      if newApp.code? and newApp.url is 'upload'
+        newApp.url = 'http://vos.jit.su/hosted?id=' + newApp._id
+
       newApp.save (err, user) ->
-        console.log err if err
+        console.log err if err?
         console.log user
         res.json user
         console.log 'Successful New App'
 ]
 
 app.get '/dashboard', [
-  login.ensureLoggedIn('/'),
+  verifySignedIn,
   (req, res) ->
     vOS_App.find owner: req.user._id, (err, apps) ->
-      console.log err if err
+      console.log err if err?
 #      console.log(apps)
       res.render 'dashboard', {
         user: req.user,
@@ -241,8 +466,8 @@ app.get '/appInfo', [
   (req, res) ->
     if req.query.app_id
       vOS_App.findOne _id: req.query.app_id, (err, app) ->
-        console.log err if err
-#        console.log app
+        console.log err if err?
+        console.log app
         res.json app
     else
       res.json null
@@ -320,19 +545,15 @@ app.delete('/app', (req, res) ->
 #GOOGLE_CLIENT_ID = secrets.google.clientID
 #GOOGLE_CLIENT_SECRET = secrets.google.clientSecret
 
-featured_apps = [
-  '5315354db87e860000a11cbc'
-]
-
 app.get('/', (req, res) ->
   vOS_App.findOne(_id: featured_apps[0], (err, app) ->
     console.log(err) if err?
     console.log(app)
-    console.log(app.id)
     res.render('home', {
       user: req.user,
       featured: featured_apps,
-      displayApp: app
+      displayApp: app,
+      message: req.flash('error')
     })
   )
 )
@@ -353,15 +574,20 @@ app.get('/try', (req, res) ->
   })
 
 app.get('/account', [
-  login.ensureLoggedIn('/'),
+  verifySignedIn,
   (req, res) ->
     res.render 'account', {
       user: req.user
     }
 ])
 
+app.get('/forgot', (req, res) ->
+  res.render 'forgot', {
+    user: req.user
+  })
+
 app.get '/debug', (req, res) ->
-  recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
+  recents = defaultAppList
   render = (app) ->
     res.render 'vOS', {
       user: {debug: true},
@@ -383,32 +609,34 @@ app.get '/local', (req, res) ->
     user: req.user
   }
 
+#if there is already an output, or there is no longer an input, don't enter
 enter = (req, res, viewName) ->
   console.log 'entering'
   console.log req.query.session_id
   console.log sessions
-  if req.query.session_id? and sessions[req.query.session_id]?
-    recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
+  console.log(sessions[req.query.session_id])
+  if req.query.session_id? and sessions[req.query.session_id]?.input? and not sessions[req.query.session_id].output?
+    recents = defaultAppList
 
     User.findOne token: sessions[req.query.session_id].token, (err, user) ->
       if user?
         recents = user.recents
       if not recents? or recents.length is 0
-        recents = ['5315354db87e860000a11cbc', '53449c8eb27e5500009434cf']
+        recents = defaultAppList
 
       #console.log(recents)
 
       if req.query.app_id
-        if user and (not user.recents or user.recents.indexOf req.query.app_id is -1)
+        if user? and (not user.recents or user.recents.indexOf req.query.app_id is -1)
           #Add to recents
           user.recents = [] if not user.recents? 
           user.recents.push req.query.app_id
           user.save (err, user) ->
-            console.log err if err
+            console.log err if err?
             console.log 'Added New Recent App'
 
       vOS_App.findOne _id: req.query.app_id, (err, app) ->
-        console.log err if err
+        console.log err if err?
         console.log app
 
         res.render viewName, {
@@ -425,11 +653,70 @@ enter = (req, res, viewName) ->
 app.get '/enterLocal', (req, res) ->
   enter req, res, 'localvOS'
 
+app.get '/enterCardboard', (req, res) ->
+  enter req, res, 'cardboardvOS'
+
+app.get '/cardboard', (req, res) ->
+  res.render('cardboard', {
+      layout: false
+  })
+
+app.get '/pair', (req, res) ->
+  res.render('pair', {
+      layout: false
+  })
+
+app.get '/getUsers', (req, res) ->
+  User.find({}, (err, people) ->
+    res.json(people)
+  )
+
+app.get '/getApps', (req, res) ->
+  vOS_App.find({}, (err, apps) ->
+    res.json(apps)
+  )
+
+app.get '/removeUser', (req, res) ->
+  User.remove({_id: req.query.id}, (err, people) ->
+    res.json(people)
+  )
+
+app.get '/removeApp', (req, res) ->
+  vOS_App.remove({_id: req.query.id}, (err, apps) ->
+    res.json(apps)
+  )
+
 app.get '/enter', (req, res) ->
   enter req, res, 'vOS'
 
-io = socket.listen app.listen 8081
-io.set 'log level', 0
+app.get('/mirror', [
+  verifySignedIn,
+  (req, res) ->
+    options = {
+      layout: false,
+      session_id: req.query.session_id,
+      user: req.user,
+      view: req.query.view,
+      token: req.user.token
+    }
+    ###
+    if sessions[req.query.session_id]?.token?
+      options.token = sessions[req.query.session_id].token
+    else
+      options.token = null
+    ###
+    res.render('mirror', options)
+])
+
+options = {
+  key: secrets.ssl.key,
+  cert: secrets.ssl.cert
+}
+httpServer = http.createServer(app).listen(8081)
+#httpsServer = https.createServer(options, app).listen(443)
+
+io = socket.listen(httpServer)
+io.set('log level', 0)
 
 keyOptions = ['2', '3', '4', '6', '7', '9', 'A', 'C', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
@@ -485,7 +772,7 @@ bind = (session) ->
 
   session.input.on 'value', (data) ->
     session.output.emit 'value', data
-    console.log 'emit: value, ' + data
+#    console.log 'emit: value, ' + data
 
   if session.passVisuals
     session.output.on 'visual', (data) ->
@@ -530,59 +817,105 @@ io.sockets.on 'connection', (socket) ->
         #console.log(Object.keys(codes))
         delete codes[key]
 
+    if data.type is 'mirror'
+      console.log 'got mirror'
+      #Find session that it is requesting
+      #Require token to mirror
+      #console.log(sessions[data.session_id])
+      #console.log(data)
+
+      if sessions[data.session_id]? and data.view? and data.token? and sessions[data.session_id].token is data.token
+        mirrors = sessions[data.session_id].mirrors
+        unless mirrors[data.view]?
+          mirrors[data.view] = []
+        mirrors[data.view].push(socket)
+        console.log(['D', mirrors[data.view]])
+
+        #for mirror in mirrors[data.view]
+        #  mirror.emit('mirror', {image: ''})
+
+        sessions[data.session_id].output.emit('mirror-views', Object.keys(sessions[data.session_id].mirrors))
+
+        #'mirror-request', {view, message: start/stop/pose, pose: {phi, theta, yaw}}
+        #if data.view is 'HUD' and sessions[data.session_id].mirrors[data.view].length is 1
+        socket.on('mirror-data', (reqData) ->
+          reqData.view = data.view
+          sessions[data.session_id].output.emit('mirror-data', reqData)
+          )
+        socket.on('disconnect', ->
+          #remove and send update
+          #socket.emit('mirror-views', bject.keys(sessions[data.session_id].mirrors))
+          )
+   
     if data.type is 'output'
       console.log 'got output'
       #Check if session is real, if so, add self as output and bind.
-      if data.session_id isnt undefined and sessions[data.session_id] != undefined and sessions[data.session_id].output is undefined
+      if data.session_id? and sessions[data.session_id]? and not sessions[data.session_id].output?
         session = sessions[data.session_id]
         session.output = socket
-        console.log 'binding'
-        bind session
-        session.output.on 'disconnect', ->
+        console.log('binding')
+        bind(session)
+        session.output.on('disconnect', ->
           killSession(data.session_id)
+        )
+
+        #'mirror', {type, image}
+        session.output.on('mirror', (data) ->
+          #find mirrors for this output which want this type and send the image to them
+          console.log('mirror incoming')
+          console.log(session.mirrors[data.view])
+          if session.mirrors[data.view]?
+            for mirror in session.mirrors[data.view]
+              console.log('emitted')
+              mirror.emit('mirror', data)
+        )
       else
         socket.emit 'error', 'incorrect session id'
 
     if data.type is 'input'
       #Listen for code
-#      console.log 'got input'
-#      console.log data
-      socket.on 'code', (raw) ->
-        console.log 'got code'
-        console.log raw
-        code = raw.toUpperCase()
-        #If code exists, make a session and send it to the page.
-        if codes[code] isnt undefined
-          newSessionID = getNewSessionID()
+      console.log 'got input'
+      console.log data
+      User.findOne token: data.token, (err, user) ->
+        console.log err if err?
+        if user?
+          socket.on 'code', (raw) ->
+            console.log 'got code'
+            console.log raw
+            code = raw.toUpperCase()
+            #If code exists, make a session and send it to the page.
+            if codes[code] isnt undefined
+              newSessionID = getNewSessionID()
 
-          #tell user which session they are on
-          User.findOne token: data.token, (err, user) ->
-            console.log err if err
-            if user
+              #tell user which session they are on
               user.sessionID = newSessionID
               user.save (err, user) ->
-                console.log err if err
+                console.log err if err?
 
-          sessions[newSessionID] = {
-            token: data.token,
-            input: socket,
-            passVisuals: if data.passVisuals? then data.passVisuals else true
-          }
+              sessions[newSessionID] = {
+                token: data.token,
+                userID: user._id,
+                input: socket,
+                mirrors: {},
+                passVisuals: if data.passVisuals? then data.passVisuals else true
+              }
 
-          console.log('New session at ' + newSessionID)
+              console.log('New session at ' + newSessionID)
 
-          socket.on 'disconnect', ->
-            killSession(newSessionID)
+              socket.on 'disconnect', ->
+                killSession(newSessionID)
 
-          socket.on 'connection', (status) ->
-            if status is 'cancelled'
-              killSession(newSessionID)
+              socket.on 'connection', (status) ->
+                if status is 'cancelled'
+                  killSession(newSessionID)
 
-          socket.emit 'response', 'correct pair code'
-          codes[code].socket.emit 'session_id', {
-            id: newSessionID,
-            name: codes[code].name
-          }
-          delete codes[code]
+              socket.emit 'response', 'correct pair code'
+              codes[code].socket.emit 'session_id', {
+                id: newSessionID,
+                name: codes[code].name
+              }
+              delete codes[code]
+            else
+              socket.emit 'error', 'incorrect pair code'
         else
-          socket.emit 'error', 'incorrect pair code'
+          socket.emit 'error', 'bad token'

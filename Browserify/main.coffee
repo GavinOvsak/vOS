@@ -1,4 +1,6 @@
 $(document).ready(->
+	require('./StereoEffect.js')
+	require('./DeviceOrientationControls.js')
 	state = require('./state')
 	util = require('./util')
 	controls = require('./controls').setUp(state, util)

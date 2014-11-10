@@ -15,6 +15,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
@@ -61,6 +62,10 @@ public class PairCode extends Activity {
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intent);
 				return true;
+		    case R.id.manage:
+		    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://vos.jit.su/account"));
+				startActivity(browserIntent);
+				return true;
 		    default:
 		    	return super.onOptionsItemSelected(item);
 	    }
@@ -95,7 +100,7 @@ public class PairCode extends Activity {
 
 	public void refreshSocket() {
 		try {
-			PairCode.socket = new SocketIO("http://vos.jit.su/");
+			PairCode.socket = new SocketIO("http://vos.jit.su/");//https://vos.jit.su:443/
 			PairCode.socket.connect(new IOCallback() {
 		        @Override
 		        public void on(String event, IOAcknowledge ack, Object... args) {

@@ -58,26 +58,20 @@ util.exportMesh = function(mesh) {
 };
 
 util.cloneMesh = function(mesh) {
-  var copy;
-  copy = new THREE.Mesh(mesh.geometry.clone(), mesh.material.clone());
-  if (copy.material.map != null) {
-    copy.material.map = mesh.material.map.clone();
-    copy.material.map.needsUpdate = true;
+  var copy, _ref, _ref1;
+  copy = mesh.clone();
+  if (((_ref = mesh.geometry.parameters) != null ? _ref.height : void 0) != null) {
+    copy.position.y += mesh.geometry.parameters.height / 2;
   }
-  copy.position = mesh.position.clone();
-  if (mesh.geometry.height != null) {
-    copy.position.y += mesh.geometry.height / 2;
-  }
-  if (mesh.geometry.width != null) {
-    copy.position.x += mesh.geometry.width / 2;
+  if (((_ref1 = mesh.geometry.parameters) != null ? _ref1.width : void 0) != null) {
+    copy.position.x += mesh.geometry.parameters.width / 2;
   }
   return copy;
 };
 
 util.cloneLine = function(line) {
   var copy;
-  copy = new THREE.Line(line.geometry.clone(), line.material.clone());
-  copy.position = line.position.clone();
+  copy = line.clone();
   return copy;
 };
 
@@ -101,19 +95,19 @@ util.makeText = function(text, px, width, height) {
 };
 
 util.setPanelPosition = function(board, Mesh, x_disp, y_disp, z_disp) {
-  var adjusted_x_disp, adjusted_y_disp, height, width;
+  var adjusted_x_disp, adjusted_y_disp, height, width, _ref, _ref1;
   width = 0;
   height = 0;
-  if (Mesh.geometry.width != null) {
-    width = Mesh.geometry.width * board.geometry.width;
+  if (((_ref = Mesh.geometry.parameters) != null ? _ref.width : void 0) != null) {
+    width = Mesh.geometry.parameters.width * board.geometry.parameters.width;
   }
-  if (Mesh.geometry.height != null) {
-    height = Mesh.geometry.height * board.geometry.height;
+  if (((_ref1 = Mesh.geometry.parameters) != null ? _ref1.height : void 0) != null) {
+    height = Mesh.geometry.parameters.height * board.geometry.parameters.height;
   }
-  Mesh.scale.x = board.geometry.width;
-  Mesh.scale.y = board.geometry.height;
-  adjusted_x_disp = board.geometry.width * (x_disp - 0.5) + width / 2;
-  adjusted_y_disp = board.geometry.height * (y_disp - 0.5) + height / 2;
+  Mesh.scale.x = board.geometry.parameters.width;
+  Mesh.scale.y = board.geometry.parameters.height;
+  adjusted_x_disp = board.geometry.parameters.width * (x_disp - 0.5) + width / 2;
+  adjusted_y_disp = board.geometry.parameters.height * (y_disp - 0.5) + height / 2;
   Mesh.position.x = board.position.x + adjusted_x_disp;
   Mesh.position.y = board.position.y + adjusted_y_disp * Math.cos(board.rotation.x) - z_disp * Math.sin(board.rotation.x);
   Mesh.position.z = board.position.z + adjusted_y_disp * Math.sin(board.rotation.x) + z_disp * Math.cos(board.rotation.x);
@@ -194,19 +188,19 @@ util.deltaAngleDeg = function(a, b) {
 
 util.toggleFullScreen = function() {
   if ((document.fullScreenElement && document.fullScreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
-    if (document.documentElement.requestFullScreen) {
+    if (document.documentElement.requestFullScreen != null) {
       return document.documentElement.requestFullScreen();
-    } else if (document.documentElement.mozRequestFullScreen) {
+    } else if (document.documentElement.mozRequestFullScreen != null) {
       return document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullScreen) {
+    } else if (document.documentElement.webkitRequestFullScreen != null) {
       return document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
-    if (document.cancelFullScreen) {
+    if (document.cancelFullScreen != null) {
       return document.cancelFullScreen();
-    } else if (document.mozCancelFullScreen) {
+    } else if (document.mozCancelFullScreen != null) {
       return document.mozCancelFullScreen();
-    } else if (document.webkitCancelFullScreen) {
+    } else if (document.webkitCancelFullScreen != null) {
       return document.webkitCancelFullScreen();
     }
   }

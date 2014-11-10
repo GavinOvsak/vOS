@@ -1,10 +1,312 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * DeviceOrientationControls - applies device orientation on object rotation
+ *
+ * @param {Object} object - instance of THREE.Object3D
+ * @constructor
+ *
+ * @author richt / http://richt.me
+ * @author WestLangley / http://github.com/WestLangley
+ * @author jonobr1 / http://jonobr1.com
+ * @author arodic / http://aleksandarrodic.com
+ * @author doug / http://github.com/doug
+ *
+ * W3C Device Orientation control
+ * (http://w3c.github.io/deviceorientation/spec-source-orientation.html)
+ */
+
+
+THREE.DeviceOrientationControls = function(object) {
+
+  this.object = object;
+  val = 0;
+
+  this.object.rotation.reorder('YXZ');
+
+  this.freeze = true;
+
+  this.movementSpeed = 1.0;
+  this.rollSpeed = 0.005;
+  this.autoAlign = true;
+  this.autoForward = false;
+
+  this.alpha = 0;
+  this.beta = 0;
+  this.gamma = 0;
+  this.orient = 0;
+
+  this.alignQuaternion = new THREE.Quaternion();
+  this.orientationQuaternion = new THREE.Quaternion();
+
+  var quaternion = new THREE.Quaternion();
+  var quaternionLerp = new THREE.Quaternion();
+
+  var tempVector3 = new THREE.Vector3();
+  var tempMatrix4 = new THREE.Matrix4();
+  var tempEuler = new THREE.Euler(0, 0, 0, 'YXZ');
+  var tempQuaternion = new THREE.Quaternion();
+
+  var zee = new THREE.Vector3(0, 0, 1);
+  var up = new THREE.Vector3(0, 1, 0);
+  var v0 = new THREE.Vector3(0, 0, 0);
+  var euler = new THREE.Euler();
+  var q0 = new THREE.Quaternion(); // - PI/2 around the x-axis
+  var q1 = new THREE.Quaternion(- Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
+
+  this.deviceOrientation = {};
+  this.screenOrientation = window.orientation || 0;
+
+  this.onDeviceOrientationChangeEvent = (function(rawEvtData) {
+
+    this.deviceOrientation = rawEvtData;
+
+  }).bind(this);
+
+  var getOrientation = function() {
+    switch (window.screen.orientation || window.screen.mozOrientation) {
+      case 'landscape-primary':
+        return 90;
+      case 'landscape-secondary':
+        return -90;
+      case 'portrait-secondary':
+        return 180;
+      case 'portrait-primary':
+        return 0;
+    }
+    // this returns 90 if width is greater then height 
+    // and window orientation is undefined OR 0
+    // if (!window.orientation && window.innerWidth > window.innerHeight)
+    //   return 90;
+    return window.orientation || 0;
+  };
+
+  this.onScreenOrientationChangeEvent = (function() {
+
+    this.screenOrientation = getOrientation();
+
+  }).bind(this);
+
+  this.update = function(delta) {
+
+    return function() {
+
+      if (this.freeze) return;
+
+      // should not need this
+      var orientation = getOrientation(); 
+      if (orientation !== this.screenOrientation) {
+        this.screenOrientation = orientation;
+        this.autoAlign = true;
+      }
+
+      this.alpha = this.deviceOrientation.gamma ?
+        THREE.Math.degToRad(this.deviceOrientation.alpha) : 0; // Z
+      this.beta = this.deviceOrientation.beta ?
+        THREE.Math.degToRad(this.deviceOrientation.beta) : 0; // X'
+      this.gamma = this.deviceOrientation.gamma ?
+        THREE.Math.degToRad(this.deviceOrientation.gamma) : 0; // Y''
+      this.orient = this.screenOrientation ?
+        THREE.Math.degToRad(this.screenOrientation) : 0; // O
+
+      // The angles alpha, beta and gamma
+      // form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
+
+      // 'ZXY' for the device, but 'YXZ' for us
+      /*val += 0.15;
+      console.log({
+        alpha: this.alpha,
+        beta: this.beta,
+        gamma: this.gamma
+      })*/
+      euler.set(this.beta, this.alpha, - this.gamma, 'YXZ');
+
+      quaternion.setFromEuler(euler);
+      quaternionLerp.slerp(quaternion, 0.5); // interpolate
+
+      // orient the device
+      if (this.autoAlign) this.orientationQuaternion.copy(quaternion); // interpolation breaks the auto alignment
+      else this.orientationQuaternion.copy(quaternionLerp);
+
+      // camera looks out the back of the device, not the top
+      this.orientationQuaternion.multiply(q1);
+
+      // adjust for screen orientation
+      this.orientationQuaternion.multiply(q0.setFromAxisAngle(zee, - this.orient));
+
+      this.object.quaternion.copy(this.alignQuaternion);
+      this.object.quaternion.multiply(this.orientationQuaternion);
+
+      var matr2 = new THREE.Matrix4()
+      matr2.makeRotationFromQuaternion(this.object.quaternion)
+
+      var tilt2 = new THREE.Matrix4()
+      tilt2.makeRotationX(Math.PI/2)
+      matr2.multiplyMatrices(tilt2, matr2)
+      this.object.quaternion.setFromRotationMatrix(matr2)
+
+      if (this.autoForward) {
+
+        tempVector3
+          .set(0, 0, -1)
+          .applyQuaternion(this.object.quaternion, 'ZXY')
+          .setLength(this.movementSpeed / 50); // TODO: why 50 :S
+
+        this.object.position.add(tempVector3);
+
+      }
+
+      if (this.autoAlign && this.alpha !== 0) {
+
+        this.autoAlign = false;
+
+        this.align();
+
+      }
+
+    };
+
+  }();
+
+  // //debug
+  // window.addEventListener('click', (function(){
+  //   this.align();
+  // }).bind(this)); 
+
+  this.align = function() {
+
+    tempVector3
+      .set(0, 0, -1)
+      .applyQuaternion( tempQuaternion.copy(this.orientationQuaternion).inverse(), 'ZXY' );
+
+    tempEuler.setFromQuaternion(
+      tempQuaternion.setFromRotationMatrix(
+        tempMatrix4.lookAt(tempVector3, v0, up)
+     )
+   );
+
+    tempEuler.set(0, tempEuler.y, 0);
+    this.alignQuaternion.setFromEuler(tempEuler);
+
+  };
+
+  this.connect = function() {
+
+    // run once on load
+    this.onScreenOrientationChangeEvent();
+
+    // window.addEventListener('orientationchange', this.onScreenOrientationChangeEvent, false);
+    window.addEventListener('deviceorientation', this.onDeviceOrientationChangeEvent, false);
+
+    this.freeze = false;
+
+    return this;
+
+  };
+
+  this.disconnect = function() {
+
+    this.freeze = true;
+
+    // window.removeEventListener('orientationchange', this.onScreenOrientationChangeEvent, false);
+    window.removeEventListener('deviceorientation', this.onDeviceOrientationChangeEvent, false);
+
+  };
+
+
+};
+
+
+},{}],2:[function(require,module,exports){
+/**
+ * @author alteredq / http://alteredqualia.com/
+ * @authod mrdoob / http://mrdoob.com/
+ * @authod arodic / http://aleksandarrodic.com/
+ */
+
+THREE.StereoEffect = function ( renderer ) {
+
+	// API
+
+	this.separation = 3;
+
+	// internals
+
+	var _width, _height;
+
+	var _position = new THREE.Vector3();
+	var _quaternion = new THREE.Quaternion();
+	var _scale = new THREE.Vector3();
+
+	var _cameraL = new THREE.PerspectiveCamera();
+	var _cameraR = new THREE.PerspectiveCamera();
+
+	// initialization
+
+	renderer.autoClear = false;
+
+	this.setSize = function ( width, height ) {
+
+		_width = width / 2;
+		_height = height;
+
+		renderer.setSize( width, height );
+
+	};
+
+	this.render = function ( scene, camera ) {
+
+		scene.updateMatrixWorld();
+
+		if ( camera.parent === undefined ) camera.updateMatrixWorld();
+	
+		camera.matrixWorld.decompose( _position, _quaternion, _scale );
+
+		// left
+
+		_cameraL.fov = camera.fov;
+		_cameraL.aspect = 0.5 * camera.aspect;
+		_cameraL.near = camera.near;
+		_cameraL.far = camera.far;
+		_cameraL.updateProjectionMatrix();
+
+		_cameraL.position.copy( _position );
+		_cameraL.quaternion.copy( _quaternion );
+		_cameraL.translateX( - this.separation );
+		_cameraL.updateMatrixWorld();
+
+		// right
+
+		_cameraR.near = camera.near;
+		_cameraR.far = camera.far;
+		_cameraR.projectionMatrix = _cameraL.projectionMatrix;
+
+		_cameraR.position.copy( _position );
+		_cameraR.quaternion.copy( _quaternion );
+		_cameraR.translateX( this.separation );
+		_cameraR.updateMatrixWorld();
+
+		//
+
+		renderer.setViewport( 0, 0, _width * 2, _height );
+		renderer.clear();
+
+		renderer.setViewport( 0, 0, _width, _height );
+		renderer.render( scene, _cameraL );
+
+		renderer.setViewport( _width, 0, _width, _height );
+		renderer.render( scene, _cameraR );
+
+	};
+
+};
+
+},{}],3:[function(require,module,exports){
 var appSwitcher;
 
 appSwitcher = exports;
 
 appSwitcher.setUp = function(state, util, controls) {
-  var mode, modes, query, resetPanel, searchResults, selectionIndex, update;
+  var mode, modes, page, query, resetPanel, searchResults, selectionIndex, update;
   state.notificationPanel = new controls.Panel();
   state.notificationPanel.objects = [];
   state.appSwitcher = {
@@ -31,46 +333,95 @@ appSwitcher.setUp = function(state, util, controls) {
       return _results;
 
       /*
-      			greenScreen = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-      			screen = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), greenScreen)
-      			screen.rotation.x = Math.PI / 2
-      			screen.position.z = 50
-      			scene.add(screen)
+      greenScreen = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
+      screen = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), greenScreen)
+      screen.rotation.x = Math.PI / 2
+      screen.position.z = 50
+      scene.add(screen)
        */
     }
   };
   query = '';
+  page = 0;
   resetPanel = function(panel) {
-    var app, appIcon, column, description, drag, goToSearch, i, input, output, recentButton, row, search, select, yref, _i, _ref;
+    var app, appIcon, backIcon, closeButton, column, description, drag, goToSearch, i, input, maxPages, nextIcon, output, recentButton, row, search, select, welcome, yref, _i, _ref, _ref1, _ref2;
     panel.objects = [];
     if (mode === modes[0]) {
-      row = 0;
-      column = 0;
-      app;
-      for (i = _i = 0, _ref = state.apps.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        if (!(row < 3)) {
-          continue;
-        }
-        app = state.apps[i];
-        appIcon = new controls.Button(0.5 + column * 6, 5 - 2 * row, 5, 1, {
-          text: app.name,
-          icon: app.icon
+      app = void 0;
+      maxPages = Math.ceil(state.apps.length / 6);
+      if (maxPages === 0) {
+        page = 0;
+      } else if (page > maxPages - 1) {
+        page = maxPages - 1;
+      }
+      if (page > 0) {
+        backIcon = new controls.Button(0, 3, 0.5, 1, {
+          text: '<'
         });
-        appIcon.onClick((function(index) {
-          return function() {
-            return state.open(state.apps[index]);
-          };
-        })(i));
-        panel.add(appIcon);
-        if (column >= 2) {
-          column = 0;
-          row++;
-        } else {
-          column++;
+        backIcon.onClick(function() {
+          page--;
+          return resetPanel(panel);
+        });
+        panel.add(backIcon);
+      }
+      if (page < maxPages - 1) {
+        nextIcon = new controls.Button(11.5, 3, 0.5, 1, {
+          text: '>'
+        });
+        nextIcon.onClick(function() {
+          page++;
+          return resetPanel(panel);
+        });
+        panel.add(nextIcon);
+      }
+      if (state.apps.length > 0) {
+        for (i = _i = _ref = 6 * page, _ref1 = Math.min(6 + 6 * page, state.apps.length); _ref <= _ref1 ? _i < _ref1 : _i > _ref1; i = _ref <= _ref1 ? ++_i : --_i) {
+          app = state.apps[state.apps.length - i - 1];
+          row = Math.floor((i - 6 * page) / 2);
+          column = (i - 6 * page) % 2;
+          closeButton = new controls.Button(5 + column * 5.5, 5 - 2 * row, 0.5, 1, {
+            text: 'X'
+          });
+          closeButton.onClick((function(app) {
+            return function() {
+              var index, index2, k, v, _j, _len, _ref2;
+              index = state.user.recent.indexOf(app._id);
+              if (index >= 0) {
+                state.user.recent.splice(index, 1);
+              }
+              index2 = -1;
+              _ref2 = state.apps;
+              for (k = _j = 0, _len = _ref2.length; _j < _len; k = ++_j) {
+                v = _ref2[k];
+                if (v._id === app._id) {
+                  index2 = k;
+                }
+              }
+              if (index2 >= 0) {
+                state.apps.splice(index2, 1);
+              }
+              $.post('http://vos.jit.su/removeAppMRU?token=' + token, {
+                appID: app._id
+              });
+              return resetPanel(panel);
+            };
+          })(app));
+          appIcon = new controls.Button(1 + column * 5.5, 5 - 2 * row, 4, 1, {
+            text: app.name,
+            icon: app.icon
+          });
+          appIcon.onClick((function(app) {
+            return function() {
+              return state.open(app, controls);
+            };
+          })(app));
+          panel.add(appIcon);
+          panel.add(closeButton);
         }
       }
-      description = new controls.Label(6, 7, 6, 1, {
-        text: 'Please choose an app: '
+      welcome = ((_ref2 = state.user) != null ? _ref2.name : void 0) != null ? state.user.name + ', please choose an app: ' : 'Please choose an app: ';
+      description = new controls.Label(3.5, 7, 8.5, 1, {
+        text: welcome
       });
       panel.add(description);
       goToSearch = new controls.Button(0, 7, 3, 1, {
@@ -150,7 +501,7 @@ appSwitcher.setUp = function(state, util, controls) {
 };
 
 
-},{}],2:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var controlObjects, eccentricity, exports;
 
 eccentricity = 80 / 30;
@@ -241,7 +592,7 @@ exports.setUp = function(state, util) {
     },
     release: function(x, y) {
       this.available = true;
-      if (this.contains(this.point.x, this.point.y)) {
+      if ((this.point != null) && this.contains(this.point.x, this.point.y)) {
         this.click(!this.isOn);
         if (this.options.toggle) {
           this.isOn = !this.isOn;
@@ -251,12 +602,12 @@ exports.setUp = function(state, util) {
     },
 
     /*
-    		dragDistance: ->
-    			if(this.point?) {
-    				return util.distance(this.point, this.initGrab)
-    			}
-    			return 0
-    		},
+    dragDistance: ->
+        if(this.point?) {
+            return util.distance(this.point, this.initGrab)
+        }
+        return 0
+    },
      */
     registerPoint: function(point) {
       this.initGrab.x = point.x;
@@ -269,6 +620,11 @@ exports.setUp = function(state, util) {
       var buttonMesh, canvas1, contentMesh, material, materialOptions, meshArray, px;
       meshArray = [];
       materialOptions = {};
+      if ((this.point != null) && !this.contains(this.point.x, this.point.y)) {
+        this.available = true;
+        state.points[this.point.i].taken = false;
+        this.point = void 0;
+      }
       if (this.isOn) {
         if (this.point != null) {
           if (this.contains(this.point.x, this.point.y)) {
@@ -307,26 +663,26 @@ exports.setUp = function(state, util) {
       }
 
       /*
-      			else if this.options.image?
-      				canvas1.height = 200
-      				canvas1.width = 200
-      				context1 = canvas1.getContext('2d')
-      				texture1 = new THREE.Texture(canvas1) 
-      				imageObj = new Image()
-      				imageObj.src = this.options.image
-      				imageObj.onload = ->
+      else if this.options.image?
+          canvas1.height = 200
+          canvas1.width = 200
+          context1 = canvas1.getContext('2d')
+          texture1 = new THREE.Texture(canvas1) 
+          imageObj = new Image()
+          imageObj.src = this.options.image
+          imageObj.onload = ->
        */
 
       /*
-               context1.drawImage(imageObj, 0, 0)
-               if ( texture1 ) {
-      				texture1.needsUpdate = true
-      				material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
-      				material1.transparent = true
-      				contentMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
-      				util.setPanelPosition(panelMesh, contentMesh, this.x, this.y, 0.2)
-      				scene.add( contentMesh )
-      			}
+      context1.drawImage(imageObj, 0, 0)
+      if ( texture1 ) {
+          texture1.needsUpdate = true
+          material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
+          material1.transparent = true
+          contentMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
+          util.setPanelPosition(panelMesh, contentMesh, this.x, this.y, 0.2)
+          scene.add( contentMesh )
+      }
        */
       return meshArray;
     }
@@ -678,18 +1034,18 @@ exports.setUp = function(state, util) {
       textMesh = util.makeText(this.options.text, this.options.px, this.width, this.height);
 
       /*
-      			canvas1 = document.createElement('canvas')
-      			canvas1.height = this.options.px
-      			canvas1.width = this.options.px * this.width / this.height
-      			context1 = canvas1.getContext('2d')
-      			context1.font = "Bold " + this.options.px + "px Arial"
-      			context1.fillStyle = "rgba(255,255,255,0.95)"
-      			context1.fillText(this.options.text, 0, this.options.px)
-      			texture1 = new THREE.Texture(canvas1) 
-      			texture1.needsUpdate = true
-      			material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
-      			material1.transparent = true
-      			textMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
+      canvas1 = document.createElement('canvas')
+      canvas1.height = this.options.px
+      canvas1.width = this.options.px * this.width / this.height
+      context1 = canvas1.getContext('2d')
+      context1.font = "Bold " + this.options.px + "px Arial"
+      context1.fillStyle = "rgba(255,255,255,0.95)"
+      context1.fillText(this.options.text, 0, this.options.px)
+      texture1 = new THREE.Texture(canvas1) 
+      texture1.needsUpdate = true
+      material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } )
+      material1.transparent = true
+      textMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.width, this.height), material1)
        */
       textMesh.position.x = this.x;
       textMesh.position.y = this.y;
@@ -745,32 +1101,6 @@ exports.setUp = function(state, util) {
           return this.getChar();
         },
         contains: function(x, y) {
-
-          /*
-          					heigh: 0.17777777777777778
-          					keyx: 0.6466
-          					keyy: 0.2607111111111111
-          					letter: "M"
-          					wid: 0.075
-          					x: 0.6510417
-          					y: 0.2777778
-           */
-
-          /*
-          					console.log({
-          						x: x,
-          						y: y,
-          						keyx: this.x * keyboard.width + keyboard.x,
-          						keyy: this.y * keyboard.height + keyboard.y,
-          						wid: this.width * keyboard.width,
-          						heigh: this.height * keyboard.height,
-          						letter: this.char,
-          						bool: util.rectContains(x, y, 
-          						this.x * keyboard.width + keyboard.x, 
-          						this.y * keyboard.height + keyboard.y, 
-          						this.width * keyboard.width, this.height * keyboard.height)
-          					})
-           */
           return util.rectContains({
             x: x,
             y: y
@@ -1161,12 +1491,12 @@ exports.setUp = function(state, util) {
         color: 0x222222
       });
 
-      /*			
-      			progress = {}
-      			for (i in this.points) {
-      				if (this.points[i] and this.points[i].initGrab and this.points[i] isnt this.gesturePoint)
-      					progress[this.points[i].initGrab.key] = Math.min(this.points[i].dragDist()/this.thresholdDistance, 1)
-      			}
+      /*            
+      progress = {}
+      for (i in this.points) {
+          if (this.points[i] and this.points[i].initGrab and this.points[i] isnt this.gesturePoint)
+              progress[this.points[i].initGrab.key] = Math.min(this.points[i].dragDist()/this.thresholdDistance, 1)
+      }
        */
       _ref = this.keys;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1176,8 +1506,8 @@ exports.setUp = function(state, util) {
         };
 
         /*if (progress[key.char]) {
-        					keyMaterialOptions.color = (34 << 16) + (200 * 0 << 8) + (1 - progress[key.char]) * 255
-        				}
+            keyMaterialOptions.color = (34 << 16) + (200 * 0 << 8) + (1 - progress[key.char]) * 255
+        }
          */
         keyMaterial = new THREE.MeshBasicMaterial(keyMaterialOptions);
         keyMesh = new THREE.Mesh(new THREE.PlaneGeometry(key.width * this.width, key.height * this.height), keyMaterial);
@@ -1250,6 +1580,11 @@ exports.setUp = function(state, util) {
     },
     release: function(x, y) {
       this.available = true;
+      if (this.options.returnsToCenter) {
+        this.onMove_callback(0, 0);
+      } else {
+        this.onMove_callback(x - this.x, y - this.y);
+      }
       this.onRelease_callback(x - this.x, y - this.y);
       return this.point = void 0;
     },
@@ -1558,86 +1893,106 @@ exports.setUp = function(state, util) {
     return (function(state, controls, appURL, util) {
 
       /*
-      	      window.testApps[appID] = {
-      	        event: {}
-      	      }
-      	      util.getSync(appURL, (data, textStatus, jqxhr) ->
-      	        ((vOS, program) ->
-      	            eval(program)
-      	        )({
-      	          onEvent: (eventType, f) ->
-      	            window.testApps[appID].event[eventType] = f
-      	          makeTextMesh: (options) ->
-      	            return {} #To Do
-      	        })
-      	        if window.testApps[appID].event.load?
-      	          state.add(window.testApps[appID], controls)
-      	        else
-      	          console.log('App from ' + appURL + ' Failed To Load')
-      	      )
+      window.testApps[appID] = {
+        event: {}
+      }
+      util.getSync(appURL, (data, textStatus, jqxhr) ->
+        ((vOS, program) ->
+            eval(program)
+        )({
+          onEvent: (eventType, f) ->
+            window.testApps[appID].event[eventType] = f
+          makeTextMesh: (options) ->
+            return {} #To Do
+        })
+        if window.testApps[appID].event.load?
+          state.add(window.testApps[appID], controls)
+        else
+          console.log('App from ' + appURL + ' Failed To Load')
+      )
        */
-      window.vOS = {
-        onEvent: function(eventType, f) {
-          return this.app.event[eventType] = f;
-        },
-        getValues: function() {
-          return state.values;
-        },
-        makeTextMesh: function(options) {
-          var height, px, text, width;
-          text = options.text || '';
-          px = options.px || 30;
-          width = options.width || 20;
-          height = options.height || 20;
-          return util.makeText(text, px, width, height);
-        },
-        getValue: function(name) {
-          return state.values[name];
-        },
-        addListener: function(name, f) {
-          if (state.valueListeners[name] == null) {
-            state.valueListeners[name] = [];
-          }
-          return state.valueListeners[name].push(f);
-        },
-        removeListener: function(name, f) {
-          var index;
-          index = state.valueListeners[name].indexOf(f);
-          if (index > -1) {
-            return state.valueListeners[name].pop(index);
-          }
-        },
-        app: {
-          event: {}
+      var currentlyOpen, k, v, _i, _len, _ref;
+      currentlyOpen = void 0;
+      _ref = state.apps;
+      for (k = _i = 0, _len = _ref.length; _i < _len; k = ++_i) {
+        v = _ref[k];
+        if (v.url === appURL) {
+          currentlyOpen = v;
         }
-      };
-      return util.getScriptSync(appURL, function(data, textStatus, jqxhr) {
-        var app, k, v;
-        if (vOS.app.event.load != null) {
-          if (extras != null) {
-            for (k in extras) {
-              v = extras[k];
-              vOS.app[k] = v;
+      }
+      if (currentlyOpen != null) {
+        return state.open(currentlyOpen, controls);
+      } else {
+        window.vOS = {
+          onEvent: function(eventType, f) {
+            return this.app.event[eventType] = f;
+          },
+          getValues: function() {
+            return state.values;
+          },
+          makeTextMesh: function(options) {
+            var height, px, text, width;
+            text = options.text || '';
+            px = options.px || 30;
+            width = options.width || 20;
+            height = options.height || 20;
+            return util.makeText(text, px, width, height);
+          },
+          getValue: function(name) {
+            return state.values[name];
+          },
+          addListener: function(name, f) {
+            if (state.valueListeners[name] == null) {
+              state.valueListeners[name] = [];
             }
+            return state.valueListeners[name].push(f);
+          },
+          removeListener: function(name, f) {
+            var index;
+            index = state.valueListeners[name].indexOf(f);
+            if (index > -1) {
+              return state.valueListeners[name].pop(index);
+            }
+          },
+          app: {
+            event: {},
+            status: 'ready'
           }
-          app = state.add(vOS.app, controls);
-          if (open) {
-            state.open(app, controls);
-          }
-        } else {
-          console.log('App from ' + appURL + ' Failed To Load');
-        }
-        return window.vOS.app = {
-          event: {}
         };
-      });
+        return util.getScriptSync(appURL, function(data, textStatus, jqxhr) {
+          var listener, _j, _len1, _ref1;
+          if (vOS.app.event.load != null) {
+            if (extras != null) {
+              for (k in extras) {
+                v = extras[k];
+                vOS.app[k] = v;
+              }
+            }
+            state.apps.push(vOS.app);
+            _ref1 = state.onAppListUpdate.listeners;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              listener = _ref1[_j];
+              listener();
+            }
+            if (open) {
+              state.open(vOS.app, controls);
+            }
+          } else {
+            console.log('App from ' + appURL + ' Failed To Load');
+          }
+          return window.vOS.app = {
+            event: {},
+            status: 'ready'
+          };
+        });
+      }
     })(state, controls, url, util);
   };
   return controls;
 };
 
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var MOUSE_SPEED, USE_TRACKER, deviceInputs;
 
 deviceInputs = exports;
@@ -1649,9 +2004,9 @@ USE_TRACKER = false;
 deviceInputs.setUp = function(state, util) {
   var bridge, lastClientX, lastClientY, mouseButtonDown, viewer;
   bridge = new OculusBridge({
-    "onConnect": function() {},
-    "onDisconnect": function() {},
-    "onOrientationUpdate": function(quatValues) {
+    'onConnect': function() {},
+    'onDisconnect': function() {},
+    'onOrientationUpdate': function(quatValues) {
       HMDRotation.x = quatValues.x;
       HMDRotation.y = quatValues.y;
       HMDRotation.z = quatValues.z;
@@ -1659,10 +2014,12 @@ deviceInputs.setUp = function(state, util) {
       return state.lastUpdate = Date.now();
     }
   });
-  bridge.connect();
-  document.addEventListener("keydown", function(e) {
+  document.addEventListener('keydown', function(e) {
     if (e.keyCode === 32) {
-      return util.toggleFullScreen();
+      util.toggleFullScreen();
+    }
+    if (e.keyCode === 72) {
+      return state.forceDistort = !state.forceDistort;
     }
   }, false);
   viewer = $('#viewer');
@@ -1686,24 +2043,30 @@ deviceInputs.setUp = function(state, util) {
       state.BaseRotationEuler.set(util.angleRangeRad(state.BaseRotationEuler.x + (event.clientY - lastClientY) * MOUSE_SPEED * enableX), util.angleRangeRad(state.BaseRotationEuler.y + (event.clientX - lastClientX) * MOUSE_SPEED), 0.0);
       lastClientX = event.clientX;
       lastClientY = event.clientY;
-      return state.BaseRotation.setFromEuler(state.BaseRotationEuler, 'YZX');
+      return state.BaseRotation.setFromEuler(state.BaseRotationEuler);
     }
   });
 };
 
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var display;
 
 display = exports;
 
 display.start = function(state, util, controls) {
-  var $viewer, ASPECT, FAR, HMDRotation, NEAR, OculusRift, USE_TRACKER, VIEW_ANGLE, WORLD_FACTOR, centerHeading, currHeading, directLight, e, effect, headingVector, keyboardMoveVector, moveVector, navList, pointLight, projGeo, projMaterial, render, renderer, resize, setUiSize, wasUsingRift;
+  var $viewer, ASPECT, FAR, HMDRotation, NEAR, OculusRift, USE_TRACKER, VIEW_ANGLE, WORLD_FACTOR, cardBoardLight, cardboardCamera, cardboardControls, cardboardEffect, centerHeading, count, directLight, e, effect, keyboardMoveVector, moveVector, navList, once, pointLight, projGeo, projMaterial, render, resize, setOrientationControls, setUiSize, wasUsingRift;
   VIEW_ANGLE = 45;
   ASPECT = state.width / state.height;
   NEAR = 0.1;
-  FAR = 10000;
+  FAR = 100000;
+  count = 0;
+  once = false;
+  cardboardControls = null;
   $viewer = $('#viewer');
+  if ((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard) {
+    VIEW_ANGLE = 90;
+  }
   state.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
   /*
@@ -1712,24 +2075,30 @@ display.start = function(state, util, controls) {
   state.camera.rotation.x = Math.PI / 2;
   state.camera.position.y = 0;
   state.camera.position.z = 10;
-  state.camera.useQuaternion = true;
   try {
-    renderer = new THREE.WebGLRenderer({
-      antialias: true
+    state.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true
     });
   } catch (_error) {
     e = _error;
     alert('This application needs WebGL enabled!');
     return false;
   }
-  renderer.autoClearColor = true;
-  renderer.setSize(state.width, state.height);
-  $viewer.append(renderer.domElement);
+  state.renderer.autoClearColor = true;
+  state.renderer.setSize(state.width, state.height);
+  $viewer.append(state.renderer.domElement);
+  if ((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard) {
+    state.renderer.domElement.addEventListener('click', function(e) {
+      return util.toggleFullScreen();
+    }, false);
+  }
   state.mobileCamera = new THREE.OrthographicCamera(0, 1, 1, 0, -30, 30);
   state.mobileCamera.position.z = 10;
   state.mobileCamera.up = new THREE.Vector3(0, 1, 0);
   state.mobileRenderer = new THREE.WebGLRenderer({
-    antialias: true
+    antialias: true,
+    alpha: true
   });
   state.mobileRenderer.autoClearColor = true;
   state.mobileRenderer.setSize(400, 400);
@@ -1754,20 +2123,30 @@ display.start = function(state, util, controls) {
     distortionK: [1.0, 0.22, 0.24, 0.0],
     chromaAbParameter: [0.996, -0.004, 1.014, 0.0]
   };
-  currHeading = 0;
   centerHeading = 0;
   navList = [];
-  headingVector = new THREE.Vector3();
   moveVector = new THREE.Vector3();
   keyboardMoveVector = new THREE.Vector3();
   HMDRotation = new THREE.Quaternion();
   OculusRift.hResolution = state.width;
   OculusRift.vResolution = state.height;
-  effect = new THREE.OculusRiftEffect(renderer, {
+  effect = new THREE.OculusRiftEffect(state.renderer, {
     HMD: OculusRift,
     worldFactor: WORLD_FACTOR
   });
   effect.setSize(state.width, state.height);
+  cardboardEffect = new THREE.StereoEffect(state.renderer);
+  cardboardEffect.separation = 0.06;
+  cardboardCamera = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
+  cardboardCamera.position.set(0, 10, 0);
+  cardBoardLight = new THREE.HemisphereLight(0x777777, 0x000000, 0.6);
+  cardboardControls = new THREE.DeviceOrientationControls(state.camera, true);
+  setUiSize = function() {
+    var height, hwidth, width;
+    width = window.innerWidth;
+    hwidth = width / 2;
+    return height = window.innerHeight;
+  };
   resize = function(event) {
     state.width = window.innerWidth;
     state.height = window.innerHeight;
@@ -1776,22 +2155,45 @@ display.start = function(state, util, controls) {
     OculusRift.hResolution = state.width;
     OculusRift.vResolution = state.height;
     effect.setHMD(OculusRift);
-    renderer.setSize(state.width, state.height);
-    return state.camera.projectionMatrix.makePerspective(VIEW_ANGLE, ASPECT, NEAR, FAR);
+    state.camera.projectionMatrix.makePerspective(VIEW_ANGLE, ASPECT, NEAR, FAR);
+    state.camera.updateProjectionMatrix();
+    state.renderer.setSize(state.width, state.height);
+    effect.setSize(state.width, state.height);
+    return cardboardEffect.setSize(state.width, state.height);
   };
   window.addEventListener('resize', resize, false);
-  setUiSize = function() {
-    var height, hwidth, width;
-    width = window.innerWidth;
-    hwidth = width / 2;
-    return height = window.innerHeight;
-  };
+  resize();
   projGeo = new THREE.SphereGeometry(5000, 512, 256);
   projMaterial = new THREE.MeshBasicMaterial({
     map: THREE.ImageUtils.loadTexture('static/placeholder.png'),
     side: THREE.DoubleSide
   });
   wasUsingRift = false;
+
+  /*
+  	setOrientationControls = (e) ->
+  		if !e.alpha
+  			console.log('gone')
+  			return
+  
+  		console.log('Set up')
+  		cardboardControls = new THREE.DeviceOrientationControls(state.camera, true)
+  		console.log(state.camera.quaternion)
+  		console.log(state.camera.rotation)
+  		debugger
+  		 *element.addEventListener('click', fullscreen, false)
+  
+  		window.removeEventListener('deviceorientation', setOrientationControls)
+  	window.addEventListener('deviceorientation', setOrientationControls, true)
+   */
+  setOrientationControls = function(event) {
+    if (event.alpha) {
+      window.removeEventListener('deviceorientation', setOrientationControls, false);
+      cardboardControls.connect();
+      return cardboardControls.update();
+    }
+  };
+  window.addEventListener('deviceorientation', setOrientationControls, false);
   render = function() {
     var adjustedHMDQuarternion, matr, matr2, scene, tilt, tilt2;
     requestAnimationFrame(render);
@@ -1800,7 +2202,7 @@ display.start = function(state, util, controls) {
       moveVector.x = 0;
     }
     state.BaseRotationEuler.set(0.0, util.angleRangeRad(state.BaseRotationEuler.y + moveVector.y), 0.0);
-    state.BaseRotation.setFromEuler(state.BaseRotationEuler, 'YZX');
+    state.BaseRotation.setFromEuler(state.BaseRotationEuler);
     matr = new THREE.Matrix4();
     matr.makeRotationFromQuaternion(state.BaseRotation);
     tilt = new THREE.Matrix4();
@@ -1818,9 +2220,9 @@ display.start = function(state, util, controls) {
     tilt2.makeRotationX(0 * Math.PI / 2);
     matr2.multiplyMatrices(tilt2, matr2);
     adjustedHMDQuarternion.setFromRotationMatrix(matr2);
-    state.camera.quaternion.multiplyQuaternions(state.BaseRotation, adjustedHMDQuarternion);
-    headingVector.setEulerFromQuaternion(state.camera.quaternion, 'YZX');
-    currHeading = util.angleRangeDeg(THREE.Math.radToDeg(-1 * headingVector.y));
+    if (!((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard)) {
+      state.camera.quaternion.multiplyQuaternions(state.BaseRotation, adjustedHMDQuarternion);
+    }
     scene = new THREE.Scene();
     if (state.front_and_back != null) {
       (function() {
@@ -1840,37 +2242,66 @@ display.start = function(state, util, controls) {
       }
       if (state.back != null) {
         (function() {
-          return state.back.external.drawImmersiveBackground(scene);
+          if (state.back.external.drawImmersiveBackground != null) {
+            return state.back.external.drawImmersiveBackground(scene);
+          } else if (state.back.external.drawImmersive != null) {
+            return state.back.external.drawImmersive(scene);
+          }
         })();
       }
     }
     state.drawPanel(scene, util);
-    scene.add(state.camera);
     scene.add(directLight);
-    if (Date.now() - state.lastUpdate < 100) {
-      effect.render(scene, state.camera);
-      return wasUsingRift = true;
+
+    /*
+    		hudCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
+    		hudCamera.rotation.x = Math.PI/2
+    		hudCamera.position.y = 0
+    		hudCamera.position.z = 10
+    		hudCamera.quaternion.multiplyQuaternions(state.BaseRotation, adjustedHMDQuarternion)
+     */
+    scene.add(state.camera);
+    if ((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard) {
+      cardboardCamera.updateProjectionMatrix();
+      cardboardControls.update();
+      return cardboardEffect.render(scene, state.camera);
     } else {
-      HMDRotation.x = 0;
-      HMDRotation.y = 0;
-      HMDRotation.z = 0;
-      HMDRotation.w = 1;
-      if (wasUsingRift) {
-        state.BaseRotationEuler.y = 0;
+      if (Date.now() - state.lastUpdate < 100 || state.forceDistort) {
+        effect.render(scene, state.camera);
+        return wasUsingRift = true;
+      } else {
+        HMDRotation.x = 0;
+        HMDRotation.y = 0;
+        HMDRotation.z = 0;
+        HMDRotation.w = 1;
+        if (wasUsingRift) {
+          state.BaseRotationEuler.y = 0;
+        }
+        state.renderer.setViewport(0, 0, state.width, state.height);
+        state.renderer.render(scene, state.camera);
+        return wasUsingRift = false;
       }
-      renderer.setViewport(0, 0, state.width, state.height);
-      renderer.render(scene, state.camera);
-      return wasUsingRift = false;
     }
+
+    /*
+    		count++
+    		if state.mirrorViews.indexOf('HUD') > -1 and count % 5 is 0
+    			state.socket.emit('mirror', {
+    				view: 'HUD',
+    				image: state.renderer.domElement.toDataURL()
+    			})
+     */
   };
   setUiSize();
   return render();
 };
 
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 $(document).ready(function() {
   var controls, state, util;
+  require('./StereoEffect.js');
+  require('./DeviceOrientationControls.js');
   state = require('./state');
   util = require('./util');
   controls = require('./controls').setUp(state, util);
@@ -1882,7 +2313,7 @@ $(document).ready(function() {
 });
 
 
-},{"./appSwitcher":1,"./controls":2,"./deviceInputs":3,"./display":4,"./params":6,"./remoteController":7,"./state":8,"./util":9}],6:[function(require,module,exports){
+},{"./DeviceOrientationControls.js":1,"./StereoEffect.js":2,"./appSwitcher":3,"./controls":4,"./deviceInputs":5,"./display":6,"./params":8,"./remoteController":9,"./state":10,"./util":11}],8:[function(require,module,exports){
 var params;
 
 params = exports;
@@ -1907,22 +2338,30 @@ params.check = function(state, util, controls) {
     _results = [];
     for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
       appID = _ref1[_j];
+      console.log('Geting ' + appID);
       _results.push(util.getSync('/appInfo?app_id=' + appID, function(appData, textStatus, jqxhr) {
-        return state.addURL(appData.url, appData);
+        if (appData != null) {
+          console.log('Adding ' + appData.url);
+          return state.addURL(appData.url, appData, false);
+        }
       }));
     }
     return _results;
   };
   if (token !== '') {
     util.getSync('/userFromToken?token=' + token, function(data) {
-      if (data.recent) {
+      if ((data != null ? data.recent : void 0) != null) {
         state.user = data;
+        return setUpUser();
       }
-      return setUpUser();
     });
   }
-  if (typeof appQueryURL !== "undefined" && appQueryURL !== null) {
-    return state.addURL(appQueryURL, null, true);
+  if (paramList['app_id'] != null) {
+    return util.getSync('/appInfo?app_id=' + paramList['app_id'], function(appData, textStatus, jqxhr) {
+      if (appData != null) {
+        return state.addURL(appData.url, appData, true);
+      }
+    });
 
     /*
       window.testApps[appID] = {
@@ -2015,7 +2454,7 @@ params.check = function(state, util, controls) {
 };
 
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var remoteController;
 
 remoteController = exports;
@@ -2081,11 +2520,20 @@ remoteController.setUp = function(state, util) {
       return _results;
     }
   };
-  state.socket = io.connect('/');
+  state.socket = io.connect('http://vos.jit.su/');
   state.socket.on('disconnect', function() {
     if (sessionId !== 'debug') {
+      console.log('disconnect');
       return window.location = state.fromURL;
     }
+  });
+  state.socket.on('mirror-views', function(data) {
+    console.log(['mirror-views', data]);
+    return state.mirrorViews = data;
+  });
+  state.socket.on('mirror-data', function(data) {
+    console.log(['mirror-data', data]);
+    return state.mirrorData = data;
   });
   state.socket.emit('declare-type', {
     type: 'output',
@@ -2093,6 +2541,7 @@ remoteController.setUp = function(state, util) {
   });
   state.socket.on('error', function(result) {
     if (sessionId !== 'debug') {
+      console.log(['error', result]);
       return window.location = state.fromURL;
     }
   });
@@ -2156,9 +2605,8 @@ remoteController.setUp = function(state, util) {
 };
 
 
-},{}],8:[function(require,module,exports){
-var every, numColumns, numRows, state,
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+},{}],10:[function(require,module,exports){
+var every, numColumns, numRows, state;
 
 state = exports;
 
@@ -2181,6 +2629,12 @@ state.camera = void 0;
 state.values = {};
 
 state.valueListeners = {};
+
+state.forceDistort = false;
+
+state.mirrorViews = [];
+
+state.mirrorData = {};
 
 state.modes = {
   Normal: 'normal',
@@ -2206,48 +2660,76 @@ state.oldState = state.modes.Normal;
 
 state.lastUpdate = 0;
 
-state.BaseRotationEuler = new THREE.Vector3();
+state.BaseRotationEuler = new THREE.Euler();
 
 state.BaseRotation = new THREE.Quaternion();
 
 every = 0;
 
-state.open = function(app) {
-  var listener, _i, _len, _ref, _ref1, _results;
-  if (!((state.front_and_back != null) && state.front_and_back.index === app.index) && !((state.front != null) && state.front.index === app.index) && !((state.back != null) && state.back.index === app.index) && (state.user != null) && (_ref = app._id, __indexOf.call(state.user.recent, _ref) < 0)) {
-    state.user.recent.push(app._id);
-    $.post('http://vos.jit.su/recentApps?token=' + token, {
-      recent: state.user.recent
-    });
-  }
-  if ((state.back != null) && state.back.index === app.index) {
-    state.back = null;
-    state.front = null;
-    state.front_and_back = app;
-  } else if ((state.front_and_back == null) || state.front_and_back.index !== app.index) {
-    if (app.external.drawContained != null) {
-      if ((state.front_and_back != null) && (state.front_and_back.external.drawImmersiveBackground != null)) {
-        state.back = state.front_and_back;
-      }
-      state.front_and_back = null;
-      state.front = app;
-    } else if (app.external.drawImmersive != null) {
-      state.front = null;
-      state.back = null;
-      state.front_and_back = app;
-    } else if (app.external.drawImmersiveBackground != null) {
-      state.front_and_back = null;
-      state.back = app;
+state.open = function(app, controls) {
+  var index, index2, k, listener, v, _i, _j, _len, _len1, _ref, _ref1, _results;
+  if (app.status === 'ready') {
+    console.log('starting..');
+    return state.start(app, controls);
+  } else {
+    index = state.user.recent.indexOf(app._id);
+    if (index >= 0) {
+      state.user.recent.splice(index, 1);
     }
+    index2 = -1;
+    _ref = state.apps;
+    for (k = _i = 0, _len = _ref.length; _i < _len; k = ++_i) {
+      v = _ref[k];
+      if (v._id === app._id) {
+        index2 = k;
+      }
+    }
+    if (index2 >= 0) {
+      state.apps.splice(index2, 1);
+    }
+    state.apps.push(app);
+    state.user.recent.push(app._id);
+    $.post('http://vos.jit.su/newAppUsed?token=' + token, {
+      appID: app._id
+    });
+
+    /*
+    if not (state.front_and_back? and state.front_and_back.index is app.index) and 
+            not (state.front? and state.front.index is app.index) and 
+            not (state.back? and state.back.index is app.index) and state.user? and
+            app._id not in state.user.recent
+        state.user.recent.push(app._id)
+        $.post('http://vos.jit.su/recentApps?token=' + token, {recent: state.user.recent})
+     */
+    if ((state.back != null) && state.back.index === app.index) {
+      state.back = null;
+      state.front = null;
+      state.front_and_back = app;
+    } else if ((state.front_and_back == null) || state.front_and_back.index !== app.index) {
+      if (app.external.drawContained != null) {
+        if ((state.front_and_back != null) && (state.front_and_back.external.drawImmersiveBackground != null)) {
+          state.back = state.front_and_back;
+        }
+        state.front_and_back = null;
+        state.front = app;
+      } else if (app.external.drawImmersive != null) {
+        state.front = null;
+        state.back = null;
+        state.front_and_back = app;
+      } else if (app.external.drawImmersiveBackground != null) {
+        state.front_and_back = null;
+        state.back = app;
+      }
+    }
+    state.mode = state.modes.Normal;
+    _ref1 = state.onAppListUpdate.listeners;
+    _results = [];
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      listener = _ref1[_j];
+      _results.push(listener());
+    }
+    return _results;
   }
-  state.mode = state.modes.Normal;
-  _ref1 = state.onAppListUpdate.listeners;
-  _results = [];
-  for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-    listener = _ref1[_i];
-    _results.push(listener());
-  }
-  return _results;
 };
 
 state.onAppListUpdate = function(func) {
@@ -2258,27 +2740,56 @@ state.onAppListUpdate.listeners = [];
 
 state.fromURL = "/";
 
-state.add = function(app, controls) {
-  var listener, _i, _len, _ref;
-  app.panel = new controls.Panel(app);
-  app.index = state.apps.length;
-  state.apps.push(app);
-  app.external = {
-    panel: app.panel,
-    user: {
-      id: state.user.id,
-      name: state.user.name
-    }
-  };
-  (function(load, app) {
-    return load(app);
-  })(app.event.load, app.external);
-  _ref = state.onAppListUpdate.listeners;
+state.start = function(app, controls) {
+  var listener, loaded, other, _i, _j, _len, _len1, _ref, _ref1;
+  other = void 0;
+  _ref = state.apps;
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    listener = _ref[_i];
-    listener();
+    loaded = _ref[_i];
+    if (loaded._id === app._id && loaded.status === 'started') {
+      other = loaded;
+    }
   }
-  return app;
+  if (other != null) {
+    return other;
+  } else {
+    app.panel = new controls.Panel(app);
+    app.index = state.apps.length;
+    
+        app.quaternion = {
+            get x() {
+                return state.camera.quaternion.x
+            },
+            get y() {
+                return state.camera.quaternion.y
+            },
+            get z() {
+                return state.camera.quaternion.z
+            },
+            get w() {
+                return state.camera.quaternion.w
+            }
+        };
+        ;
+    app.external = {
+      panel: app.panel,
+      user: {
+        id: state.user.id,
+        name: state.user.name
+      }
+    };
+    (function(load, app) {
+      return load(app);
+    })(app.event.load, app.external);
+    app.status = 'started';
+    _ref1 = state.onAppListUpdate.listeners;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      listener = _ref1[_j];
+      listener();
+    }
+    state.open(app, controls);
+    return app;
+  }
 };
 
 state.canMaximize = function() {
@@ -2339,7 +2850,7 @@ state.close = function() {
 };
 
 state.drawPanel = function(scene, util) {
-  var ambient, circle, circle_amplitude, directLight, mesh, meshes, mobileDataURI, mobileScene, object, objects, panelApp, panelMesh, point, redLambert, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
+  var ambient, circle, circle_amplitude, directLight, mesh, meshes, mobileDataURI, mobileScene, object, objects, panelApp, panelMesh, point, redLambert, welcomeText, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
   redLambert = new THREE.MeshLambertMaterial({
     color: 0xCC0000
   });
@@ -2350,6 +2861,12 @@ state.drawPanel = function(scene, util) {
   panelMesh.rotation.x = -1.1 + Math.PI / 2;
   panelApp = state.getPanelApp();
   mobileScene = new THREE.Scene();
+  if (state.topBar.state !== 'mobile') {
+    welcomeText = util.makeText('Remote Control Area', 40, 0.4, 0.1);
+    welcomeText.position.x = 0.5;
+    welcomeText.position.y = 0.5;
+    mobileScene.add(welcomeText);
+  }
   _ref = state.topBar.draw();
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     mesh = _ref[_i];
@@ -2425,7 +2942,7 @@ state.drawPanel = function(scene, util) {
   mobileScene.add(ambient);
   state.mobileRenderer.render(mobileScene, state.mobileCamera);
   mobileDataURI = state.mobileRenderer.domElement.toDataURL();
-  if ((state.socket != null) && every % 10 === 0) {
+  if ((state.socket != null) && every % 5 === 0) {
     state.socket.emit('visual', mobileDataURI);
   }
   return every++;
@@ -2439,7 +2956,7 @@ $.ajax({
 });
 
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var eccentricity, util;
 
 util = exports;
@@ -2499,26 +3016,20 @@ util.exportMesh = function(mesh) {
 };
 
 util.cloneMesh = function(mesh) {
-  var copy;
-  copy = new THREE.Mesh(mesh.geometry.clone(), mesh.material.clone());
-  if (copy.material.map != null) {
-    copy.material.map = mesh.material.map.clone();
-    copy.material.map.needsUpdate = true;
+  var copy, _ref, _ref1;
+  copy = mesh.clone();
+  if (((_ref = mesh.geometry.parameters) != null ? _ref.height : void 0) != null) {
+    copy.position.y += mesh.geometry.parameters.height / 2;
   }
-  copy.position = mesh.position.clone();
-  if (mesh.geometry.height != null) {
-    copy.position.y += mesh.geometry.height / 2;
-  }
-  if (mesh.geometry.width != null) {
-    copy.position.x += mesh.geometry.width / 2;
+  if (((_ref1 = mesh.geometry.parameters) != null ? _ref1.width : void 0) != null) {
+    copy.position.x += mesh.geometry.parameters.width / 2;
   }
   return copy;
 };
 
 util.cloneLine = function(line) {
   var copy;
-  copy = new THREE.Line(line.geometry.clone(), line.material.clone());
-  copy.position = line.position.clone();
+  copy = line.clone();
   return copy;
 };
 
@@ -2542,19 +3053,19 @@ util.makeText = function(text, px, width, height) {
 };
 
 util.setPanelPosition = function(board, Mesh, x_disp, y_disp, z_disp) {
-  var adjusted_x_disp, adjusted_y_disp, height, width;
+  var adjusted_x_disp, adjusted_y_disp, height, width, _ref, _ref1;
   width = 0;
   height = 0;
-  if (Mesh.geometry.width != null) {
-    width = Mesh.geometry.width * board.geometry.width;
+  if (((_ref = Mesh.geometry.parameters) != null ? _ref.width : void 0) != null) {
+    width = Mesh.geometry.parameters.width * board.geometry.parameters.width;
   }
-  if (Mesh.geometry.height != null) {
-    height = Mesh.geometry.height * board.geometry.height;
+  if (((_ref1 = Mesh.geometry.parameters) != null ? _ref1.height : void 0) != null) {
+    height = Mesh.geometry.parameters.height * board.geometry.parameters.height;
   }
-  Mesh.scale.x = board.geometry.width;
-  Mesh.scale.y = board.geometry.height;
-  adjusted_x_disp = board.geometry.width * (x_disp - 0.5) + width / 2;
-  adjusted_y_disp = board.geometry.height * (y_disp - 0.5) + height / 2;
+  Mesh.scale.x = board.geometry.parameters.width;
+  Mesh.scale.y = board.geometry.parameters.height;
+  adjusted_x_disp = board.geometry.parameters.width * (x_disp - 0.5) + width / 2;
+  adjusted_y_disp = board.geometry.parameters.height * (y_disp - 0.5) + height / 2;
   Mesh.position.x = board.position.x + adjusted_x_disp;
   Mesh.position.y = board.position.y + adjusted_y_disp * Math.cos(board.rotation.x) - z_disp * Math.sin(board.rotation.x);
   Mesh.position.z = board.position.z + adjusted_y_disp * Math.sin(board.rotation.x) + z_disp * Math.cos(board.rotation.x);
@@ -2635,19 +3146,19 @@ util.deltaAngleDeg = function(a, b) {
 
 util.toggleFullScreen = function() {
   if ((document.fullScreenElement && document.fullScreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
-    if (document.documentElement.requestFullScreen) {
+    if (document.documentElement.requestFullScreen != null) {
       return document.documentElement.requestFullScreen();
-    } else if (document.documentElement.mozRequestFullScreen) {
+    } else if (document.documentElement.mozRequestFullScreen != null) {
       return document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullScreen) {
+    } else if (document.documentElement.webkitRequestFullScreen != null) {
       return document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
-    if (document.cancelFullScreen) {
+    if (document.cancelFullScreen != null) {
       return document.cancelFullScreen();
-    } else if (document.mozCancelFullScreen) {
+    } else if (document.mozCancelFullScreen != null) {
       return document.mozCancelFullScreen();
-    } else if (document.webkitCancelFullScreen) {
+    } else if (document.webkitCancelFullScreen != null) {
       return document.webkitCancelFullScreen();
     }
   }
@@ -2764,4 +3275,4 @@ util.get_suggestion = function(state, path, probs) {
 };
 
 
-},{}]},{},[5])
+},{}]},{},[7])

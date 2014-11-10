@@ -40,20 +40,22 @@ util.exportMesh = (mesh) ->
   return result
 
 util.cloneMesh = (mesh) ->
-  copy = new THREE.Mesh(mesh.geometry.clone(), mesh.material.clone())
-  if copy.material.map?
-    copy.material.map = mesh.material.map.clone()
-    copy.material.map.needsUpdate = true
-  copy.position = mesh.position.clone()
-  if mesh.geometry.height?
-    copy.position.y += mesh.geometry.height/2
-  if mesh.geometry.width?
-    copy.position.x += mesh.geometry.width/2
+  copy = mesh.clone()
+#  copy = new THREE.Mesh(mesh.geometry.clone(), mesh.material.clone())
+#  if copy.material.map?
+#    copy.material.map = mesh.material.map.clone()
+#    copy.material.map.needsUpdate = true
+#  copy.position = mesh.position.clone()
+  if mesh.geometry.parameters?.height?
+    copy.position.y += mesh.geometry.parameters.height/2
+  if mesh.geometry.parameters?.width?
+    copy.position.x += mesh.geometry.parameters.width/2
   return copy
 
 util.cloneLine = (line) ->
-  copy = new THREE.Line(line.geometry.clone(), line.material.clone())
-  copy.position = line.position.clone()
+  copy = line.clone()
+#  copy = new THREE.Line(line.geometry.clone(), line.material.clone())
+#  copy.position = line.position.clone()
   return copy
 
 util.makeText = (text, px, width, height) ->
@@ -77,15 +79,15 @@ util.setPanelPosition = (board, Mesh, x_disp, y_disp, z_disp) ->
   width = 0
   height = 0
   
-  width = Mesh.geometry.width * board.geometry.width if Mesh.geometry.width?
+  width = Mesh.geometry.parameters.width * board.geometry.parameters.width if Mesh.geometry.parameters?.width?
 
-  height = Mesh.geometry.height * board.geometry.height if Mesh.geometry.height?
+  height = Mesh.geometry.parameters.height * board.geometry.parameters.height if Mesh.geometry.parameters?.height?
 
-  Mesh.scale.x = board.geometry.width
-  Mesh.scale.y = board.geometry.height
+  Mesh.scale.x = board.geometry.parameters.width
+  Mesh.scale.y = board.geometry.parameters.height
   
-  adjusted_x_disp = board.geometry.width * (x_disp - 0.5) + width / 2
-  adjusted_y_disp = board.geometry.height * (y_disp - 0.5) + height / 2
+  adjusted_x_disp = board.geometry.parameters.width * (x_disp - 0.5) + width / 2
+  adjusted_y_disp = board.geometry.parameters.height * (y_disp - 0.5) + height / 2
 
   Mesh.position.x = board.position.x + adjusted_x_disp
   Mesh.position.y = board.position.y + adjusted_y_disp * Math.cos(board.rotation.x) - z_disp * Math.sin(board.rotation.x)
@@ -149,21 +151,21 @@ util.angleRangeRad = (angle) ->
 util.deltaAngleDeg = (a,b) ->
   return Math.min(360 - (Math.abs(a - b) %360), Math.abs(a - b) % 360)
 
-util.toggleFullScreen = ->
-  if (document.fullScreenElement and document.fullScreenElement isnt null) or    # alternative standard method
-      (not document.mozFullScreen and not document.webkitIsFullScreen)           # current working methods
-    if document.documentElement.requestFullScreen
+util.toggleFullScreen = ()->
+  if (document.fullScreenElement and document.fullScreenElement isnt null) or   # alternative standard method
+      (not document.mozFullScreen and not document.webkitIsFullScreen)          # current working methods
+    if document.documentElement.requestFullScreen?
       document.documentElement.requestFullScreen()
-    else if document.documentElement.mozRequestFullScreen
+    else if document.documentElement.mozRequestFullScreen?
       document.documentElement.mozRequestFullScreen()
-    else if document.documentElement.webkitRequestFullScreen
+    else if document.documentElement.webkitRequestFullScreen?
       document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
   else
-    if document.cancelFullScreen
+    if document.cancelFullScreen?
       document.cancelFullScreen()
-    else if document.mozCancelFullScreen
+    else if document.mozCancelFullScreen?
       document.mozCancelFullScreen()
-    else if document.webkitCancelFullScreen
+    else if document.webkitCancelFullScreen?
       document.webkitCancelFullScreen()
 
 #Doesn't actually seem to be synchronous. Apparently not allowed on cross domain requests

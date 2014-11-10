@@ -11,9 +11,10 @@
     <link href="css/jumbotron.css" rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://apis.google.com/js/client.js?onload=onLoadCallback"></script>
-    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/jquery-1.11.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-
+    <script src="js/purl.js"></script>
+    <!--
     <script type="text/javascript">
       var socket = io.connect('/');
       socket.on('code', function(data) {
@@ -30,6 +31,7 @@
       });
       socket.emit('declare-type', {type: 'page', name: 'basic'});
     </script>
+  -->
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
@@ -50,13 +52,19 @@
               <a class="dropdown-toggle" data-toggle="dropdown">Develop<b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="/documentation">Documentation</a></li>
+                <% if (!user) { %>
+                <li><a data-target="#form" data-toggle="modal">Dashboard</a></li>
+                <% } else { %>
                 <li><a href="/dashboard">Dashboard</a></li>
+                <% } %>
               </ul>
             </li>
             <li><a class="active" href="/try">Try It!</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
+            <!--
             <li><a id="code"></a></li>
+          -->
             <% if (!user) { %>
             <li id="signInButton"><a data-target="#form" data-toggle="modal">Sign In</a></li>
             <% } else { %>
@@ -98,11 +106,15 @@
                 <div class="form-group" id="password">
                   <input type="password" name="password" class="form-control input-lg" placeholder="Password">
                 </div>
+                <div class="form-group" id="confirmpassword"  style="display:none;">
+                  <input type="password" name="confirmpassword" class="form-control input-lg" placeholder="Confirm Password">
+                </div>
                 <span class="button-checkbox" id='loginsettings'>
                   <button type="button" class="btn" data-color="info">Remember Me</button>
                   <input type="checkbox" name="remember_me" id="remember_me" checked="checked" style="display:none;">
-                  <a id="forgot" class="btn btn-link pull-right">Forgot Password?</a>
+                  <a href="/forgot" id="forgot" class="btn btn-link pull-right">Forgot Password?</a>
                 </span>
+                <div class="alert alert-danger" id="passwordAlert" style="display:none; width: 100%; text-align:center;">Error</div>
               </fieldset>
             </form>
           </div>
@@ -113,6 +125,10 @@
         </div>
       </div>
     </div>
+    <div class="alert alert-info" id="toast" style="display: none;position:absolute; width: 60%; left: 20%; right: 20%; text-align:center; z-index:1;">
+      <button type="button" class="close" data-dismiss="alert">×</button>
+      <p></p>
+    </div>
     <%- body %>
     <div class="container">
       <hr>
@@ -121,17 +137,33 @@
       </footer>
     </div>
     <script type="text/javascript">
-    $(function(){
+    $(document).ready(function(){
+
+        toast = function(message) {
+            $("#toast p").text(message);
+            $("#toast").finish().show().delay(2000).fadeOut("slow");
+            if (message == 'Please Sign In First') {
+              $('#form').modal('show');
+            }
+        };
+
+        <% if (locals.message != null && locals.message != '') { %>
+        toast('<%= message %>');
+        <% } %>
+
         var isRegistering = false;
         $('#change').click(function() {
           if(isRegistering) {
             $('#myModalLabel').text('Please Sign In');
             $('#nameField').hide();
+            $('#confirmpassword').hide();
+            $('#passwordAlert').hide();
             $('#loginsettings').show();
             $(this).text('Go to Registration');
           } else {
             $('#myModalLabel').text('Please Register');
             $('#nameField').show();
+            $('#confirmpassword').show();
             $('#loginsettings').hide();
             $(this).text('Go to Sign In');
           }
@@ -140,13 +172,27 @@
 
         $('#submit').click(function() {
           //Check if fields are valid
-          $('#form').modal('hide');
-          if(isRegistering) {
-            $('#signinform').attr('action','/registerAndSignIn');
+          if (!isRegistering) {
+            $('#form').modal('hide');
+            if (purl(window.location.search).param('from') != null) {
+              $('#signinform').attr('action','https://vos.jit.su/signin?from='+purl(window.location.search).param('from'));
+            } else {
+              $('#signinform').attr('action','https://vos.jit.su/signin');
+            }
+            $('#signinform').submit();
           } else {
-            $('#signinform').attr('action','/signin');
+            if ($('[name=password]').val().length < 6) {
+              $('#passwordAlert').show();
+              $('#passwordAlert').text('Password must be at least 6 characters long');
+            } else if ($('[name=password]').val() != $('[name=confirmpassword]').val()) {
+              $('#passwordAlert').show();
+              $('#passwordAlert').text("Passwords don't match");
+            } else {
+             $('#form').modal('hide');
+             $('#signinform').attr('action','https://vos.jit.su/registerAndSignIn');
+             $('#signinform').submit();
+            }
           }
-          $('#signinform').submit();
         });
 
         $('.button-checkbox').each(function(){

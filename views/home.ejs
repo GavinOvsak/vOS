@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <div class="jumbotron">
   <div class="container">
-    <h1>Welcome To The Future!</h1>
+    <h1>Welcome to vOS, a virtual operating system</h1>
     <p>vOS is a new platform for virtual reality applications. Think of it like an immersive computer controlled by your tablet.</p>
+    <div class="row col-sm-offset-3 col-sm-6">
+      <h2 style="text-align:center">
+        <div id="vOS-embed">
+        </div>
+      </h2>
+      <script src="/js/embed.js"></script>
+    </div>
     <div class="row col-sm-offset-3 col-sm-6">
       <a href="/app?app_id=<%= displayApp._id %>">
         <div id="compactView" style="width:600;height:400;text-align: center"></div>
@@ -13,8 +20,7 @@
 </div>
 <div class="container">
   <div class="row">
-    <div style="display:none" id="vOS-embed" data-app="5315354db87e860000a11cbc"></div>
-  	<h2>Featured Apps:</h2>
+    <h2>Featured Apps:</h2>
     <hr>
   </div>
   <% for(var row = 0; row * 3 <= featured.length - featured.length % 3; row++) { %>
@@ -30,6 +36,7 @@
     </div>
   <% } %>
 </div>
+
 <script>
   $(document).ready(function() {
     $('.featuredApp').each(function() {
@@ -77,7 +84,7 @@ var camera1 = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 camera1.rotation.x = camera_start.x;
 camera1.position.y = camera_start.y;
 camera1.position.z = camera_start.z;
-var renderer1 = new THREE.WebGLRenderer( {antialias:true} );
+var renderer1 = new THREE.WebGLRenderer( {antialias:true, alpha:true} );
 renderer1.autoClearColor = true;
 renderer1.setSize(WIDTH, HEIGHT);
 $compactView.append(renderer1.domElement);
@@ -178,4 +185,3 @@ var controls = controlObjects.setUp(mockState, mockUtil);
 })(THREE, controls, '<%= displayApp.url %>', scene1);
 
 </script>
-<script type="text/javascript" src="http://vos.jit.su/js/embed.js"/>

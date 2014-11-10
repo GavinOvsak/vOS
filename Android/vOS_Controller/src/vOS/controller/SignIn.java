@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -46,8 +47,10 @@ public class SignIn extends Activity {
 	private EditText name;
 	private EditText email;
 	private EditText password;
+	private EditText confirmPassword;
 	private Button change;
 	private Button submit;
+	private Button forgotButton;
 	
 	private boolean isRegistering = false;
 	
@@ -75,12 +78,22 @@ public class SignIn extends Activity {
 		name = (EditText)findViewById(R.id.name);
 		email = (EditText)findViewById(R.id.email);
 		password = (EditText)findViewById(R.id.password);
-		change = (Button)findViewById(R.id.change);
+		confirmPassword = (EditText)findViewById(R.id.confirmPassword);
 		submit = (Button)findViewById(R.id.submit);
+		forgotButton = (Button)findViewById(R.id.forgotButton);
+		change = (Button)findViewById(R.id.change);
 		final ActionBar actionBar = getActionBar();
 	    actionBar.show();
 	    actionBar.setTitle(" Please Sign In");
 
+	    forgotButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://vos.jit.su/forgot"));
+				startActivity(browserIntent);
+			}
+	    });
+	    
 		change.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -105,9 +118,16 @@ public class SignIn extends Activity {
 				String nameValue = name.getText().toString();
 				String emailValue = email.getText().toString();
 				String passwordValue = password.getText().toString();
+				String confirmPasswordValue = confirmPassword.getText().toString();
 				
-				PostTask tk = new PostTask(nameValue, emailValue, passwordValue);
-				tk.execute(); 
+				if (!isRegistering || (confirmPasswordValue.equals(passwordValue) && passwordValue.length() >= 6)) {
+					PostTask tk = new PostTask(nameValue, emailValue, passwordValue);
+					tk.execute(); 
+				} else if (isRegistering && passwordValue.length() <= 6) {
+					toast("Password must be at least 6 characters long");
+				} else if (isRegistering && !confirmPasswordValue.equals(passwordValue)) {
+					toast("Passwords don't match");
+				}
 			}
 		});
 	}

@@ -10,9 +10,9 @@ USE_TRACKER = false;
 deviceInputs.setUp = function(state, util) {
   var bridge, lastClientX, lastClientY, mouseButtonDown, viewer;
   bridge = new OculusBridge({
-    "onConnect": function() {},
-    "onDisconnect": function() {},
-    "onOrientationUpdate": function(quatValues) {
+    'onConnect': function() {},
+    'onDisconnect': function() {},
+    'onOrientationUpdate': function(quatValues) {
       HMDRotation.x = quatValues.x;
       HMDRotation.y = quatValues.y;
       HMDRotation.z = quatValues.z;
@@ -20,10 +20,12 @@ deviceInputs.setUp = function(state, util) {
       return state.lastUpdate = Date.now();
     }
   });
-  bridge.connect();
-  document.addEventListener("keydown", function(e) {
+  document.addEventListener('keydown', function(e) {
     if (e.keyCode === 32) {
-      return util.toggleFullScreen();
+      util.toggleFullScreen();
+    }
+    if (e.keyCode === 72) {
+      return state.forceDistort = !state.forceDistort;
     }
   }, false);
   viewer = $('#viewer');
@@ -47,7 +49,7 @@ deviceInputs.setUp = function(state, util) {
       state.BaseRotationEuler.set(util.angleRangeRad(state.BaseRotationEuler.x + (event.clientY - lastClientY) * MOUSE_SPEED * enableX), util.angleRangeRad(state.BaseRotationEuler.y + (event.clientX - lastClientX) * MOUSE_SPEED), 0.0);
       lastClientX = event.clientX;
       lastClientY = event.clientY;
-      return state.BaseRotation.setFromEuler(state.BaseRotationEuler, 'YZX');
+      return state.BaseRotation.setFromEuler(state.BaseRotationEuler);
     }
   });
 };

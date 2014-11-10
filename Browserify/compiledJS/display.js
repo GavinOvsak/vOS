@@ -4,12 +4,18 @@ var display;
 display = exports;
 
 display.start = function(state, util, controls) {
-  var $viewer, ASPECT, FAR, HMDRotation, NEAR, OculusRift, USE_TRACKER, VIEW_ANGLE, WORLD_FACTOR, centerHeading, currHeading, directLight, e, effect, headingVector, keyboardMoveVector, moveVector, navList, pointLight, projGeo, projMaterial, render, renderer, resize, setUiSize, wasUsingRift;
+  var $viewer, ASPECT, FAR, HMDRotation, NEAR, OculusRift, USE_TRACKER, VIEW_ANGLE, WORLD_FACTOR, cardBoardLight, cardboardCamera, cardboardControls, cardboardEffect, centerHeading, count, directLight, e, effect, keyboardMoveVector, moveVector, navList, once, pointLight, projGeo, projMaterial, render, resize, setOrientationControls, setUiSize, wasUsingRift;
   VIEW_ANGLE = 45;
   ASPECT = state.width / state.height;
   NEAR = 0.1;
-  FAR = 10000;
+  FAR = 100000;
+  count = 0;
+  once = false;
+  cardboardControls = null;
   $viewer = $('#viewer');
+  if ((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard) {
+    VIEW_ANGLE = 90;
+  }
   state.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
   /*
@@ -18,24 +24,30 @@ display.start = function(state, util, controls) {
   state.camera.rotation.x = Math.PI / 2;
   state.camera.position.y = 0;
   state.camera.position.z = 10;
-  state.camera.useQuaternion = true;
   try {
-    renderer = new THREE.WebGLRenderer({
-      antialias: true
+    state.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true
     });
   } catch (_error) {
     e = _error;
     alert('This application needs WebGL enabled!');
     return false;
   }
-  renderer.autoClearColor = true;
-  renderer.setSize(state.width, state.height);
-  $viewer.append(renderer.domElement);
+  state.renderer.autoClearColor = true;
+  state.renderer.setSize(state.width, state.height);
+  $viewer.append(state.renderer.domElement);
+  if ((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard) {
+    state.renderer.domElement.addEventListener('click', function(e) {
+      return util.toggleFullScreen();
+    }, false);
+  }
   state.mobileCamera = new THREE.OrthographicCamera(0, 1, 1, 0, -30, 30);
   state.mobileCamera.position.z = 10;
   state.mobileCamera.up = new THREE.Vector3(0, 1, 0);
   state.mobileRenderer = new THREE.WebGLRenderer({
-    antialias: true
+    antialias: true,
+    alpha: true
   });
   state.mobileRenderer.autoClearColor = true;
   state.mobileRenderer.setSize(400, 400);
@@ -60,20 +72,30 @@ display.start = function(state, util, controls) {
     distortionK: [1.0, 0.22, 0.24, 0.0],
     chromaAbParameter: [0.996, -0.004, 1.014, 0.0]
   };
-  currHeading = 0;
   centerHeading = 0;
   navList = [];
-  headingVector = new THREE.Vector3();
   moveVector = new THREE.Vector3();
   keyboardMoveVector = new THREE.Vector3();
   HMDRotation = new THREE.Quaternion();
   OculusRift.hResolution = state.width;
   OculusRift.vResolution = state.height;
-  effect = new THREE.OculusRiftEffect(renderer, {
+  effect = new THREE.OculusRiftEffect(state.renderer, {
     HMD: OculusRift,
     worldFactor: WORLD_FACTOR
   });
   effect.setSize(state.width, state.height);
+  cardboardEffect = new THREE.StereoEffect(state.renderer);
+  cardboardEffect.separation = 0.06;
+  cardboardCamera = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
+  cardboardCamera.position.set(0, 10, 0);
+  cardBoardLight = new THREE.HemisphereLight(0x777777, 0x000000, 0.6);
+  cardboardControls = new THREE.DeviceOrientationControls(state.camera, true);
+  setUiSize = function() {
+    var height, hwidth, width;
+    width = window.innerWidth;
+    hwidth = width / 2;
+    return height = window.innerHeight;
+  };
   resize = function(event) {
     state.width = window.innerWidth;
     state.height = window.innerHeight;
@@ -82,22 +104,45 @@ display.start = function(state, util, controls) {
     OculusRift.hResolution = state.width;
     OculusRift.vResolution = state.height;
     effect.setHMD(OculusRift);
-    renderer.setSize(state.width, state.height);
-    return state.camera.projectionMatrix.makePerspective(VIEW_ANGLE, ASPECT, NEAR, FAR);
+    state.camera.projectionMatrix.makePerspective(VIEW_ANGLE, ASPECT, NEAR, FAR);
+    state.camera.updateProjectionMatrix();
+    state.renderer.setSize(state.width, state.height);
+    effect.setSize(state.width, state.height);
+    return cardboardEffect.setSize(state.width, state.height);
   };
   window.addEventListener('resize', resize, false);
-  setUiSize = function() {
-    var height, hwidth, width;
-    width = window.innerWidth;
-    hwidth = width / 2;
-    return height = window.innerHeight;
-  };
+  resize();
   projGeo = new THREE.SphereGeometry(5000, 512, 256);
   projMaterial = new THREE.MeshBasicMaterial({
     map: THREE.ImageUtils.loadTexture('static/placeholder.png'),
     side: THREE.DoubleSide
   });
   wasUsingRift = false;
+
+  /*
+  	setOrientationControls = (e) ->
+  		if !e.alpha
+  			console.log('gone')
+  			return
+  
+  		console.log('Set up')
+  		cardboardControls = new THREE.DeviceOrientationControls(state.camera, true)
+  		console.log(state.camera.quaternion)
+  		console.log(state.camera.rotation)
+  		debugger
+  		 *element.addEventListener('click', fullscreen, false)
+  
+  		window.removeEventListener('deviceorientation', setOrientationControls)
+  	window.addEventListener('deviceorientation', setOrientationControls, true)
+   */
+  setOrientationControls = function(event) {
+    if (event.alpha) {
+      window.removeEventListener('deviceorientation', setOrientationControls, false);
+      cardboardControls.connect();
+      return cardboardControls.update();
+    }
+  };
+  window.addEventListener('deviceorientation', setOrientationControls, false);
   render = function() {
     var adjustedHMDQuarternion, matr, matr2, scene, tilt, tilt2;
     requestAnimationFrame(render);
@@ -106,7 +151,7 @@ display.start = function(state, util, controls) {
       moveVector.x = 0;
     }
     state.BaseRotationEuler.set(0.0, util.angleRangeRad(state.BaseRotationEuler.y + moveVector.y), 0.0);
-    state.BaseRotation.setFromEuler(state.BaseRotationEuler, 'YZX');
+    state.BaseRotation.setFromEuler(state.BaseRotationEuler);
     matr = new THREE.Matrix4();
     matr.makeRotationFromQuaternion(state.BaseRotation);
     tilt = new THREE.Matrix4();
@@ -124,9 +169,9 @@ display.start = function(state, util, controls) {
     tilt2.makeRotationX(0 * Math.PI / 2);
     matr2.multiplyMatrices(tilt2, matr2);
     adjustedHMDQuarternion.setFromRotationMatrix(matr2);
-    state.camera.quaternion.multiplyQuaternions(state.BaseRotation, adjustedHMDQuarternion);
-    headingVector.setEulerFromQuaternion(state.camera.quaternion, 'YZX');
-    currHeading = util.angleRangeDeg(THREE.Math.radToDeg(-1 * headingVector.y));
+    if (!((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard)) {
+      state.camera.quaternion.multiplyQuaternions(state.BaseRotation, adjustedHMDQuarternion);
+    }
     scene = new THREE.Scene();
     if (state.front_and_back != null) {
       (function() {
@@ -146,28 +191,55 @@ display.start = function(state, util, controls) {
       }
       if (state.back != null) {
         (function() {
-          return state.back.external.drawImmersiveBackground(scene);
+          if (state.back.external.drawImmersiveBackground != null) {
+            return state.back.external.drawImmersiveBackground(scene);
+          } else if (state.back.external.drawImmersive != null) {
+            return state.back.external.drawImmersive(scene);
+          }
         })();
       }
     }
     state.drawPanel(scene, util);
-    scene.add(state.camera);
     scene.add(directLight);
-    if (Date.now() - state.lastUpdate < 100) {
-      effect.render(scene, state.camera);
-      return wasUsingRift = true;
+
+    /*
+    		hudCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
+    		hudCamera.rotation.x = Math.PI/2
+    		hudCamera.position.y = 0
+    		hudCamera.position.z = 10
+    		hudCamera.quaternion.multiplyQuaternions(state.BaseRotation, adjustedHMDQuarternion)
+     */
+    scene.add(state.camera);
+    if ((typeof isCardboard !== "undefined" && isCardboard !== null) && isCardboard) {
+      cardboardCamera.updateProjectionMatrix();
+      cardboardControls.update();
+      return cardboardEffect.render(scene, state.camera);
     } else {
-      HMDRotation.x = 0;
-      HMDRotation.y = 0;
-      HMDRotation.z = 0;
-      HMDRotation.w = 1;
-      if (wasUsingRift) {
-        state.BaseRotationEuler.y = 0;
+      if (Date.now() - state.lastUpdate < 100 || state.forceDistort) {
+        effect.render(scene, state.camera);
+        return wasUsingRift = true;
+      } else {
+        HMDRotation.x = 0;
+        HMDRotation.y = 0;
+        HMDRotation.z = 0;
+        HMDRotation.w = 1;
+        if (wasUsingRift) {
+          state.BaseRotationEuler.y = 0;
+        }
+        state.renderer.setViewport(0, 0, state.width, state.height);
+        state.renderer.render(scene, state.camera);
+        return wasUsingRift = false;
       }
-      renderer.setViewport(0, 0, state.width, state.height);
-      renderer.render(scene, state.camera);
-      return wasUsingRift = false;
     }
+
+    /*
+    		count++
+    		if state.mirrorViews.indexOf('HUD') > -1 and count % 5 is 0
+    			state.socket.emit('mirror', {
+    				view: 'HUD',
+    				image: state.renderer.domElement.toDataURL()
+    			})
+     */
   };
   setUiSize();
   return render();
